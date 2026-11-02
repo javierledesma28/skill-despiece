@@ -3,6 +3,58 @@
 Formato: versión semántica (`metadata.version` de SKILL.md). Una entrada por cambio relevante, con el
 resultado de las evals que lo respaldan.
 
+## [1.2.0] - 2026-11-02
+
+### Añadido
+- **`ensamblar.py --interactivo`**: la página interactiva, desde el mismo `modelo.json`, para tipo físico con
+  un bloque `geometria`. Un solo HTML sin librerías ni red: vista isométrica que se abre al cargar y con un
+  deslizador, desmontaje pieza a pieza al bajar (scroll-driven animations con fallback por
+  IntersectionObserver), flujo paso a paso con la flecha de cada relación y «▶ Recorrer», nivel 2 que se abre
+  con el scroll o con «Ver por dentro →», predicción con opciones y popover «▲ supuesto». Funciona sin
+  JavaScript, en claro y oscuro, con movimiento reducido y en el móvil. Sin `geometria`, o en otro tipo,
+  escribe la estática y lo dice. Detalle en `references/interactivo.md`.
+- `scripts/isometrico.py`: proyección isométrica y **alzas calculadas**, no escritas: se elige la combinación
+  en la que ninguna pieza tapa más del 5 % de la cara de arriba de otra ni su número en ningún paso del
+  desmontaje. Si no la hay, `ensamblar.py` sale con 1 y dice qué pieza tapa a cuál. Se ejecuta también solo.
+- `scripts/interactiva.py` y `assets/plantilla-interactiva.html`: el SVG llega pintado y explotado desde
+  Python; el JS solo cambia estados.
+- `scripts/capturar-cdp.mjs`: captura en tiempo real por DevTools Protocol (Node 22 o superior, sin
+  dependencias), porque `--screenshot` captura antes de que corran el scroll y las animaciones. Acepta `TEMA`,
+  `MOVIMIENTO`, `SIN_JS` y `PUERTO`; sin `PUERTO`, el navegador elige un puerto libre y se pueden lanzar
+  capturas en paralelo.
+- Modelo: `figuras[].destacada`, `prediccion.opciones` y `prediccion.correcta`, `flujo_entrada` y el bloque
+  `geometria`. `assets/ejemplo-fisico.json` los trae todos.
+- `validar_modelo.py`: reglas para todo lo anterior (forma, rangos, una sola placa y la primera en montarse,
+  volúmenes que no se solapan, `unidades` igual a `cantidad`, subconjuntos solo en raíces con hijos, huecos de
+  los rótulos, `lift` escrito a mano). `evals/probar_validador.py` comprueba cada regla con una mutación del
+  ejemplo: 37/37.
+- `docs/interactivo.md` con la demo interactiva del SSD y sus capturas (`docs/interactivo/`), y
+  `docs/research-interactivo.md` con el prototipo que sirvió para decidir (`docs/prototipo-interactivo/`).
+  Sin GitHub Pages: el HTML se descarga y se abre.
+
+### Cambiado
+- `SKILL.md`: dos gotchas (la interactiva es opcional y solo física; no se revisa con `--screenshot`), el
+  paso 6 con el bloque «Interactiva» y Node 22 en `compatibility`. `allowed-tools` pasa a lista e incluye
+  `node` para `capturar-cdp.mjs`.
+- `ensamblar.py` y `explosionado.py`: `--help` muestra la documentación entera, con los códigos de salida.
+  `validar_modelo.py --help` sale por stdout con código 0, y un argumento de más, por stderr con 2.
+- `explosionado.py` sigue en 2D: la vista isométrica solo existe en la página interactiva.
+- README, `docs/demo.md` y `docs/instalacion.md`: pestaña «Interactiva», Node 22 como requisito opcional y
+  la hoja de ruta al día.
+
+### Evaluación
+- **Caso 5 nuevo (`fisico-interactivo-ddr5`) y dos consultas de activación nuevas**, corridos el 2026-11-02
+  (`evals/resultados-2026-11-02b.md`). Calidad con y sin skill en subagentes limpios: **8/8 con skill frente
+  a 4/8 sin ella**, con Sonnet y con Haiku. Activación **64/66** con Sonnet, Haiku y Opus 5.5 (22 consultas
+  cada uno). Los dos fallos son la misma consulta de validación: una página «que se recorra con el scroll,
+  tipo 3D» se va a la guía web. Al ser de validación, no se tocó la descripción, que va por 1.001 de 1.024
+  caracteres.
+- Dos defectos que encontraron las evals, corregidos antes de publicar:
+  - `capturar-cdp.mjs` usaba un puerto fijo, y dos capturas a la vez se colgaban. Ahora el navegador elige
+    uno libre.
+  - La plantilla interactiva activaba el scroll suave desde el principio, y a veces el salto inicial a un
+    `#ancla` no ocurría (1 de 8 cargas). Ahora el scroll suave se activa cuando la página ya cargó: 14 de 14.
+
 ## [1.1.1] - 2026-11-02
 
 ### Corregido

@@ -1,12 +1,12 @@
 <div align="center">
 
-[**← README**](../README.md) · [**Demo**](demo.md) · **Instalación** · [**Changelog**](../CHANGELOG.md) · [**Licencia**](../LICENSE)
+[**← README**](../README.md) · [**Demo**](demo.md) · [**Interactiva**](interactivo.md) · **Instalación** · [**Changelog**](../CHANGELOG.md) · [**Licencia**](../LICENSE)
 
 </div>
 
 # Instalar `despiece`
 
-Cinco minutos, sin compilar nada. La skill es una carpeta con un `SKILL.md` y tres scripts de Python que no
+Cinco minutos, sin compilar nada. La skill es una carpeta con un `SKILL.md` y unos scripts de Python que no
 necesitan pip. Elegí tu sistema y seguí los pasos en orden.
 
 ## Qué necesitás
@@ -17,6 +17,7 @@ necesitan pip. Elegí tu sistema y seguí los pasos en orden.
 | Python 3.10 o superior | Valida el modelo, dibuja la vista explotada y arma la página | `python3 --version` en macOS/Linux · `python --version` en Windows |
 | Git (opcional) | Para clonar y actualizar con un comando | `git --version`. Si no lo tenés, más abajo hay un camino sin Git |
 | Edge o Chrome (opcional) | Solo para capturar la página en PNG | Ya lo tenés si navegás por Internet |
+| Node 22 o superior (opcional) | Solo para capturar la [página interactiva](interactivo.md) | `node --version` |
 
 Si Python no está: en macOS, `brew install python` o el instalador de [python.org](https://www.python.org/downloads/);
 en Windows, el instalador de [python.org](https://www.python.org/downloads/windows/) marcando **«Add python.exe to
@@ -109,6 +110,8 @@ más en el sistema.
 | `python: command not found` en macOS | Solo existe `python3` | Usá `python3`. La skill lo acepta igual: Claude Code usa el que tengas |
 | `SyntaxError` al correr un script | Python anterior a 3.10 | `python3 --version`; actualizá a 3.10 o superior |
 | La captura PNG no sale | Edge o Chrome no están en la ruta esperada | Es opcional: abrí `index.html` en el navegador. Para capturar, usá la ruta completa del ejecutable |
+| `capturar-cdp.mjs` dice «hace falta Node 22» | Node anterior a 22 | Actualizá Node (`brew upgrade node`, `winget upgrade OpenJS.NodeJS`) o abrí la página en el navegador |
+| `--interactivo` escribe la página estática | El modelo no es de tipo físico o no tiene `geometria` | Es lo esperado: la interactiva solo existe para hardware con geometría (ver [Interactiva](interactivo.md)) |
 | La página sale sin marca | Es lo esperado | La skill no trae la marca de nadie. Pasá `--marca ruta/a/tu-marca.json` (ver [el README](../README.md#tu-marca-en-un-fichero)) |
 
 ¿Otra cosa? [Abrí un issue](https://github.com/javierledesma28/skill-despiece/issues) con tu sistema, la versión

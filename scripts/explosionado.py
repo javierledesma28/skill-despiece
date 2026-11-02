@@ -100,7 +100,7 @@ def envolver(texto: str, n: int, lineas: int = 2) -> list[str]:
 
 def main(argv: list[str]) -> int:
     _utf8_stdout()
-    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0], add_help=True)
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("modelo")
     ap.add_argument("--salida", required=True)
     ap.add_argument("--subconjunto", default=None, help="id de la pieza cuyos hijos se explotan")

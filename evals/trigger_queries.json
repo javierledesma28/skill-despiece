@@ -11,6 +11,7 @@
   {"split": "train", "should_trigger": false, "query": "armá un deck para dirección con los avances del plan anual"},
   {"split": "train", "should_trigger": false, "query": "relevamiento del repo del conector antes de tocar nada"},
   {"split": "train", "should_trigger": false, "query": "qué es un NSG? en una frase nomás"},
+  {"split": "train", "should_trigger": false, "query": "al diagrama de la placa base que ya tengo en la web agregale zoom y que al tocar cada componente se abra su ficha"},
   {"split": "validation", "should_trigger": true, "query": "qué partes tiene una Raspberry Pi 5 y qué hace cada una, para la ficha del taller"},
   {"split": "validation", "should_trigger": true, "query": "anatomía de una petición HL7 desde el hospital hasta el motor de integración: quiero ver cada salto y quién lo decide"},
   {"split": "validation", "should_trigger": true, "query": "explicámelo para que lo entienda: por qué el backup semanal no me cubre el RPO que pide el cliente"},
@@ -18,5 +19,6 @@
   {"split": "validation", "should_trigger": false, "query": "hacé que el SVG del post del blog se pueda hacer zoom y clicar los puntos"},
   {"split": "validation", "should_trigger": false, "query": "redibujá este draw.io como flowchart con la marca de la casa"},
   {"split": "validation", "should_trigger": false, "query": "resumime este informe en tres líneas para el correo a dirección"},
-  {"split": "validation", "should_trigger": false, "query": "abrí un ticket con lo que hicimos ayer en la WAF"}
+  {"split": "validation", "should_trigger": false, "query": "abrí un ticket con lo que hicimos ayer en la WAF"},
+  {"split": "validation", "should_trigger": true, "query": "quiero ver cómo se desarma una placa base pieza a pieza en una página que se recorra con el scroll, tipo 3D"}
 ]

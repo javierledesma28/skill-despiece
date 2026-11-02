@@ -21,9 +21,11 @@ página salen de él, y `validar_modelo.py` lo comprueba antes de dibujar. Ejemp
 | `relaciones[]` | no | `{de, a, tipo, etiqueta?}`; tipos: `flujo`, `contiene`, `depende`, `controla`, `dato`, `energia`, `causa` |
 | `flujo[]` | proceso y sistema | Ids en el orden en que la petición, el dato o el paso ocurren; ≥ 3 |
 | `malentendidos[]` | no (aviso) | Lo que el lector suele creer y es falso, con la corrección |
-| `figuras[]` | no (aviso) | `{nivel, titulo, tipo_visual, skill, piezas[], fichero?}` |
+| `figuras[]` | no (aviso) | `{nivel, titulo, tipo_visual, skill, piezas[], fichero?, destacada?}`; `destacada` es una de sus `piezas` |
 | `feynman[]` | sí | Exactamente 3 frases que un no experto entendería |
-| `prediccion` | sí | `{pregunta, respuesta}`: una situación concreta y qué pasaría |
+| `prediccion` | sí | `{pregunta, respuesta, opciones?, correcta?}`: una situación concreta y qué pasaría; `opciones` son 2–4 respuestas cortas y `correcta`, el índice de la buena desde 0 |
+| `flujo_entrada` | no | Lo que entra desde fuera de la frontera al primer paso del flujo (mejor uno de `nivel0.fuera`) |
+| `geometria` | físico, para `--interactivo` | Placa, posición y alto de cada raíz, y capas de los subconjuntos: ver `references/interactivo.md` |
 
 ### Cada pieza
 
@@ -49,6 +51,9 @@ página salen de él, y `validar_modelo.py` lo comprueba antes de dibujar. Ejemp
   no cuentan.
 - **Ninguna pieza sin fuente ni `supuesto: true`.** Es la regla que evita explicar de memoria.
 - **`feynman` son 3 frases**, cada una de una línea y media como mucho. Si no cabe, no está entendido.
+- **Con `geometria`**: solo en tipo físico; una entrada por raíz, una sola `placa` (la primera en
+  montarse), rangos `[desde, hasta]` crecientes, `unidades` = `cantidad`, piezas que no se interpenetran.
+  Detalle en `references/interactivo.md`.
 - **`prediccion.pregunta`** plantea una situación concreta («dos SSD de 1 TB, uno con DRAM y otro sin…»),
   no una definición («¿qué es la DRAM?»).
 

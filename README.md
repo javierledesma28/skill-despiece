@@ -4,11 +4,11 @@
 
 <br>
 
-**README** · [**Demo**](docs/demo.md) · [**Instalación**](docs/instalacion.md) · [**Changelog**](CHANGELOG.md) · [**Licencia**](LICENSE)
+**README** · [**Demo**](docs/demo.md) · [**Interactiva**](docs/interactivo.md) · [**Instalación**](docs/instalacion.md) · [**Changelog**](CHANGELOG.md) · [**Licencia**](LICENSE)
 
 <br>
 
-[![Versión](https://img.shields.io/badge/versi%C3%B3n-1.1.1-F5C500?labelColor=0A0A0A)](CHANGELOG.md)
+[![Versión](https://img.shields.io/badge/versi%C3%B3n-1.2.0-F5C500?labelColor=0A0A0A)](CHANGELOG.md)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-efefef?labelColor=0A0A0A)](LICENSE)
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-efefef?labelColor=0A0A0A)](https://claude.com/claude-code)
 [![Python 3.10+ sin pip](https://img.shields.io/badge/python-3.10%2B%20sin%20pip-3776ab?labelColor=0A0A0A)](scripts/)
@@ -47,7 +47,8 @@ encaja PIM»), la skill:
    fuente, y el flujo que las une. Un validador lo revisa contra las reglas del método.
 5. **Dibuja una figura por nivel.** Vista explotada propia para hardware; flujo, calles, capas o árbol
    delegados a la skill de dibujo que tengas instalada, o a un script propio.
-6. **Ensambla una página** HTML con tema claro y oscuro, las figuras incrustadas y tu marca si querés.
+6. **Ensambla una página** HTML con tema claro y oscuro, las figuras incrustadas y tu marca si querés. Para
+   hardware, también una **interactiva** que se abre, se desmonta al bajar y recorre el flujo.
 7. **Comprueba que se entendió.** Tres frases que un no experto seguiría y una pregunta de predicción con
    la respuesta plegada al final.
 
@@ -74,13 +75,24 @@ qué dos SSD del mismo tamaño y precio rinden tan distinto en escrituras largas
 La página completa, en claro y en oscuro, las dos vistas explotadas y el modelo del que sale todo están en
 la [**Demo**](docs/demo.md). Y se reproduce en tu máquina con tres comandos, sin Claude.
 
+El mismo modelo, con unas medidas más, sale como página interactiva: una vista isométrica que se abre sola,
+se desmonta pieza a pieza al bajar, recorre el flujo paso a paso y deja entrar en la NAND.
+
+<div align="center">
+
+[<img src="docs/interactivo/capturas/04-flujo-claro.png" alt="Página interactiva del SSD: el flujo paso a paso sobre la vista isométrica, con la tabla de mapeo de la controladora a la DRAM" width="820">](docs/interactivo.md)
+
+</div>
+
+Capturas en claro, oscuro, móvil y sin JavaScript en [**Interactiva**](docs/interactivo.md).
+
 ## Lo que obtenés
 
 | Fichero | Qué es |
 |---|---|
 | `modelo.json` | La única fuente de verdad: piezas, funciones, fuentes, relaciones, flujo, malentendidos |
 | `figuras/*.svg` | Una por nivel. Vectoriales, sin tamaño fijo, listas para incrustar donde quieras |
-| `index.html` | La explicación completa, autocontenida, claro y oscuro, con la predicción plegada |
+| `index.html` | La explicación completa, autocontenida, claro y oscuro, con la predicción plegada. Con `--interactivo`, la versión que se abre y se recorre |
 
 Y en la conversación, lo esencial: el título del nivel 0, las tres frases y la pregunta de predicción.
 
@@ -110,7 +122,8 @@ En Windows, con PowerShell:
 git clone https://github.com/javierledesma28/skill-despiece.git "$env:USERPROFILE\.claude\skills\despiece"
 ```
 
-Hace falta Claude Code y Python 3.10 o superior. **Sin dependencias de pip.** El paso a paso completo,
+Hace falta Claude Code y Python 3.10 o superior. **Sin dependencias de pip.** Node 22 o superior, solo para
+capturar la página interactiva. El paso a paso completo,
 con la instalación sin Git, cómo comprobar que quedó bien, actualizar, desinstalar y qué hacer si algo
 falla, está en [**Instalación**](docs/instalacion.md).
 
@@ -183,6 +196,8 @@ con Haiku:
 | Aserciones cumplidas, Sonnet (4 casos) | **26 / 26** | 16 / 26 |
 | Aserciones cumplidas, Haiku (caso físico) | **7 / 7** | 2 / 7 |
 | Activación correcta (20 consultas × 3 modelos) | **60 / 60** | — |
+| Página interactiva, Sonnet y Haiku (caso 5, 1.2.0) | **8 / 8 y 8 / 8** | 4 / 8 y 4 / 8 |
+| Activación con 22 consultas (1.2.0, × 3 modelos) | **64 / 66** | — |
 
 Sin la skill, el modelo explica bien, cita fuentes y a veces cierra con una pregunta, pero no modela por niveles,
 no marca supuestos pieza a pieza ni deriva las figuras de un guion con las piezas exactas. Con la skill, hasta Haiku entrega el modelo
@@ -190,14 +205,23 @@ validado, la vista explotada con una sola pieza destacada y las dos puertas de c
 evidencia y limitaciones en [`evals/resultados-2026-11-02.md`](evals/resultados-2026-11-02.md); los de la
 1.0, en [`evals/resultados-2026-11-01.md`](evals/resultados-2026-11-01.md).
 
+En la página interactiva, sin la skill los dos modelos arman una página que se recorre con el scroll y lleva
+la marca, pero sin modelo ni pregunta foco, con la figura vacía si no hay JavaScript y sin las puertas de
+comprensión. Los dos fallos de activación son la misma consulta: una página «que se recorra con el scroll,
+tipo 3D» se va a la guía web. Para la interactiva, conviene pedir el despiece de forma explícita. Detalle en
+[`evals/resultados-2026-11-02b.md`](evals/resultados-2026-11-02b.md).
+
 ## Hoja de ruta
 
 - [x] Correr las evals públicas (calidad y activación) y publicar los resultados.
 - [x] Un caso con Haiku como ejecutor.
 - [x] Capturas de un despiece de punta a punta ([Demo](docs/demo.md)).
-- [ ] Una página mucho más visual e interactiva: la vista explotada que se abre y se cierra, los flujos que
-      se recorren pieza a pieza y niveles en los que uno entra con el scroll, no solo texto con figuras.
-- [ ] Cortes y vistas isométricas en la vista explotada.
+- [x] Una página mucho más visual e interactiva: la vista explotada que se abre y se cierra, los flujos que
+      se recorren pieza a pieza y niveles en los que uno entra con el scroll ([Interactiva](docs/interactivo.md),
+      para hardware).
+- [x] Vista isométrica, en la página interactiva.
+- [ ] La página interactiva para procesos, sistemas e ideas.
+- [ ] Cortes con trama y giro de la vista explotada.
 - [ ] Vídeo de un despiece de punta a punta.
 
 ¿Lo usaste para algo? Abrí un issue con tu `modelo.json`: los buenos despieces se convierten en ejemplos.

@@ -13,6 +13,16 @@ Comprueba lo que el método exige y que, sin guía, se salta (E = error, A = avi
   A  figuras: > 6 piezas nuevas (E si > 9), título no afirmativo, skill desconocida, nivel > profundidad
   A  funcion > 160 caracteres (es un párrafo, no una función); nombre > 40
   A  sin malentendidos; sin figuras; piezas sin ninguna figura que las muestre
+  E  figuras[].destacada fuera de las piezas de esa figura
+  E  prediccion.opciones: 2–4 textos, con correcta (índice desde 0) dentro de rango
+  A  flujo: un paso al que no le llega ninguna relación desde los anteriores; flujo_entrada fuera de nivel0.fuera
+  Con «geometria» (página interactiva, ver references/interactivo.md):
+  E  solo en tipo fisico (A si no); placa con largo y ancho > 0; cada raíz con su entrada y solo raíces;
+     forma conocida; una sola «placa», y es la de menor orden_montaje; rangos [a, b] con a < b; alto > 0;
+     unidades = cantidad; dos piezas que ocupan el mismo volumen; subconjuntos de raíces con hijos, con
+     huella, z de cada hija y patrón conocido; rótulos con huecos {…} que no existen
+  A  pieza fuera de la placa; cantidad > 1 sin unidades; «lift» escrito a mano (se calcula); raíz con hijos
+     sin subconjunto o hija sin geometría (no se dibujan); paso del flujo que no es raíz; nivel 3 (no se dibuja)
 
 Salida (stdout, JSON): {"ok", "errores": [...], "avisos": [...], "metricas": {...}}
 Códigos de salida: 0 sin errores · 1 hay errores · 2 argumentos o fichero inválidos.
@@ -23,12 +33,15 @@ from __future__ import annotations
 
 import json
 import re
+import string
 import sys
 from pathlib import Path
 
 TIPOS = {"fisico", "proceso", "sistema", "idea"}
 TIPOS_RELACION = {"flujo", "contiene", "depende", "controla", "dato", "energia", "causa"}
 SKILLS_DIBUJO = {"diagram-design", "diagrama-microsoft-learn", "grafico-interactivo", "explosionado", "propio", "ninguna"}
+FORMAS = {"placa", "chip", "conector", "caja"}
+PATRONES = {"rejilla", "puntos"}
 NO_AFIRMATIVO = re.compile(
     r"^\s*(qu[eé] es|definici[oó]n|introducci[oó]n|visi[oó]n general|resumen|overview|descripci[oó]n)\b",
     re.IGNORECASE,
@@ -186,6 +199,18 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
         if r.get("tipo") not in TIPOS_RELACION:
             E.append(f"relaciones[{i}]: tipo «{r.get('tipo')}» desconocido; usar uno de {sorted(TIPOS_RELACION)}")
 
+    rels = [r for r in m.get("relaciones") or [] if isinstance(r, dict)]
+    for k, fid in enumerate(flujo[1:], 1):
+        if fid in ids and not any(r.get("a") == fid and r.get("de") in flujo[:k] for r in rels):
+            A.append(f"flujo: a «{fid}» (paso {k + 1}) no le llega ninguna relación desde los pasos anteriores; "
+                     "añadir la relación o reordenar el flujo")
+    entrada = m.get("flujo_entrada")
+    if entrada is not None:
+        if not isinstance(entrada, str) or not entrada.strip():
+            E.append("flujo_entrada debe ser un texto: lo que entra desde fuera de la frontera")
+        elif n0.get("fuera") and entrada not in n0["fuera"]:
+            A.append("flujo_entrada no está en nivel0.fuera: lo que entra viene de fuera de la frontera, nombrarlo igual")
+
     if not m.get("malentendidos"):
         A.append("sin malentendidos: ¿qué suele creer el lector que es falso? Es lo que más ayuda a entender")
 
@@ -219,6 +244,8 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
             E.append(f"figuras[{i}]: {len(nuevas)} piezas nuevas; nadie retiene más de 9 en una figura")
         elif len(nuevas) > 6:
             A.append(f"figuras[{i}]: {len(nuevas)} piezas nuevas; el tope cómodo son 6")
+        if f.get("destacada") is not None and f["destacada"] not in pz:
+            E.append(f"figuras[{i}]: destacada «{f['destacada']}» no está entre las piezas de esa figura")
         mostradas.update(pz)
     sin_figura = [p for p in ids if p not in mostradas]
     if figuras and sin_figura:
@@ -239,6 +266,18 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
         E.append("prediccion.pregunta no termina en «?»")
     if not isinstance(pred, dict) or not isinstance(pred.get("respuesta"), str) or not pred["respuesta"].strip():
         E.append("prediccion.respuesta vacía")
+    if isinstance(pred, dict) and "opciones" in pred:
+        op = pred["opciones"]
+        if not isinstance(op, list) or not 2 <= len(op) <= 4 or not all(isinstance(o, str) and o.strip() for o in op):
+            E.append("prediccion.opciones: entre 2 y 4 textos no vacíos")
+        elif not isinstance(pred.get("correcta"), int) or isinstance(pred.get("correcta"), bool) or not 0 <= pred["correcta"] < len(op):
+            E.append(f"prediccion.correcta: índice de la opción buena, de 0 a {len(op) - 1}")
+    elif isinstance(pred, dict) and "correcta" in pred:
+        A.append("prediccion.correcta sin opciones: no se usa")
+
+    geo = m.get("geometria")
+    if geo is not None:
+        validar_geometria(geo, tipo, ids, raices, hijos, niveles, flujo, E, A)
 
     metricas = {
         "tipo": tipo,
@@ -249,14 +288,183 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
         "figuras": len(figuras),
         "supuestos": sum(1 for p in ids.values() if p.get("supuesto") is True),
         "pasos_flujo": len(flujo),
+        "geometria": isinstance(geo, dict),
     }
     return E, A, metricas
+
+
+def _rango(v) -> tuple[float, float] | None:
+    """[a, b] numérico con a < b, o None."""
+    if (isinstance(v, (list, tuple)) and len(v) == 2 and all(_numero(x) for x in v) and v[0] < v[1]):
+        return float(v[0]), float(v[1])
+    return None
+
+
+def _numero(v) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+def _positivo(v) -> bool:
+    return _numero(v) and v > 0
+
+
+def _rotulo_malo(texto, permitidos: set[str]) -> str | None:
+    """Nombre del primer hueco {…} que el rótulo no admite, o None."""
+    try:
+        campos = [c for _, c, _, _ in string.Formatter().parse(texto) if c is not None]
+    except ValueError:
+        return "llaves sin cerrar"
+    return next((f"{{{c}}}" for c in campos if c not in permitidos), None)
+
+
+def validar_geometria(geo, tipo, ids, raices, hijos, niveles, flujo, E: list[str], A: list[str]) -> None:
+    """Reglas del bloque «geometria», el que dibuja la página interactiva (ensamblar.py --interactivo)."""
+    if not isinstance(geo, dict):
+        E.append("geometria debe ser un objeto con placa, piezas y, si hay nivel 2, subconjuntos")
+        return
+    if tipo != "fisico":
+        A.append(f"geometria en un modelo de tipo {tipo}: --interactivo solo la usa en tipo fisico")
+        return
+    placa = geo.get("placa")
+    largo = ancho = None
+    if not isinstance(placa, dict) or not _positivo(placa.get("largo")) or not _positivo(placa.get("ancho")):
+        E.append("geometria.placa necesita largo y ancho > 0 (en la unidad de geometria.unidad)")
+    else:
+        largo, ancho = float(placa["largo"]), float(placa["ancho"])
+        if "grosor" in placa and not _positivo(placa["grosor"]):
+            E.append("geometria.placa.grosor debe ser > 0")
+        malo = _rotulo_malo(placa.get("rotulo") or "", {"nombre", "ancho", "largo", "grosor", "unidad"})
+        if malo:
+            E.append(f"geometria.placa.rotulo: {malo} no se puede rellenar; usar {{nombre}}, {{ancho}}, {{largo}}, {{grosor}} o {{unidad}}")
+        for k, ag in enumerate(placa.get("agujeros") or []):
+            if not (isinstance(ag, list) and len(ag) == 3 and all(_numero(x) and x >= 0 for x in ag)):
+                E.append(f"geometria.placa.agujeros[{k}]: [x, y, radio] con números ≥ 0")
+
+    gp = geo.get("piezas")
+    if not isinstance(gp, dict):
+        E.append("geometria.piezas debe ser un objeto {id de raíz: {forma, x, y, alto}}")
+        gp = {}
+    for pid in gp:
+        if pid not in ids:
+            E.append(f"geometria.piezas: «{pid}» no existe en piezas")
+        elif pid not in raices:
+            E.append(f"geometria.piezas: «{pid}» no es raíz; sus capas van en geometria.subconjuntos.{ids[pid].get('padre')}")
+    faltan = [pid for pid in raices if pid not in gp]
+    if faltan:
+        E.append(f"geometria.piezas: faltan las raíces {faltan}; la vista isométrica las dibuja todas")
+
+    cajas: dict[str, list[tuple]] = {}
+    placas = []
+    for pid, g in gp.items():
+        if pid not in raices:
+            continue
+        if not isinstance(g, dict):
+            E.append(f"geometria.piezas.{pid} debe ser un objeto")
+            continue
+        if "lift" in g:
+            A.append(f"geometria.piezas.{pid}: «lift» se ignora; las alzas se calculan para que nada se tape")
+        forma = g.get("forma", "caja")
+        if forma not in FORMAS:
+            E.append(f"geometria.piezas.{pid}: forma «{forma}» desconocida; usar una de {sorted(FORMAS)}")
+            continue
+        if forma == "placa":
+            placas.append(pid)
+            continue
+        y = _rango(g.get("y"))
+        if not y:
+            E.append(f"geometria.piezas.{pid}: y debe ser [desde, hasta] con desde < hasta")
+        if not _positivo(g.get("alto")):
+            E.append(f"geometria.piezas.{pid}: alto debe ser > 0")
+        z0 = g.get("z", 0)
+        if not _numero(z0) or z0 < 0:
+            E.append(f"geometria.piezas.{pid}: z (altura a la que empieza la pieza) debe ser un número ≥ 0")
+            z0 = 0
+        cantidad = ids[pid].get("cantidad")
+        if g.get("unidades") is not None:
+            uds = g["unidades"] if isinstance(g["unidades"], list) else []
+            xs = [_rango(u) for u in uds]
+            if not uds or not all(xs):
+                E.append(f"geometria.piezas.{pid}: unidades debe ser una lista de [desde, hasta] en x, uno por unidad")
+                xs = []
+            elif isinstance(cantidad, int) and cantidad != len(uds):
+                E.append(f"geometria.piezas.{pid}: {len(uds)} unidades y cantidad = {cantidad}; tienen que coincidir")
+        else:
+            x = _rango(g.get("x"))
+            xs = [x] if x else []
+            if not x:
+                E.append(f"geometria.piezas.{pid}: x debe ser [desde, hasta] con desde < hasta (o unidades si son varias)")
+            if isinstance(cantidad, int) and cantidad > 1:
+                A.append(f"geometria.piezas.{pid}: cantidad = {cantidad} sin unidades; se dibuja una sola")
+        if forma == "conector" and "muesca" in g and not _rango(g.get("muesca")):
+            E.append(f"geometria.piezas.{pid}: muesca debe ser [desde, hasta] en y")
+        if y and xs and _positivo(g.get("alto")):
+            cajas[pid] = [(x[0], y[0], x[1], y[1], float(z0), float(z0) + float(g["alto"])) for x in xs]
+            if largo is not None and any(b[0] < 0 or b[1] < 0 or b[2] > largo or b[3] > ancho for b in cajas[pid]):
+                A.append(f"geometria.piezas.{pid}: se sale de la placa ({largo:g} × {ancho:g}); comprobar x e y")
+    if len(placas) != 1:
+        E.append(f"geometria.piezas: tiene que haber exactamente una pieza con forma «placa» (hay {len(placas)}): es la base que no sube")
+    elif all(isinstance(ids[r].get("orden_montaje"), int) for r in raices):
+        primera = min(raices, key=lambda r: ids[r]["orden_montaje"])
+        if primera != placas[0]:
+            E.append(f"geometria: la placa «{placas[0]}» tiene que ser la primera en orden_montaje (ahora lo es «{primera}»)")
+    lista = sorted(cajas)
+    for i, a in enumerate(lista):
+        for b in lista[i + 1:]:
+            if any(min(p[2], q[2]) > max(p[0], q[0]) and min(p[3], q[3]) > max(p[1], q[1])
+                   and min(p[5], q[5]) > max(p[4], q[4]) for p in cajas[a] for q in cajas[b]):
+                E.append(f"geometria.piezas: «{a}» y «{b}» ocupan el mismo volumen; separarlas en x/y o apilarlas con z")
+
+    subs = geo.get("subconjuntos") or {}
+    if not isinstance(subs, dict):
+        E.append("geometria.subconjuntos debe ser un objeto {id de raíz con hijos: {huella, piezas}}")
+        subs = {}
+    for padre, sub in subs.items():
+        if padre not in raices or not hijos.get(padre):
+            E.append(f"geometria.subconjuntos: «{padre}» no es una raíz con hijos")
+            continue
+        if not isinstance(sub, dict):
+            E.append(f"geometria.subconjuntos.{padre} debe ser un objeto")
+            continue
+        h = sub.get("huella")
+        if not isinstance(h, dict) or not _rango(h.get("x")) or not _rango(h.get("y")):
+            E.append(f"geometria.subconjuntos.{padre}: huella necesita x e y como [desde, hasta]")
+        malo = _rotulo_malo(sub.get("rotulo") or "", {"nombre", "ancho", "largo", "unidad", "n"})
+        if malo:
+            E.append(f"geometria.subconjuntos.{padre}.rotulo: {malo} no se puede rellenar; usar {{nombre}}, {{ancho}}, {{largo}}, {{unidad}} o {{n}}")
+        sp = sub.get("piezas") if isinstance(sub.get("piezas"), dict) else {}
+        if not sp:
+            E.append(f"geometria.subconjuntos.{padre}: piezas vacía; una entrada por hija con su z")
+        for cid, g in sp.items():
+            if cid not in hijos[padre]:
+                E.append(f"geometria.subconjuntos.{padre}: «{cid}» no es hija de «{padre}»")
+                continue
+            if not isinstance(g, dict) or not _rango(g.get("z")):
+                E.append(f"geometria.subconjuntos.{padre}.{cid}: z debe ser [desde, hasta] con desde < hasta")
+                continue
+            for eje in ("x", "y"):
+                if eje in g and not _rango(g[eje]):
+                    E.append(f"geometria.subconjuntos.{padre}.{cid}: {eje} debe ser [desde, hasta] (o quitarlo: ocupa la huella)")
+            if "patron" in g and g["patron"] not in PATRONES:
+                E.append(f"geometria.subconjuntos.{padre}.{cid}: patron «{g['patron']}» desconocido; usar uno de {sorted(PATRONES)}")
+            if "lift" in g:
+                A.append(f"geometria.subconjuntos.{padre}.{cid}: «lift» se ignora; las capas se separan solas")
+        sin_geo = [c for c in hijos[padre] if c not in sp]
+        if sp and sin_geo:
+            A.append(f"geometria.subconjuntos.{padre}: las hijas {sin_geo} no tienen geometría y no se dibujan")
+    for r in raices:
+        if hijos.get(r) and r not in subs:
+            A.append(f"geometria: «{r}» tiene hijos y no tiene subconjunto; la página interactiva no la abre en el nivel 2")
+    no_raiz = [f for f in flujo if f in ids and f not in raices]
+    if no_raiz:
+        A.append(f"flujo: {no_raiz} no son raíces; en la página interactiva sus flechas no tienen dónde apoyarse")
+    if any(n >= 3 for n in niveles.values()):
+        A.append("hay piezas de nivel 3: la página interactiva dibuja hasta el nivel 2; el 3 queda solo en la estática")
 
 
 def main(argv: list[str]) -> int:
     _utf8_stdout()
     if len(argv) != 2 or argv[1] in {"-h", "--help"}:
-        print(__doc__.strip(), file=sys.stderr if len(argv) == 2 else sys.stdout)
+        print(__doc__.strip(), file=sys.stdout if len(argv) == 2 and argv[1] in {"-h", "--help"} else sys.stderr)
         return 0 if len(argv) == 2 and argv[1] in {"-h", "--help"} else 2
     ruta = Path(argv[1])
     if not ruta.is_file():

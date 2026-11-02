@@ -12,10 +12,12 @@ description: >-
   Learn: la skill de diagramas que corresponda, p. ej. diagram-design), para gráficos de datos (dataviz),
   presentaciones, hacer interactivo un SVG existente ni para el estado de un proyecto (relevamiento).
 argument-hint: "[qué despiezar]"
-compatibility: Claude Code en Windows, macOS o Linux. Python 3.10 o superior sin dependencias de pip; para capturar la página en PNG, Edge o Chrome.
-allowed-tools: Bash(python -I ${CLAUDE_SKILL_DIR}/scripts/*)
+compatibility: Claude Code en Windows, macOS o Linux. Python 3.10 o superior sin dependencias de pip; para capturar la página en PNG, Edge o Chrome, y Node 22 o superior para capturar la interactiva.
+allowed-tools:
+  - Bash(python -I ${CLAUDE_SKILL_DIR}/scripts/*)
+  - Bash(node ${CLAUDE_SKILL_DIR}/scripts/*)
 metadata:
-  version: "1.1.1"
+  version: "1.2.0"
   author: t28.io (Javier Ledesma)
   updated: "2026-11-02"
 ---
@@ -47,6 +49,13 @@ de hardware la dibuja esta skill.
 - **En lo físico, el desmontaje es el montaje al revés.** Las raíces llevan `orden_montaje`; una pieza
   con hijos se dibuja cerrada y se abre en su propia figura; una sola pieza destacada por figura; el
   objeto tiene que seguir reconociéndose.
+- **La página interactiva es opcional y solo física.** `ensamblar.py --interactivo` dibuja una vista
+  isométrica que se abre, se desarma al bajar y recorre el flujo, pero solo si el modelo tiene `geometria`;
+  si no, avisa y escribe la estática. Las alzas no se escriben: se calculan para que nada tape a nada.
+  Se usa cuando piden algo que se pueda recorrer, animado o «en 3D»; si no, la estática.
+- **La interactiva no se revisa con `--screenshot`**: captura antes de que corran el scroll y las
+  animaciones. Se captura con `capturar-cdp.mjs`, desplazando con `behavior: 'instant'` (la página usa
+  scroll suave y, si no, la captura sale a mitad de camino).
 - **Casos mixtos: manda la pregunta foco.** Un firewall es físico para «qué cable va dónde» y sistema para
   «por qué bloquea esto». Se elige un tipo y se dice.
 - **El dibujo se delega con un guion, no con una idea vaga.** Quien dibuja (una skill o un script propio)
@@ -76,7 +85,7 @@ Despiece <objeto>:
 - [ ] 3. Fuentes consultadas; lo no verificado, marcado como supuesto
 - [ ] 4. modelo.json escrito y validar_modelo.py sin errores
 - [ ] 5. Una figura por nivel: explosionado.py (físico) o guion a quien dibuja
-- [ ] 6. Página ensamblada (ensamblar.py), capturada y revisada a ojo
+- [ ] 6. Página ensamblada (ensamblar.py, o --interactivo), capturada y revisada a ojo
 - [ ] 7. Entrega: nivel 0, tres frases y pregunta de predicción en la respuesta, más la página
 ```
 
@@ -105,8 +114,9 @@ modelo y en la página.
 **4. Modelo.** Carpeta de trabajo: la que indique el usuario; si no, `despiece-<objeto>/` donde se esté
 trabajando. Escribir `modelo.json` según [references/modelo.md](references/modelo.md) (leerlo la
 primera vez; los ejemplos `assets/ejemplo-fisico.json` y `assets/ejemplo-sistema.json` son válidos y
-completos). Validar y corregir hasta que no haya errores; cada aviso se corrige o se justifica en la
-respuesta:
+completos). Si la página va a ser interactiva, añadir el bloque `geometria` según
+[references/interactivo.md](references/interactivo.md) (leerlo antes del primer `--interactivo`). Validar y
+corregir hasta que no haya errores; cada aviso se corrige o se justifica en la respuesta:
 
 ```bash
 python -I ${CLAUDE_SKILL_DIR}/scripts/validar_modelo.py <carpeta>/modelo.json
@@ -124,7 +134,8 @@ el modelo. `<marca>` es la ruta del JSON de marca del proyecto o `ninguna`.
   python -I ${CLAUDE_SKILL_DIR}/scripts/explosionado.py <carpeta>/modelo.json --salida <carpeta>/figuras/n2-<padre>.svg --subconjunto <padre> --marca <marca>
   ```
 
-  Toma el título de la figura del modelo con esas mismas piezas. Salida 2 si el tipo no es físico.
+  Toma el título de la figura del modelo con esas mismas piezas. Salida 2 si el tipo no es físico. Si la
+  página va a ser interactiva, estas figuras sobran: las dibuja desde `geometria`.
 - **Proceso, sistema e idea** → guion a quien dibuja, según
   [references/guion-visual.md](references/guion-visual.md) (leerlo al dibujar la primera figura
   delegada): una skill de diagramas editoriales para flujo, calles, secuencia, estados, capas y árboles;
@@ -147,6 +158,18 @@ fuentes se leen en tema claro y oscuro. Las figuras van sobre lámina blanca en 
 SVG transparente con tinta oscura se lee igual. Edge headless sigue el tema del sistema: para capturar el
 otro, poner `data-theme="light"` o `data-theme="dark"` en `<html>` de una copia.
 
+**Interactiva** (tipo físico con `geometria`): la misma orden con `--interactivo` y sin `--figuras`.
+
+```bash
+python -I ${CLAUDE_SKILL_DIR}/scripts/ensamblar.py <carpeta>/modelo.json --salida <carpeta>/index.html --interactivo --marca <marca>
+node ${CLAUDE_SKILL_DIR}/scripts/capturar-cdp.mjs <carpeta>/captura.png 1240 900 "file:///<ruta absoluta>/index.html?p=1"
+```
+
+Salida 1 = oclusiones: alguna pieza tapa a otra en algún paso (la página se escribe igual; separarlas en
+`geometria` o agruparlas). Capturar al menos la portada, el desmontaje a mitad, el flujo, el nivel 2, tema
+oscuro (`TEMA=dark`), móvil (390 de ancho) y sin JavaScript (`SIN_JS=1`); qué mirar en cada una, en
+[references/interactivo.md](references/interactivo.md#capturar-y-revisar).
+
 **7. Entrega.** En la respuesta: el título del nivel 0, las tres frases, la pregunta de predicción con la
 respuesta al final, y la ruta de la página y las figuras. No pegar el modelo. Si el usuario quiere
 profundizar, el siguiente nivel es añadir piezas hijas al modelo y repetir desde el paso 4.
@@ -157,11 +180,15 @@ profundizar, el siguiente nivel es añadir piezas hijas al modelo y repetir desd
 |---|---|
 | `scripts/validar_modelo.py` | **Ejecutar** en el paso 4: comprueba el modelo contra las reglas del método (`--help`) |
 | `scripts/explosionado.py` | **Ejecutar** en el paso 5, tipo físico: vista explotada 2D numerada con lista de piezas (`--help`) |
-| `scripts/ensamblar.py` | **Ejecutar** en el paso 6: página HTML por niveles con las figuras incrustadas (`--help`) |
+| `scripts/ensamblar.py` | **Ejecutar** en el paso 6: página HTML por niveles con las figuras incrustadas, o la interactiva con `--interactivo` (`--help`) |
+| `scripts/capturar-cdp.mjs` | **Ejecutar** en el paso 6 con `--interactivo`: captura la página en tiempo real, con scroll y animaciones (`--help`) |
+| `scripts/isometrico.py`, `scripts/interactiva.py` | Los importa `ensamblar.py --interactivo`; `isometrico.py` también se ejecuta para ver solo las alzas y las oclusiones |
 | `references/metodo-por-tipo.md` | Leer **en el paso 2**: eje, técnica, fuentes y figura de cada tipo; casos mixtos |
 | `references/modelo.md` | Leer **al escribir el primer modelo**: campos, reglas del validador, convenciones |
+| `references/interactivo.md` | Leer **antes del primer `--interactivo`**: bloque `geometria`, alzas, parámetros de la página y cómo capturarla |
 | `references/guion-visual.md` | Leer **al delegar la primera figura**: qué pedir a quien dibuja, qué hacer sin skill de dibujo y cómo revisar la figura |
 | `references/fuentes.md` | Leer **si se quiere saber de dónde sale una regla**: skills estudiadas y bibliografía |
 | `assets/ejemplo-fisico.json`, `assets/ejemplo-sistema.json` | Modelos completos y válidos para copiar la estructura |
 | `assets/marca-ejemplo.json` | Copiar y adaptar: los campos del fichero de marca que acepta `--marca` |
-| `evals/` | Casos de prueba de la skill (no se usan en la tarea) |
+| `assets/plantilla-interactiva.html` | Plantilla de la página interactiva; la rellena `interactiva.py` (no se edita en la tarea) |
+| `evals/` | Casos de prueba de la skill y `probar_validador.py`, que prueba cada regla del validador (no se usan en la tarea) |

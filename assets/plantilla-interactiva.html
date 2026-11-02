@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{TITULO_PAGINA}}</title>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* Página generada por ensamblar.py --interactivo (skill despiece) desde modelo.json. */
+/* --p: progreso de explosión (0 = armado, 1 = explotado). Registrada para poder animarla con scroll y transicionarla. */
+@property --p { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+:root {
+  color-scheme: light dark;
+  /* Tokens crudos: -c claro, -o oscuro */
+  --tinta-c:#1f2933; --tinta-o:#e6ebf0; --gris-c:#5c6b7a; --gris-o:#9aa6b2; --linea-c:#cbd2d9; --linea-o:#2b3542;
+  --fondo-c:#f4f6f8; --fondo-o:#0f141a; --panel-c:#ffffff; --panel-o:#171e27; --lamina-c:#ffffff; --lamina-o:#1a222c;
+  --acento-c:{{ACENTO_C}}; --acento-o:{{ACENTO_O}}; --suave-c:{{SUAVE_C}}; --suave-o:{{SUAVE_O}}; --aviso-c:#9a6700; --aviso-o:#e3b341;
+  --titulo-c:{{TITULO_C}}; --titulo-o:{{TITULO_O}}; --sobre-acento-c:#ffffff; --sobre-acento-o:#0f141a;
+  --ok-c:#1f7a4d; --ok-o:#5fcf8f; --mal-c:#b42318; --mal-o:#f28b82;
+  --pcb-t-c:#3a7d6c; --pcb-l-c:#2f6657; --pcb-r-c:#26524a; --pcb-t-o:#3f8a77; --pcb-l-o:#336f60; --pcb-r-o:#295a4e;
+  --chip-t-c:#4a5568; --chip-l-c:#3b4453; --chip-r-c:#2d3440; --chip-t-o:#6b778a; --chip-l-o:#566173; --chip-r-o:#434c5b;
+  --oro-t-c:#d9b84a; --oro-l-c:#b8962e; --oro-r-c:#957722; --oro-t-o:#d9b84a; --oro-l-o:#b8962e; --oro-r-o:#957722;
+  --sel-t-c:{{SEL_T_C}}; --sel-l-c:{{SEL_L_C}}; --sel-r-c:{{SEL_R_C}}; --sel-t-o:{{SEL_T_O}}; --sel-l-o:{{SEL_L_O}}; --sel-r-o:{{SEL_R_O}};
+
+  /* Tokens resueltos: por defecto claro */
+  --tinta:var(--tinta-c); --gris:var(--gris-c); --linea:var(--linea-c); --fondo:var(--fondo-c); --panel:var(--panel-c);
+  --lamina:var(--lamina-c); --acento:var(--acento-c); --suave:var(--suave-c); --aviso:var(--aviso-c); --ok:var(--ok-c); --mal:var(--mal-c);
+  --titulo:var(--titulo-c); --sobre-acento:var(--sobre-acento-c);
+  --pcb-t:var(--pcb-t-c); --pcb-l:var(--pcb-l-c); --pcb-r:var(--pcb-r-c); --chip-t:var(--chip-t-c); --chip-l:var(--chip-l-c); --chip-r:var(--chip-r-c);
+  --oro-t:var(--oro-t-c); --oro-l:var(--oro-l-c); --oro-r:var(--oro-r-c); --sel-t:var(--sel-t-c); --sel-l:var(--sel-l-c); --sel-r:var(--sel-r-c);
+  --apagado: .42; /* cuánto queda de una pieza que no es la destacada */
+  --fuente: {{FUENTE}};
+  accent-color: var(--acento);
+}
+/* Fallback para navegadores sin light-dark(): la media query y el tema forzado por atributo */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --tinta:var(--tinta-o); --gris:var(--gris-o); --linea:var(--linea-o); --fondo:var(--fondo-o); --panel:var(--panel-o);
+  --lamina:var(--lamina-o); --acento:var(--acento-o); --suave:var(--suave-o); --aviso:var(--aviso-o); --ok:var(--ok-o); --mal:var(--mal-o);
+  --titulo:var(--titulo-o); --sobre-acento:var(--sobre-acento-o);
+  --pcb-t:var(--pcb-t-o); --pcb-l:var(--pcb-l-o); --pcb-r:var(--pcb-r-o); --chip-t:var(--chip-t-o); --chip-l:var(--chip-l-o); --chip-r:var(--chip-r-o);
+  --oro-t:var(--oro-t-o); --oro-l:var(--oro-l-o); --oro-r:var(--oro-r-o); --sel-t:var(--sel-t-o); --sel-l:var(--sel-l-o); --sel-r:var(--sel-r-o);
+  --apagado: .62;
+} }
+:root[data-theme="dark"] {
+  --tinta:var(--tinta-o); --gris:var(--gris-o); --linea:var(--linea-o); --fondo:var(--fondo-o); --panel:var(--panel-o);
+  --lamina:var(--lamina-o); --acento:var(--acento-o); --suave:var(--suave-o); --aviso:var(--aviso-o); --ok:var(--ok-o); --mal:var(--mal-o);
+  --titulo:var(--titulo-o); --sobre-acento:var(--sobre-acento-o);
+  --pcb-t:var(--pcb-t-o); --pcb-l:var(--pcb-l-o); --pcb-r:var(--pcb-r-o); --chip-t:var(--chip-t-o); --chip-l:var(--chip-l-o); --chip-r:var(--chip-r-o);
+  --oro-t:var(--oro-t-o); --oro-l:var(--oro-l-o); --oro-r:var(--oro-r-o); --sel-t:var(--sel-t-o); --sel-l:var(--sel-l-o); --sel-r:var(--sel-r-o);
+  --apagado: .62;
+}
+/* Con light-dark() todo se resuelve por color-scheme, también el tema forzado */
+@supports (color: light-dark(white, black)) {
+  :root {
+    --tinta:light-dark(var(--tinta-c),var(--tinta-o)); --gris:light-dark(var(--gris-c),var(--gris-o)); --linea:light-dark(var(--linea-c),var(--linea-o));
+    --fondo:light-dark(var(--fondo-c),var(--fondo-o)); --panel:light-dark(var(--panel-c),var(--panel-o)); --lamina:light-dark(var(--lamina-c),var(--lamina-o));
+    --acento:light-dark(var(--acento-c),var(--acento-o)); --suave:light-dark(var(--suave-c),var(--suave-o)); --aviso:light-dark(var(--aviso-c),var(--aviso-o));
+    --ok:light-dark(var(--ok-c),var(--ok-o)); --mal:light-dark(var(--mal-c),var(--mal-o));
+    --titulo:light-dark(var(--titulo-c),var(--titulo-o)); --sobre-acento:light-dark(var(--sobre-acento-c),var(--sobre-acento-o));
+    --pcb-t:light-dark(var(--pcb-t-c),var(--pcb-t-o)); --pcb-l:light-dark(var(--pcb-l-c),var(--pcb-l-o)); --pcb-r:light-dark(var(--pcb-r-c),var(--pcb-r-o));
+    --chip-t:light-dark(var(--chip-t-c),var(--chip-t-o)); --chip-l:light-dark(var(--chip-l-c),var(--chip-l-o)); --chip-r:light-dark(var(--chip-r-c),var(--chip-r-o));
+    --oro-t:light-dark(var(--oro-t-c),var(--oro-t-o)); --oro-l:light-dark(var(--oro-l-c),var(--oro-l-o)); --oro-r:light-dark(var(--oro-r-c),var(--oro-r-o));
+    --sel-t:light-dark(var(--sel-t-c),var(--sel-t-o)); --sel-l:light-dark(var(--sel-l-c),var(--sel-l-o)); --sel-r:light-dark(var(--sel-r-c),var(--sel-r-o));
+  }
+  :root[data-theme="dark"] { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+}
+
+* { box-sizing: border-box; }
+/* Scroll suave solo cuando la página ya cargó (clase .suave, la pone el JS): activo desde el principio, Chrome a veces
+   se salta el salto inicial a un #ancla */
+@media (prefers-reduced-motion: no-preference) { html.suave { scroll-behavior: smooth; } }
+body { margin: 0; font-family: var(--fuente); color: var(--tinta); background: var(--fondo); line-height: 1.55; -webkit-text-size-adjust: 100%; }
+a { color: var(--acento); }
+h1, h2, h3 { line-height: 1.2; margin: 0 0 .5rem; letter-spacing: -.01em; }
+h1, h2 { color: var(--titulo); }
+h1 { font-size: clamp(1.7rem, 3.4vw, 2.6rem); max-width: 22ch; }
+h2 { font-size: clamp(1.35rem, 2.4vw, 1.9rem); max-width: 30ch; }
+.flujo h2 { max-width: 46ch; }
+p { margin: 0 0 .8rem; }
+button { font: inherit; color: inherit; }
+.boton { border: 1px solid var(--linea); background: var(--panel); border-radius: 999px; padding: .45rem .95rem; cursor: pointer; }
+.boton:hover { border-color: var(--acento); }
+.boton.primario { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+.boton:focus-visible, .pieza:focus-visible, .pill:focus-visible, .opcion:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+[tabindex="-1"]:focus-visible { outline: 3px solid var(--acento); outline-offset: 4px; border-radius: 4px; }
+html:not(.js) .solo-js { display: none !important; }
+.kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .72rem; color: var(--gris); margin: 0 0 .5rem; }
+.contenedor { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+.seccion { padding-block: clamp(2.5rem, 6vw, 5rem); border-top: 1px solid var(--linea); }
+.seccion.sin-borde { border-top: 0; }
+.nota { color: var(--gris); font-size: .92rem; }
+.chips { display: flex; flex-wrap: wrap; gap: .45rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.chips li { border: 1px dashed var(--linea); border-radius: 999px; padding: .2rem .7rem; font-size: .85rem; color: var(--gris); }
+.chips li::before { content: "fuera · "; opacity: .7; }
+
+/* Barra superior */
+.barra { position: sticky; top: 0; z-index: 5; backdrop-filter: blur(8px); background: color-mix(in srgb, var(--fondo) 80%, transparent); border-bottom: 1px solid var(--linea); }
+.barra .contenedor { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 48px; }
+.barra .marca { font-weight: 700; letter-spacing: .02em; font-size: .9rem; }
+.barra .marca span { color: var(--gris); font-weight: 400; }
+.barra nav { display: flex; gap: .2rem .9rem; flex-wrap: wrap; font-size: .85rem; }
+.barra nav a { color: var(--gris); text-decoration: none; }
+.barra nav a:hover { color: var(--acento); }
+#tema { border: 1px solid var(--linea); background: var(--panel); border-radius: 999px; padding: .25rem .7rem; cursor: pointer; font-size: .85rem; }
+
+/* Figura isométrica: lámina. Sin JavaScript la vista sale explotada; con él, cada figura parte de su estado. */
+.lamina { background: var(--lamina); border: 1px solid var(--linea); border-radius: 14px; padding: .6rem; }
+.lamina svg { display: block; width: 100%; height: auto; font-family: var(--fuente); --p: 1; }
+.js #hero-svg, .js #rec-svg, .js .tarjeta svg { --p: 0; }
+.cara { stroke: var(--lamina); stroke-width: .6; stroke-linejoin: round; transition: fill .3s; }
+.k-pcb .t { fill: var(--pcb-t); } .k-pcb .l { fill: var(--pcb-l); } .k-pcb .r { fill: var(--pcb-r); }
+.k-chip .t { fill: var(--chip-t); } .k-chip .l { fill: var(--chip-l); } .k-chip .r { fill: var(--chip-r); }
+.k-oro .t { fill: var(--oro-t); } .k-oro .l { fill: var(--oro-l); } .k-oro .r { fill: var(--oro-r); }
+.pieza.sel .t { fill: var(--sel-t); } .pieza.sel .l { fill: var(--sel-l); } .pieza.sel .r { fill: var(--sel-r); }
+/* Piezas repartidas sobre una base: las demás se lavan hacia el color de la lámina sin volverse transparentes,
+   así el material se sigue reconociendo y la base no asoma a través de una pieza a medio levantar */
+.pieza.dim { --lavado: calc(var(--apagado) * 100%); } .pieza.k-pcb.dim { --lavado: 72%; }
+svg:not(.capas) .pieza.dim.k-pcb .t { fill: color-mix(in oklab, var(--pcb-t) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim.k-pcb .l { fill: color-mix(in oklab, var(--pcb-l) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim.k-pcb .r { fill: color-mix(in oklab, var(--pcb-r) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim.k-chip .t { fill: color-mix(in oklab, var(--chip-t) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim.k-chip .l { fill: color-mix(in oklab, var(--chip-l) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim.k-chip .r { fill: color-mix(in oklab, var(--chip-r) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim.k-oro .t { fill: color-mix(in oklab, var(--oro-t) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim.k-oro .l { fill: color-mix(in oklab, var(--oro-l) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim.k-oro .r { fill: color-mix(in oklab, var(--oro-r) var(--lavado), var(--lamina)); }
+svg:not(.capas) .pieza.dim .detalle, svg:not(.capas) .pieza.dim .rejilla { opacity: .45; }
+@supports not (color: color-mix(in oklab, red, blue)) { .pieza.dim { opacity: .5; } }
+/* Capas apiladas de un subconjunto: rayos X, las apagadas quedan translúcidas para ver las de abajo */
+svg.capas .pieza.dim { opacity: var(--apagado); }
+.detalle { stroke: var(--oro-r); stroke-width: .9; fill: none; }
+.rejilla { stroke: var(--chip-r); stroke-width: .7; fill: none; opacity: .9; }
+.pieza.sel .rejilla { stroke: var(--sel-r); }
+.hueco { fill: var(--lamina); }
+.pieza { cursor: pointer; transform: translateY(calc(var(--p) * var(--lift, 0) * -1px)); transition: opacity .3s; }
+.pieza:hover .cara { filter: brightness(1.08); }
+.pieza:focus-visible { outline: none; }
+.pieza:focus-visible .t { stroke: var(--acento); stroke-width: 2; }
+.badge circle { fill: var(--panel); stroke: var(--tinta); stroke-width: 1.4; }
+.badge text { fill: var(--tinta); font-size: 13px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+.badge .mult { font-size: 10.5px; font-weight: 600; fill: var(--gris); text-anchor: start; }
+.pieza.sel .badge circle { fill: var(--acento); stroke: var(--acento); }
+.pieza.sel .badge text { fill: var(--sobre-acento); }
+.pieza.sel .badge .mult { fill: var(--acento); }
+.badge line { stroke: var(--tinta); stroke-width: 1; }
+.pieza.dim .badge circle { stroke: var(--gris); } .pieza.dim .badge text { fill: var(--gris); } .pieza.dim .badge line { stroke: var(--gris); }
+.rastro .huella { fill: none; stroke: var(--gris); stroke-width: .9; stroke-dasharray: 3 3; opacity: var(--p); }
+.rastro .guia { stroke: var(--gris); stroke-width: 1; stroke-dasharray: 2 3; transform: scaleY(var(--p)); }
+.cota { fill: var(--gris); font-size: 12px; }
+.marca-mas circle { fill: var(--panel); stroke: var(--acento); stroke-width: 1.4; }
+.marca-mas path { stroke: var(--acento); stroke-width: 1.8; stroke-linecap: round; }
+.pieza.dim .marca-mas { opacity: .5; }
+
+/* Modo deslizador: la explosión se transiciona (menos mientras se arrastra) */
+.modo-slider .pieza, .modo-slider .rastro { transition: --p .55s cubic-bezier(.2,.7,.2,1), opacity .3s; }
+/* Primera apertura al cargar: más lenta y escalonada, la pieza que se montó la última sale primero */
+.modo-slider.apertura .pieza, .modo-slider.apertura .rastro { transition: --p 1.1s cubic-bezier(.2,.7,.2,1) calc(var(--retraso, 0) * 130ms), opacity .3s; }
+.arrastrando .pieza, .arrastrando .rastro { transition: opacity .3s; }
+.modo-nivel .pieza, .modo-nivel .rastro { transition: --p .9s cubic-bezier(.2,.7,.2,1), opacity .3s; }
+@media (prefers-reduced-motion: reduce) {
+  .modo-slider .pieza, .modo-slider .rastro, .modo-nivel .pieza, .modo-nivel .rastro { transition: none; }
+}
+
+/* Modo scroll: cada pieza se levanta con la view-timeline de su paso (CSS nativo) o con IntersectionObserver (fallback) */
+@keyframes levantar { from { --p: 0; } to { --p: 1; } }
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    .nativo .modo-scroll .pieza, .nativo .modo-scroll .rastro { animation: levantar auto linear both; animation-range: entry 0% cover 35%; }
+  }
+}
+
+/* Portada */
+.portada { padding-top: clamp(2rem, 5vw, 4rem); }
+.portada .grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr); gap: 1.5rem; align-items: start; }
+.portada .cabecera { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr); gap: .4rem 1.5rem; align-items: end; margin-bottom: 1.1rem; }
+.portada .cabecera .foco { margin-top: 0; }
+.portada .cabecera .frontera { margin-bottom: 0; }
+section[id] { scroll-margin-top: 56px; }
+.frontera { border-left: 3px solid var(--acento); padding-left: .9rem; color: var(--gris); }
+.foco { background: var(--suave); border-radius: 10px; padding: .7rem .9rem; margin: 1rem 0; }
+.foco b { color: var(--acento); }
+.controles { display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; margin-top: .7rem; }
+.controles label { display: flex; align-items: center; gap: .6rem; flex: 1 1 260px; font-size: .9rem; color: var(--gris); }
+.controles input[type=range] { flex: 1; min-width: 140px; }
+.ficha { background: var(--panel); border: 1px solid var(--linea); border-radius: 14px; padding: 1rem 1.1rem; position: sticky; top: 64px; }
+.ficha .num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--acento); color: var(--sobre-acento); font-weight: 700; font-size: .9rem; margin-right: .5rem; vertical-align: middle; }
+.ficha h3 { display: inline; font-size: 1.15rem; vertical-align: middle; }
+.ficha .fn { margin-top: .7rem; }
+.ficha .fuente, .ficha .hijos { font-size: .88rem; color: var(--gris); }
+.ficha .hijos { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.lista-piezas { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: .3rem; border-top: 1px solid var(--linea); padding-top: .8rem; }
+.lista-piezas button { width: 100%; text-align: left; display: flex; gap: .6rem; align-items: baseline; background: none; border: 0; padding: .35rem .5rem; border-radius: 8px; cursor: pointer; }
+.lista-piezas button:hover { background: var(--suave); }
+.lista-piezas button[aria-pressed="true"] { background: var(--suave); font-weight: 600; }
+.lista-piezas .n { color: var(--gris); font-variant-numeric: tabular-nums; min-width: 1.4em; }
+.lista-piezas .sup { margin-left: auto; }
+.sup { color: var(--aviso); font-size: .8rem; border: 0; background: none; cursor: help; padding: 0 .2rem; border-radius: 6px; white-space: nowrap; }
+.sup:hover { text-decoration: underline; }
+[popover]#pop-supuesto { border: 1px solid var(--linea); background: var(--panel); color: var(--tinta); border-radius: 10px; padding: .7rem .9rem; max-width: 32ch; font-size: .88rem; box-shadow: 0 8px 28px rgb(0 0 0 / .18); }
+[popover]#pop-supuesto::backdrop { background: transparent; }
+@supports (anchor-name: --x) {
+  [popover]#pop-supuesto { inset: auto; margin: 0; position: fixed; position-area: block-start; position-try-fallbacks: flip-block; margin-block: 6px; }
+}
+
+/* Recorrido con scroll */
+.recorrido .grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); gap: 2rem; align-items: start; }
+.pegado { position: sticky; top: 64px; }
+.pegado .pie { display: flex; justify-content: space-between; gap: 1rem; color: var(--gris); font-size: .9rem; margin-top: .6rem; }
+.pegado .pie b { color: var(--tinta); }
+.nav-rec { display: flex; gap: .5rem; margin-top: .4rem; }
+.pasos { display: grid; gap: 0; }
+.paso { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; padding: 1rem 0; border-left: 2px solid var(--linea); padding-left: 1.2rem; margin-left: .3rem; transition: border-color .3s; }
+.paso.activo { border-color: var(--acento); }
+.paso h3 { font-size: 1.25rem; }
+.paso .fuente { color: var(--gris); font-size: .88rem; }
+.paso .orden { color: var(--acento); font-weight: 700; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; }
+
+/* Flujo paso a paso */
+.flujo .grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr); gap: 1.5rem; align-items: start; }
+.flecha { fill: none; stroke: var(--gris); stroke-width: 2; opacity: .55; }
+.flecha.activa { stroke: var(--acento); opacity: 1; stroke-width: 3; }
+.flecha.externa { stroke-dasharray: 4 5; }
+.paquete { fill: var(--acento); stroke: var(--lamina); stroke-width: 2.5; }
+#flujo-svg .badge { display: none; }
+.punta { fill: var(--gris); opacity: .7; } .punta.activa { fill: var(--acento); opacity: 1; }
+.etiqueta { font-size: 12.5px; fill: var(--gris); paint-order: stroke; stroke: var(--lamina); stroke-width: 5px; stroke-linejoin: round; text-anchor: middle; }
+.etiqueta.activa { fill: var(--acento); font-weight: 700; font-size: 14px; }
+.js .etiqueta:not(.activa):not(.fija) { display: none; }
+.etiqueta.fija { text-anchor: start; }
+.pills { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; padding: 0; margin: 0 0 1rem; }
+.pill { border: 1px solid var(--linea); background: var(--panel); border-radius: 999px; padding: .35rem .8rem; cursor: pointer; display: flex; gap: .5rem; align-items: center; }
+.pill[aria-current="step"] { border-color: var(--acento); background: var(--suave); font-weight: 600; }
+.pill .n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--linea); font-size: .75rem; font-weight: 700; }
+.pill[aria-current="step"] .n { background: var(--acento); color: var(--sobre-acento); }
+.paso-flujo { background: var(--panel); border: 1px solid var(--linea); border-radius: 14px; padding: 1rem 1.1rem; }
+.paso-flujo-item + .paso-flujo-item { border-top: 1px solid var(--linea); margin-top: 1rem; padding-top: 1rem; }
+.js .paso-flujo-item:not(.activo) { display: none; }
+.js .paso-flujo-item + .paso-flujo-item { border-top: 0; margin-top: 0; padding-top: 0; }
+.paso-flujo .rel { color: var(--acento); font-weight: 600; }
+.nav-flujo { display: flex; gap: .5rem; margin-top: .8rem; flex-wrap: wrap; }
+.nav-flujo .nota { align-self: center; margin-left: auto; }
+
+/* Nivel 2: la tarjeta que se abre. Sin JavaScript sale abierta. */
+.sub + .sub { margin-top: clamp(2.5rem, 6vw, 4.5rem); }
+.tarjeta { background: var(--panel); border: 1px solid var(--linea); border-radius: 16px; padding: 1.1rem; display: grid; gap: 1rem; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr); align-items: start; }
+.tarjeta .lamina { padding: .3rem; }
+.tarjeta .ficha { position: static; border: 0; padding: 0; background: none; }
+.tarjeta .cerrada-solo { display: none; }
+.js .tarjeta:not(.abierta) { grid-template-columns: 220px minmax(0, 1fr); align-items: center; max-width: 720px; }
+.js .tarjeta:not(.abierta) .cerrada-solo { display: block; }
+.js .tarjeta:not(.abierta) .abierta-solo { display: none; }
+::view-transition-group(*) { animation-duration: .5s; }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
+
+/* Malentendidos, Feynman, predicción, fuentes */
+.tarjetas { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin: 1rem 0; padding: 0; list-style: none; }
+.tarjetas li { background: var(--panel); border: 1px solid var(--linea); border-radius: 14px; padding: 1rem 1.1rem; }
+.tarjetas .ico { color: var(--mal); font-weight: 700; margin-right: .4rem; }
+.tarjetas .n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--suave); color: var(--acento); font-weight: 700; font-size: .85rem; margin-bottom: .5rem; }
+.prediccion { background: var(--panel); border: 1px solid var(--linea); border-radius: 16px; padding: 1.3rem; max-width: 760px; }
+.opciones { display: grid; gap: .6rem; margin: 1rem 0; }
+.opcion { text-align: left; border: 1px solid var(--linea); background: var(--fondo); border-radius: 12px; padding: .8rem 1rem; cursor: pointer; display: flex; gap: .7rem; align-items: center; }
+.opcion:hover { border-color: var(--acento); }
+.opcion .letra { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--linea); font-weight: 700; flex: none; }
+.opcion[aria-pressed="true"] { border-color: var(--acento); }
+.opcion.bien { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--panel)); }
+.opcion.mal { border-color: var(--mal); background: color-mix(in srgb, var(--mal) 10%, var(--panel)); }
+.respuesta { border-top: 1px solid var(--linea); margin-top: 1rem; padding-top: 1rem; }
+.respuesta .veredicto { font-weight: 700; }
+.respuesta .veredicto.bien { color: var(--ok); } .respuesta .veredicto.mal { color: var(--mal); }
+details.plegada summary { cursor: pointer; color: var(--acento); }
+.fuentes { padding-left: 1.2rem; }
+.fuentes li { margin-bottom: .4rem; }
+.leyenda { color: var(--gris); font-size: .9rem; }
+footer { padding: 2rem 0 3rem; color: var(--gris); font-size: .85rem; border-top: 1px solid var(--linea); }
+footer .contenedor { display: flex; justify-content: space-between; gap: .5rem 1.5rem; flex-wrap: wrap; }
+footer .lema { color: var(--acento); letter-spacing: .14em; font-size: .72rem; font-weight: 600; text-transform: uppercase; }
+
+/* Revelado decorativo al entrar en pantalla: solo con soporte nativo y sin preferencia de menos movimiento */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    .revelar { animation: aparecer auto linear both; animation-timeline: view(); animation-range: entry 5% entry 45%; }
+  }
+}
+@keyframes aparecer { from { opacity: 0; translate: 0 22px; } }
+
+@media (max-width: 880px) {
+  .portada .cabecera, .portada .grid, .recorrido .grid, .flujo .grid, .tarjeta { grid-template-columns: 1fr; }
+  .js .tarjeta:not(.abierta) { grid-template-columns: 1fr; }
+  .ficha { position: static; }
+  .pegado { top: 52px; }
+  .paso { min-height: 60vh; }
+}
+@media (max-width: 600px) {
+  .barra .marca span { display: none; }
+  .barra nav { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; }
+  .barra .marca, #tema { white-space: nowrap; }
+}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="contenedor">
+    <div class="marca">{{MARCA_BARRA}}</div>
+    <nav aria-label="Secciones">{{NAV}}</nav>
+    <button id="tema" class="solo-js" type="button" aria-label="Tema de color: automático">Tema: auto</button>
+  </div>
+</header>
+
+<main>
+  <!-- Nivel 0: el todo y su frontera, con la vista explotada manipulable -->
+  <section class="seccion sin-borde portada" id="nivel0">
+    <div class="contenedor">
+      <p class="kicker">Despiece · {{OBJETO}} · nivel 0</p>
+      <div class="cabecera">
+        <div>
+          <h1 id="titulo0" tabindex="-1">{{TITULO0}}</h1>
+          <p class="frontera">{{FRONTERA}}</p>
+        </div>
+        <div>
+          <p class="foco"><b>Pregunta foco.</b> {{FOCO}}</p>
+          {{FUERA}}
+          <p class="nota">{{LECTOR}}</p>
+        </div>
+      </div>
+      <div class="grid">
+        <div>
+          <div class="lamina modo-slider" id="hero-lamina">{{SVG_HERO}}</div>
+          <div class="controles solo-js">
+            <label>Armado
+              <input type="range" id="explode" min="0" max="1" step="0.01" value="0" aria-label="Explosión de la vista">
+              Explotado</label>
+            <button class="boton" type="button" id="btn-explotar">Explotar</button>
+            <button class="boton" type="button" id="btn-armar">Armar</button>
+          </div>
+          <p class="nota solo-js">Tocá una pieza, en la figura o en la lista, para ver qué hace y de dónde sale.</p>
+        </div>
+        <aside class="ficha" id="hero-ficha" aria-live="polite">{{FICHA_HERO}}</aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nivel 1 por scroll: la figura queda fija y el objeto se desarma pieza a pieza al avanzar -->
+  <section class="seccion recorrido" id="recorrido">
+    <div class="contenedor">
+      <p class="kicker">Nivel 1 · desmontaje guiado</p>
+      <h2>{{TITULO_N1}}</h2>
+      <p class="nota">Bajá despacio: cada pieza se separa cuando su texto entra en pantalla. El desmontaje es el montaje al revés.</p>
+      <div class="grid">
+        <div class="pegado">
+          <div class="lamina modo-scroll" id="rec-lamina">{{SVG_REC}}</div>
+          <p class="pie solo-js"><span>Pieza: <b id="rec-actual">—</b></span><span id="rec-progreso"></span></p>
+          <div class="nav-rec solo-js">
+            <button class="boton" type="button" id="rec-prev">↑ Anterior</button>
+            <button class="boton" type="button" id="rec-next">Siguiente ↓</button>
+          </div>
+        </div>
+        <div class="pasos" id="pasos">{{PASOS}}</div>
+      </div>
+    </div>
+  </section>
+
+<!--si:flujo-->
+  <!-- Flujo: el camino, paso a paso, sobre la vista medio abierta -->
+  <section class="seccion flujo" id="flujo">
+    <div class="contenedor">
+      <p class="kicker">Nivel 1 · el flujo, paso a paso</p>
+      <h2>{{TITULO_FLUJO}}</h2>
+      <p class="nota solo-js">Avanzá con los botones o con las flechas del teclado. La pieza activa se ilumina y la relación que la alimenta se mueve.</p>
+      <div class="grid">
+        <div class="lamina" id="flujo-lamina">{{SVG_FLUJO}}</div>
+        <div>
+          <ol class="pills solo-js" id="flujo-pills">{{PILLS}}</ol>
+          <div class="paso-flujo" id="flujo-ficha" aria-live="polite" tabindex="0">{{FICHAS_FLUJO}}</div>
+          <div class="nav-flujo solo-js">
+            <button class="boton" type="button" id="flujo-prev">← Anterior</button>
+            <button class="boton primario" type="button" id="flujo-next">Siguiente →</button>
+            <button class="boton" type="button" id="flujo-play" aria-pressed="false">▶ Recorrer</button>
+            <span class="nota" id="flujo-contador"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<!--/si:flujo-->
+
+<!--si:nivel2-->
+  <!-- Nivel 2: cada pieza con hijos se dibuja cerrada en el nivel 1 y se abre en su propia figura -->
+  <section class="seccion" id="nivel2">
+    <div class="contenedor">{{SUBCONJUNTOS}}</div>
+  </section>
+<!--/si:nivel2-->
+
+<!--si:malentendidos-->
+  <section class="seccion" id="malentendidos">
+    <div class="contenedor">
+      <p class="kicker">Lo que suele entenderse mal</p>
+      <h2>{{TITULO_MALENTENDIDOS}}</h2>
+      <ul class="tarjetas">{{MALENTENDIDOS}}</ul>
+    </div>
+  </section>
+<!--/si:malentendidos-->
+
+  <!-- Puertas de comprensión -->
+  <section class="seccion" id="prueba">
+    <div class="contenedor">
+      <p class="kicker">Comprobá que lo entendiste</p>
+      <h2>En tres frases</h2>
+      <ol class="tarjetas">{{FEYNMAN}}</ol>
+      <h2 style="margin-top:2rem">Ponete a prueba</h2>
+      <div class="prediccion revelar">{{PREDICCION}}</div>
+    </div>
+  </section>
+
+<!--si:fuentes-->
+  <section class="seccion" id="fuentes">
+    <div class="contenedor">
+      <p class="kicker">De dónde sale cada pieza</p>
+      <h2>Fuentes</h2>
+      <ol class="fuentes">{{FUENTES}}</ol>
+      <p class="leyenda" id="leyenda-supuesto"><b>▲ supuesto</b>: pieza sin fuente verificada. Se marca pieza a pieza en vez de darla por sabida.</p>
+    </div>
+  </section>
+<!--/si:fuentes-->
+</main>
+
+<footer>
+  <div class="contenedor">{{PIE}}</div>
+</footer>
+
+<div id="pop-supuesto" popover role="note">
+  <b>▲ supuesto.</b> No tiene fuente verificada: es lo habitual en el dominio, pero no se leyó de una especificación ni de la configuración real.
+</div>
+
+<!-- El modelo, tal cual lo valida validar_modelo.py: la página sale de él -->
+<script type="application/json" id="modelo">{{MODELO_JSON}}</script>
+<!-- Lo que la interacción necesita y no está en el HTML -->
+<script type="application/json" id="vista">{{VISTA_JSON}}</script>
+
+<script>
+(() => {
+  'use strict';
+  // Todo el contenido ya viene escrito en el HTML; aquí solo se cambia de estado.
+  const V = JSON.parse(document.getElementById('vista').textContent);
+  const $ = id => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const suave = () => reduceMotion.matches ? 'auto' : 'smooth';
+  const SVGNS = 'http://www.w3.org/2000/svg';
+
+  /* ---------- Tema ---------- */
+  const root = document.documentElement;
+  const btnTema = $('tema');
+  const ciclo = ['auto', 'light', 'dark'];
+  const nombres = { auto: 'auto', light: 'claro', dark: 'oscuro' };
+  let tema = params.get('tema') || (() => { try { return localStorage.getItem('despiece-tema'); } catch { return null; } })() || 'auto';
+  function aplicarTema(t) {
+    tema = ciclo.includes(t) ? t : 'auto';
+    if (tema === 'auto') root.removeAttribute('data-theme'); else root.dataset.theme = tema;
+    btnTema.textContent = 'Tema: ' + nombres[tema];
+    btnTema.setAttribute('aria-label', 'Tema de color: ' + nombres[tema] + '. Cambiar');
+    try { localStorage.setItem('despiece-tema', tema); } catch {}
+  }
+  aplicarTema(tema);
+  const activarSuave = () => requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('suave')));
+  if (document.readyState === 'complete') activarSuave(); else addEventListener('load', activarSuave, { once: true });
+  btnTema.addEventListener('click', () => aplicarTema(ciclo[(ciclo.indexOf(tema) + 1) % ciclo.length]));
+
+  /* ---------- Selección: una sola pieza destacada por figura; volver a tocarla la suelta ---------- */
+  function controlarSeleccion({ svg, ficha, destacada, onSel }) {
+    const grupos = Object.fromEntries([...svg.querySelectorAll('.pieza')].map(g => [g.dataset.id, g]));
+    let sel = null;
+    function pintar() {
+      for (const [id, g] of Object.entries(grupos)) { g.classList.toggle('sel', id === sel); g.classList.toggle('dim', !!sel && id !== sel); }
+      if (ficha) {
+        ficha.querySelectorAll('.ficha-pieza').forEach(f => { f.hidden = f.dataset.id !== sel; });
+        const vacia = ficha.querySelector('.ficha-vacia'); if (vacia) vacia.hidden = !!sel;
+        ficha.querySelectorAll('.lista-piezas button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === sel)));
+      }
+      onSel && onSel(sel);
+    }
+    function seleccionar(id, { toggle = true } = {}) { sel = (toggle && sel === id) ? null : id; pintar(); }
+    for (const [id, g] of Object.entries(grupos)) {
+      g.addEventListener('click', () => seleccionar(id));
+      g.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); seleccionar(id); } });
+    }
+    if (ficha) ficha.querySelectorAll('.lista-piezas button').forEach(b => b.addEventListener('click', () => seleccionar(b.dataset.id)));
+    if (destacada && grupos[destacada]) seleccionar(destacada); else pintar();
+    return { seleccionar };
+  }
+
+  /* ---------- Nivel 0: la figura manipulable ---------- */
+  const heroSvg = $('hero-svg');
+  controlarSeleccion({ svg: heroSvg, ficha: $('hero-ficha'), destacada: V.destacada });
+  const slider = $('explode');
+  const heroLamina = $('hero-lamina');
+  const setExplode = v => { slider.value = v; heroSvg.style.setProperty('--p', v); };
+  slider.addEventListener('pointerdown', () => heroLamina.classList.add('arrastrando'));
+  slider.addEventListener('input', () => heroSvg.style.setProperty('--p', slider.value));
+  const soltar = () => heroLamina.classList.remove('arrastrando');
+  for (const ev of ['pointerup', 'pointercancel', 'blur', 'change']) slider.addEventListener(ev, soltar);
+  $('btn-explotar').addEventListener('click', () => setExplode(1));
+  $('btn-armar').addEventListener('click', () => setExplode(0));
+  // Al cargar, el objeto se abre una vez (1–2 s, sin bucle). Con menos movimiento, aparece ya abierto.
+  if (params.has('p')) setExplode(params.get('p'));
+  else if (reduceMotion.matches) setExplode(1);
+  else {
+    heroLamina.classList.add('apertura');
+    setTimeout(() => setExplode(1), 600);
+    setTimeout(() => heroLamina.classList.remove('apertura'), 2400);
+  }
+
+  /* ---------- Nivel 1: desmontaje con scroll ---------- */
+  const recSvg = $('rec-svg');
+  const nombreDe = id => (recSvg.querySelector(`.pieza[data-id="${CSS.escape(id)}"] title`) || {}).textContent || id;
+  const recSel = controlarSeleccion({ svg: recSvg, onSel: id => { $('rec-actual').textContent = id ? nombreDe(id) : 'armado'; } });
+  const pasos = [...document.querySelectorAll('#pasos .paso')];
+  const pasoDePieza = pasos.filter(s => !s.dataset.intro && !s.dataset.final);
+  const soporteScroll = CSS.supports('(animation-timeline: scroll()) and (animation-range: 0% 100%)');
+  if (soporteScroll && !reduceMotion.matches) {
+    // Nativo: la view-timeline de cada paso mueve su pieza y su rastro
+    document.body.classList.add('nativo');
+    const nombresTl = pasoDePieza.map((s, i) => {
+      const n = `--paso-${i}`;
+      s.style.setProperty('view-timeline', `${n} block`);
+      recSvg.querySelectorAll(`[data-id="${CSS.escape(s.dataset.id)}"]`).forEach(e => e.style.setProperty('animation-timeline', n));
+      return n;
+    });
+    $('recorrido').style.setProperty('timeline-scope', nombresTl.join(', '));
+  } else {
+    // Fallback: IntersectionObserver reparte el progreso de cada paso a su pieza (continuo; discreto con menos movimiento)
+    const umbrales = Array.from({ length: 41 }, (_, i) => i / 40);
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        const vh = innerHeight, top = e.boundingClientRect.top;
+        let p = Math.min(1, Math.max(0, (vh - top) / (vh * 0.65)));
+        if (reduceMotion.matches) p = p > 0.5 ? 1 : 0;
+        recSvg.querySelectorAll(`[data-id="${CSS.escape(e.target.dataset.id)}"]`).forEach(g => g.style.setProperty('--p', p.toFixed(3)));
+      }
+    }, { threshold: umbrales });
+    pasoDePieza.forEach(s => io.observe(s));
+  }
+  // El paso que cruza el centro de la pantalla es el activo: resalta su pieza (estado, no animación)
+  let pasoRec = 0;
+  const irPasoRec = i => pasos[Math.max(0, Math.min(pasos.length - 1, i))].scrollIntoView({ behavior: suave(), block: 'center' });
+  $('rec-prev').addEventListener('click', () => irPasoRec(pasoRec - 1));
+  $('rec-next').addEventListener('click', () => irPasoRec(pasoRec + 1));
+  const ioPaso = new IntersectionObserver(entries => {
+    for (const e of entries) if (e.isIntersecting) {
+      pasos.forEach(s => s.classList.toggle('activo', s === e.target));
+      recSel.seleccionar(e.target.dataset.intro ? null : e.target.dataset.id, { toggle: false });
+      pasoRec = pasos.indexOf(e.target);
+      $('rec-progreso').textContent = `${pasoRec + 1} / ${pasos.length}`;
+    }
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  pasos.forEach(s => ioPaso.observe(s));
+
+  /* ---------- Flujo paso a paso ---------- */
+  if ($('flujo')) {
+    const flujoSvg = $('flujo-svg');
+    const flujoSel = controlarSeleccion({ svg: flujoSvg });
+    const pills = [...document.querySelectorAll('#flujo-pills .pill')];
+    const items = [...document.querySelectorAll('#flujo-ficha .paso-flujo-item')];
+    const capa = flujoSvg.querySelector('.flechas');
+    let pasoActual = 0, paquete = null;
+    // El dato viaja por la flecha activa 3 veces (≈ 4 s, menos de 5 s) y se queda en la pieza. Con menos movimiento, no hay paquete.
+    function lanzarPaquete(d) {
+      if (paquete) paquete.remove();
+      paquete = null;
+      if (!d || reduceMotion.matches) return;
+      const anim = document.createElementNS(SVGNS, 'animateMotion');
+      for (const [k, v] of Object.entries({ dur: '1.3s', repeatCount: '3', fill: 'freeze', begin: 'indefinite', path: d, calcMode: 'spline', keyTimes: '0;1', keySplines: '.45 0 .25 1' })) anim.setAttribute(k, v);
+      paquete = document.createElementNS(SVGNS, 'circle');
+      for (const [k, v] of Object.entries({ class: 'paquete', r: 6.5, cx: 0, cy: 0 })) paquete.setAttribute(k, v);
+      paquete.append(anim);
+      capa.append(paquete);
+      anim.beginElement();
+    }
+    function irPasoFlujo(i) {
+      pasoActual = (i + items.length) % items.length;
+      const item = items[pasoActual], id = item.dataset.id, de = item.dataset.de;
+      flujoSel.seleccionar(id, { toggle: false });
+      pills.forEach((b, j) => j === pasoActual ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'));
+      items.forEach(x => x.classList.toggle('activo', x === item));
+      let dActiva = null;
+      capa.querySelectorAll('.flecha, .etiqueta').forEach(e => {
+        const activa = de !== undefined && e.dataset.a === id && e.dataset.de === de;
+        e.classList.toggle('activa', activa);
+        if (e.classList.contains('flecha')) { e.setAttribute('marker-end', activa ? 'url(#punta-activa)' : 'url(#punta)'); if (activa) dActiva = e.getAttribute('d'); }
+      });
+      lanzarPaquete(dActiva);
+      $('flujo-contador').textContent = `${pasoActual + 1} / ${items.length}`;
+    }
+    // Recorrer solo: avanza un paso cada 2,4 s hasta el último y se para; el mismo botón lo pausa
+    const btnPlay = $('flujo-play');
+    let reproduccion = null;
+    function pararRecorrido() { clearInterval(reproduccion); reproduccion = null; btnPlay.textContent = '▶ Recorrer'; btnPlay.setAttribute('aria-pressed', 'false'); }
+    btnPlay.addEventListener('click', () => {
+      if (reproduccion) return pararRecorrido();
+      btnPlay.textContent = '❚❚ Pausar'; btnPlay.setAttribute('aria-pressed', 'true');
+      if (pasoActual === items.length - 1) irPasoFlujo(0);
+      reproduccion = setInterval(() => { if (pasoActual >= items.length - 1) return pararRecorrido(); irPasoFlujo(pasoActual + 1); }, 2400);
+    });
+    const manual = i => { pararRecorrido(); irPasoFlujo(i); };
+    pills.forEach((b, i) => b.addEventListener('click', () => manual(i)));
+    $('flujo-prev').addEventListener('click', () => manual(pasoActual - 1));
+    $('flujo-next').addEventListener('click', () => manual(pasoActual + 1));
+    $('flujo').addEventListener('keydown', ev => {
+      if (ev.key === 'ArrowRight') { ev.preventDefault(); manual(pasoActual + 1); }
+      if (ev.key === 'ArrowLeft') { ev.preventDefault(); manual(pasoActual - 1); }
+    });
+    irPasoFlujo(Number(params.get('paso') || 0));
+  }
+
+  /* ---------- Nivel 2: cada tarjeta se abre con una View Transition ---------- */
+  const tarjetas = {};
+  document.querySelectorAll('.tarjeta').forEach(t => {
+    const padre = t.dataset.padre, svg = t.querySelector('svg');
+    const estado = { abierta: false, cerradaPorUsuario: false };
+    controlarSeleccion({ svg, ficha: t.querySelector('.ficha'), destacada: V.destacadas[padre] });
+    function cambiar(abrir, { animar = true, enfocar = null } = {}) {
+      if (abrir === estado.abierta) { if (enfocar) $(enfocar).focus({ preventScroll: true }); return; }
+      estado.abierta = abrir;
+      const aplicar = () => { t.classList.toggle('abierta', abrir); if (!abrir) svg.style.setProperty('--p', 0); };
+      const despues = () => { if (abrir) svg.style.setProperty('--p', 1); if (enfocar) $(enfocar).focus({ preventScroll: true }); };
+      if (!animar || !document.startViewTransition || reduceMotion.matches) { aplicar(); despues(); return; }
+      document.startViewTransition(aplicar).finished.finally(despues);
+    }
+    // El foco solo se mueve cuando el lector lo pidió con un gesto
+    const abrir = ({ porUsuario = false } = {}) => { if (porUsuario) estado.cerradaPorUsuario = false; cambiar(true, { enfocar: porUsuario ? t.dataset.titulo : null }); };
+    t.querySelector('[data-abrir]').addEventListener('click', () => abrir({ porUsuario: true }));
+    t.querySelector('[data-volver]').addEventListener('click', () => {
+      estado.cerradaPorUsuario = true;
+      cambiar(false, { enfocar: 'titulo0' });
+      $('nivel0').scrollIntoView({ behavior: suave() });
+    });
+    // Entrar con el scroll: cuando la tarjeta ocupa media pantalla se abre sola, salvo que el lector la haya cerrado.
+    // Sin View Transition: su instantánea queda fija mientras la página sigue desplazándose y pisa la sección siguiente;
+    // las capas se separan igual con la transición de --p
+    new IntersectionObserver(entries => { for (const e of entries) if (e.isIntersecting && e.intersectionRatio >= 0.5 && !estado.abierta && !estado.cerradaPorUsuario) cambiar(true, { animar: false }); }, { threshold: [0.5] }).observe(t);
+    tarjetas[padre] = { t, abrir };
+    if (params.get('abrir') === padre) cambiar(true, { animar: false });
+  });
+  // «Ver por dentro →» desde la ficha o desde un paso del desmontaje
+  document.addEventListener('click', ev => {
+    const b = ev.target.closest('[data-entrar]');
+    if (!b || !tarjetas[b.dataset.entrar]) return;
+    ev.preventDefault();
+    const { t, abrir } = tarjetas[b.dataset.entrar];
+    t.closest('.sub').scrollIntoView({ behavior: suave(), block: 'start' });
+    abrir({ porUsuario: true });
+  });
+
+  /* ---------- Predicción con opciones ---------- */
+  const opciones = $('opciones');
+  if (opciones) {
+    const correcta = Number(opciones.dataset.correcta);
+    const botones = [...opciones.querySelectorAll('.opcion')];
+    botones.forEach((b, i) => b.addEventListener('click', () => {
+      botones.forEach((o, j) => { o.setAttribute('aria-pressed', String(j === i)); o.classList.toggle('bien', j === correcta); o.classList.toggle('mal', j === i && i !== correcta); o.disabled = true; });
+      const ok = i === correcta, v = $('veredicto');
+      v.textContent = ok ? 'Eso es.' : 'No era esa.'; v.className = 'veredicto ' + (ok ? 'bien' : 'mal');
+      $('respuesta').hidden = false;
+      $('plegada').hidden = true;
+    }));
+  }
+
+  // Sin Popover API, el botón «▲ supuesto» lleva a la leyenda
+  if (!('popover' in HTMLElement.prototype)) {
+    document.addEventListener('click', ev => {
+      const b = ev.target.closest('[popovertarget="pop-supuesto"]'), l = $('leyenda-supuesto');
+      if (b && l) l.scrollIntoView({ block: 'center' });
+    });
+  }
+})();
+</script>
+</body>
+</html>
