@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 772" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cinco piezas en una placa, y la controladora en medio de todo" font-family="'Segoe UI', system-ui, sans-serif">
+<rect width="1240" height="772" fill="#ffffff"/>
+<text x="90" y="52" font-size="26" font-weight="700" fill="#0b3d91">Cinco piezas en una placa, y la controladora en medio de todo</text>
+<text x="90" y="80" font-size="15" fill="#7b8794">Vista explotada · de abajo arriba, el orden de montaje; de arriba abajo, el de desmontaje</text>
+<line x1="300.0" y1="104" x2="300.0" y2="692" stroke="#cbd2d9" stroke-width="2" stroke-dasharray="8,6"/>
+<g id="fv-escena">
+<g class="fv-punto" data-id="nand">
+<rect x="90" y="120" width="420" height="76" rx="10" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.6"/>
+<text x="108" y="151" font-size="18" font-weight="600" fill="#7b8794">Chips NAND</text>
+<text x="108" y="176" font-size="13" fill="#7b8794">paso de montaje 5 · ×4 · contiene 3 piezas → figura aparte</text>
+<line x1="510" y1="158.0" x2="616" y2="158.0" stroke="#cbd2d9" stroke-width="1.4"/>
+<circle cx="544" cy="158.0" r="15" fill="#0b3d91"/>
+<text x="544" y="163.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">5</text>
+<text x="640" y="152.0" font-size="16" font-weight="600" fill="#7b8794">5. Chips NAND<tspan font-weight="400" fill="#7b8794" font-size="13"></tspan></text>
+<text x="640" y="172.0" font-size="14" fill="#7b8794">Donde viven los datos; más chips en paralelo, más velocidad sostenida</text>
+</g>
+<g class="fv-punto" data-id="dram">
+<rect x="90" y="240" width="420" height="76" rx="10" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.6"/>
+<text x="108" y="271" font-size="18" font-weight="600" fill="#7b8794">Caché DRAM</text>
+<text x="108" y="296" font-size="13" fill="#7b8794">paso de montaje 4</text>
+<line x1="510" y1="278.0" x2="616" y2="278.0" stroke="#cbd2d9" stroke-width="1.4"/>
+<circle cx="544" cy="278.0" r="15" fill="#0b3d91"/>
+<text x="544" y="283.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">4</text>
+<text x="640" y="272.0" font-size="16" font-weight="600" fill="#7b8794">4. Caché DRAM<tspan font-weight="400" fill="#7b8794" font-size="13"> ▲ supuesto</tspan></text>
+<text x="640" y="292.0" font-size="14" fill="#7b8794">Guarda la tabla que dice en qué chip está cada bloque; sin ella, el</text>
+<text x="640" y="310.0" font-size="14" fill="#7b8794">disco la busca en la propia NAND y se frena</text>
+</g>
+<g class="fv-punto" data-id="controladora">
+<rect x="90" y="360" width="420" height="76" rx="10" fill="#e6f4f3" stroke="#1b998b" stroke-width="3"/>
+<text x="108" y="391" font-size="18" font-weight="600" fill="#1f2933">Controladora</text>
+<text x="108" y="416" font-size="13" fill="#7b8794">paso de montaje 3</text>
+<line x1="510" y1="398.0" x2="616" y2="398.0" stroke="#cbd2d9" stroke-width="1.4"/>
+<circle cx="544" cy="398.0" r="15" fill="#1b998b"/>
+<text x="544" y="403.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+<text x="640" y="392.0" font-size="16" font-weight="600" fill="#1f2933">3. Controladora<tspan font-weight="400" fill="#7b8794" font-size="13"></tspan></text>
+<text x="640" y="412.0" font-size="14" fill="#7b8794">El cerebro: traduce comandos NVMe a operaciones sobre la NAND y reparte</text>
+<text x="640" y="430.0" font-size="14" fill="#7b8794">el desgaste</text>
+</g>
+<g class="fv-punto" data-id="conector">
+<rect x="90" y="480" width="420" height="76" rx="10" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.6"/>
+<text x="108" y="511" font-size="18" font-weight="600" fill="#7b8794">Conector M.2 llave M</text>
+<text x="108" y="536" font-size="13" fill="#7b8794">paso de montaje 2</text>
+<line x1="510" y1="518.0" x2="616" y2="518.0" stroke="#cbd2d9" stroke-width="1.4"/>
+<circle cx="544" cy="518.0" r="15" fill="#0b3d91"/>
+<text x="544" y="523.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+<text x="640" y="512.0" font-size="16" font-weight="600" fill="#7b8794">2. Conector M.2 llave M<tspan font-weight="400" fill="#7b8794" font-size="13"></tspan></text>
+<text x="640" y="532.0" font-size="14" fill="#7b8794">Entrega alimentación y hasta 4 carriles PCIe; la llave impide pinchar un</text>
+<text x="640" y="550.0" font-size="14" fill="#7b8794">disco SATA</text>
+</g>
+<g class="fv-punto" data-id="pcb">
+<rect x="90" y="600" width="420" height="76" rx="10" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.6"/>
+<text x="108" y="631" font-size="18" font-weight="600" fill="#7b8794">Placa (PCB)</text>
+<text x="108" y="656" font-size="13" fill="#7b8794">paso de montaje 1</text>
+<line x1="510" y1="638.0" x2="616" y2="638.0" stroke="#cbd2d9" stroke-width="1.4"/>
+<circle cx="544" cy="638.0" r="15" fill="#0b3d91"/>
+<text x="544" y="643.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+<text x="640" y="632.0" font-size="16" font-weight="600" fill="#7b8794">1. Placa (PCB)<tspan font-weight="400" fill="#7b8794" font-size="13"></tspan></text>
+<text x="640" y="652.0" font-size="14" fill="#7b8794">Sostiene y conecta todo; su tamaño (2280 = 22 × 80 mm) fija cuántos</text>
+<text x="640" y="670.0" font-size="14" fill="#7b8794">chips caben</text>
+</g>
+</g>
+<line x1="90" y1="728" x2="1150" y2="728" stroke="#cbd2d9" stroke-width="1"/>
+<text x="90" y="750" font-size="13" fill="#7b8794">Acme Research · Documentación técnica interna</text>
+<text x="1150" y="750" font-size="12" fill="#1b998b" text-anchor="end" letter-spacing="1.5">ENTENDER ANTES DE TOCAR</text>
+</svg>

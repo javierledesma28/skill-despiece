@@ -45,8 +45,8 @@ section{margin:36px 0}section>h2{font-size:1.35rem;margin:0 0 4px;color:var(--pt
 .nivel{color:var(--st);font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
 .frontera{background:var(--suave);border-left:4px solid var(--s);padding:10px 14px;border-radius:6px;margin:12px 0}
 figure{margin:18px 0;background:#fff;border:1px solid var(--linea);border-radius:10px;padding:12px}
-figure svg,figure img{width:100%%;height:auto;display:block}figcaption{color:var(--gris);font-size:.9rem;margin-top:8px}
-.pendiente{border:2px dashed var(--linea);color:var(--gris);padding:28px;text-align:center;border-radius:10px}
+figure svg,figure img{width:100%%;height:auto;display:block}figcaption{color:#5c6b7a;font-size:.9rem;margin-top:8px}
+.pendiente{border:2px dashed #dde3ea;color:#5c6b7a;padding:28px;text-align:center;border-radius:10px}
 ol.piezas{padding-left:0;list-style:none;counter-reset:pz}ol.piezas li{counter-increment:pz;display:grid;grid-template-columns:34px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--linea)}
 ol.piezas li::before{content:counter(pz);display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%%;background:var(--p);color:#fff;font-weight:700;font-size:.85rem}
 ol.piezas b{display:block}ol.piezas .fuente{color:var(--gris);font-size:.85rem}.supuesto{color:#b4541a;font-weight:600}

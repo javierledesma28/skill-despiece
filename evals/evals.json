@@ -1,6 +1,6 @@
 {
   "skill_name": "despiece",
-  "nota": "Un caso por familia (sistema, físico, proceso, idea). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos: pendientes de correr (los de la 1.0 eran del entorno privado del autor).",
+  "nota": "Un caso por familia (sistema, físico, proceso, idea). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku: ver resultados-2026-11-02.md.",
   "evals": [
     {
       "id": 1,

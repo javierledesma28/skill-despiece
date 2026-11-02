@@ -3,6 +3,32 @@
 Formato: versión semántica (`metadata.version` de SKILL.md). Una entrada por cambio relevante, con el
 resultado de las evals que lo respaldan.
 
+## [1.1.1] - 2026-11-02
+
+### Corregido
+- `ensamblar.py`: el pie de figura (`figcaption`) y el hueco de figura pendiente usaban el gris del tema
+  (`--gris`), que en oscuro es casi blanco, sobre la lámina blanca fija de las figuras: el texto no se leía.
+  Ahora llevan colores fijos para lámina blanca (`#5c6b7a` y `#dde3ea`), iguales en los dos temas. Lo
+  encontró el subagente del caso 1 de las evals al revisar su página en oscuro.
+
+### Añadido
+- `docs/demo.md`: cómo se ve un despiece terminado (el SSD de `assets/ejemplo-fisico.json`), con la portada y
+  la página completa capturadas en claro y oscuro, las dos vistas explotadas y el modelo del que sale todo.
+  Los ficheros están en `docs/demo/`.
+- `docs/instalacion.md`: paso a paso para macOS, Linux y Windows, con Git o sin él, comprobación, primer
+  despiece, actualizar, desinstalar y qué hacer si algo falla.
+- `docs/media/banner.svg`: cabecera del README.
+- README reescrito con la identidad de Think28 (t28.io): barra de navegación hacia Demo, Instalación,
+  Changelog y Licencia (GitHub no admite pestañas propias), sección «Así se ve», instalación corta que remite
+  a la guía, cifras reales de las evals y hoja de ruta con la página interactiva como siguiente paso.
+- `.gitignore`: `demo/` anclado a la raíz (`/demo/`) para que `docs/demo/` sí se versione.
+
+### Evaluación
+- **Evals de los casos públicos, corridas el 2026-11-02** (`evals/resultados-2026-11-02.md`). Activación
+  **60/60** (Sonnet, Haiku y Fable 5.1, 20 consultas cada uno, sin iterar la descripción). Calidad, cuatro
+  casos con y sin skill en subagentes limpios de Sonnet: **26/26 con skill frente a 16/26
+  sin ella**; el caso físico repetido con Haiku como ejecutor: **7/7 con skill frente a 2/7 sin ella**.
+
 ## [1.1.0] - 2026-11-02
 
 Primera versión pública, publicada como desarrollo de [t28.io](https://t28.io) en

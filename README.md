@@ -1,17 +1,23 @@
 <div align="center">
 
-# despiece
+<img src="docs/media/banner.svg" alt="despiece: despiezá cualquier cosa hasta entenderla de verdad" width="100%">
 
-**Despiezá cualquier cosa hasta entenderla de verdad.**
+<br>
+
+**README** · [**Demo**](docs/demo.md) · [**Instalación**](docs/instalacion.md) · [**Changelog**](CHANGELOG.md) · [**Licencia**](LICENSE)
+
+<br>
+
+[![Versión](https://img.shields.io/badge/versi%C3%B3n-1.1.1-F5C500?labelColor=0A0A0A)](CHANGELOG.md)
+[![Licencia MIT](https://img.shields.io/badge/licencia-MIT-efefef?labelColor=0A0A0A)](LICENSE)
+[![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-efefef?labelColor=0A0A0A)](https://claude.com/claude-code)
+[![Python 3.10+ sin pip](https://img.shields.io/badge/python-3.10%2B%20sin%20pip-3776ab?labelColor=0A0A0A)](scripts/)
+[![Un desarrollo de Think28](https://img.shields.io/badge/un%20desarrollo%20de-Think28-F5C500?labelColor=0A0A0A)](https://t28.io)
+
+<br>
 
 Una skill de [Claude Code](https://claude.com/claude-code) que convierte «no entiendo cómo funciona esto»
 en una explicación por niveles, con figuras, fuentes y dos pruebas de que lo entendiste.
-
-[![Versión](https://img.shields.io/badge/versi%C3%B3n-1.1.0-0b3d91)](CHANGELOG.md)
-[![Licencia MIT](https://img.shields.io/badge/licencia-MIT-1b998b)](LICENSE)
-[![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-7c3aed)](https://claude.com/claude-code)
-[![Python 3.10+ sin pip](https://img.shields.io/badge/python-3.10%2B%20sin%20pip-3776ab)](scripts/)
-[![Un desarrollo de t28.io](https://img.shields.io/badge/un%20desarrollo%20de-t28.io-111111)](https://t28.io)
 
 </div>
 
@@ -45,20 +51,16 @@ encaja PIM»), la skill:
 7. **Comprueba que se entendió.** Tres frases que un no experto seguiría y una pregunta de predicción con
    la respuesta plegada al final.
 
-## Lo que obtenés
+## Así se ve
 
-| Fichero | Qué es |
-|---|---|
-| `modelo.json` | La única fuente de verdad: piezas, funciones, fuentes, relaciones, flujo, malentendidos |
-| `figuras/*.svg` | Una por nivel. Vectoriales, sin tamaño fijo, listas para incrustar donde quieras |
-| `index.html` | La explicación completa, autocontenida, claro y oscuro, con la predicción plegada |
+Un SSD NVMe, despiezado para un técnico que compra discos y nunca abrió ninguno. La pregunta foco: *¿por
+qué dos SSD del mismo tamaño y precio rinden tan distinto en escrituras largas?*
 
-Y en la conversación, lo esencial: el título del nivel 0, las tres frases y la pregunta de predicción.
+<div align="center">
 
-## Un ejemplo en treinta segundos
+[<img src="docs/demo/portada-claro.png" alt="Portada del despiece de un SSD NVMe: nivel 0, frontera y vista explotada del nivel 1" width="820">](docs/demo.md)
 
-Objeto: **un SSD NVMe**. Pregunta foco: *¿por qué dos SSD del mismo tamaño y precio rinden tan distinto
-en escrituras largas?*
+</div>
 
 > **Nivel 0 · Un SSD es una placa con cinco piezas, y solo dos deciden su velocidad.**
 >
@@ -69,9 +71,18 @@ en escrituras largas?*
 > **Ponete a prueba.** Dos SSD de 1 TB: uno con 4 chips NAND y DRAM, otro con 2 chips y sin DRAM. Copiás
 > 200 GB seguidos. ¿Cuál se frena antes y por qué?
 
-El modelo completo está en [`assets/ejemplo-fisico.json`](assets/ejemplo-fisico.json). La vista explotada
-que sale de él, numerada en orden de montaje y con la controladora destacada, se genera con un comando
-(más abajo).
+La página completa, en claro y en oscuro, las dos vistas explotadas y el modelo del que sale todo están en
+la [**Demo**](docs/demo.md). Y se reproduce en tu máquina con tres comandos, sin Claude.
+
+## Lo que obtenés
+
+| Fichero | Qué es |
+|---|---|
+| `modelo.json` | La única fuente de verdad: piezas, funciones, fuentes, relaciones, flujo, malentendidos |
+| `figuras/*.svg` | Una por nivel. Vectoriales, sin tamaño fijo, listas para incrustar donde quieras |
+| `index.html` | La explicación completa, autocontenida, claro y oscuro, con la predicción plegada |
+
+Y en la conversación, lo esencial: el título del nivel 0, las tres frases y la pregunta de predicción.
 
 ## Cuatro tipos de cosa, cuatro formas de abrirla
 
@@ -87,7 +98,7 @@ para «por qué bloquea esto».
 
 ## Instalación
 
-Cloná el repo en la carpeta de skills personales de Claude Code:
+Un `git clone` en la carpeta de skills de Claude Code y listo. En macOS o Linux:
 
 ```bash
 git clone https://github.com/javierledesma28/skill-despiece.git ~/.claude/skills/despiece
@@ -99,8 +110,9 @@ En Windows, con PowerShell:
 git clone https://github.com/javierledesma28/skill-despiece.git "$env:USERPROFILE\.claude\skills\despiece"
 ```
 
-Requisitos: Claude Code y Python 3.10 o superior. **Sin dependencias de pip.** Para capturar la página en
-PNG, Edge o Chrome.
+Hace falta Claude Code y Python 3.10 o superior. **Sin dependencias de pip.** El paso a paso completo,
+con la instalación sin Git, cómo comprobar que quedó bien, actualizar, desinstalar y qué hacer si algo
+falla, está en [**Instalación**](docs/instalacion.md).
 
 ## Uso
 
@@ -121,22 +133,6 @@ qué partes tiene una Raspberry Pi 5 y qué hace cada una, para la ficha del tal
 Se activa con «despiezá», «desmenuzá», «desarmá», «cómo funciona por dentro», «qué partes tiene»,
 «anatomía de», «explicámelo para entenderlo», «no veo cómo encaja»… aunque no digas «despiece». Si pedís
 algo corto («en dos párrafos»), aplica el mismo método pero responde en texto, sin montar la página.
-
-## Probalo en dos minutos, sin Claude
-
-Los scripts funcionan solos. Con el ejemplo del SSD:
-
-```bash
-cd ~/.claude/skills/despiece
-python -I scripts/validar_modelo.py assets/ejemplo-fisico.json
-mkdir -p demo/figuras
-python -I scripts/explosionado.py assets/ejemplo-fisico.json --salida demo/figuras/n1-explosion.svg --destacar controladora --marca assets/marca-ejemplo.json
-python -I scripts/explosionado.py assets/ejemplo-fisico.json --salida demo/figuras/n2-nand.svg --subconjunto nand --marca assets/marca-ejemplo.json
-python -I scripts/ensamblar.py assets/ejemplo-fisico.json --salida demo/index.html --figuras demo --marca assets/marca-ejemplo.json
-```
-
-Abrí `demo/index.html`. Cambiá el tema del sistema a oscuro: la página cambia y las figuras siguen sobre
-lámina blanca.
 
 ## Tu marca, en un fichero
 
@@ -177,25 +173,32 @@ ocho skills de explicación visual. Todo trazado regla por regla en
 
 ## Qué tan bien funciona
 
-Medido, no prometido. En las evals de la versión 1.0 (cuatro casos reales, uno por tipo, ejecutados con y
-sin la skill en subagentes limpios):
+Medido, no prometido. Los cuatro casos públicos de [`evals/evals.json`](evals/evals.json) (una WAF delante
+de un portal, una Raspberry Pi 5, la activación de un rol por PIM y la idempotencia en una API de pagos),
+ejecutados el 2026-11-02 con y sin la skill en subagentes limpios de Sonnet, más el caso físico repetido
+con Haiku:
 
 | | Con skill | Sin skill |
 |---|---|---|
-| Aserciones cumplidas | **26 / 26** | 15 / 26 |
+| Aserciones cumplidas, Sonnet (4 casos) | **26 / 26** | 16 / 26 |
+| Aserciones cumplidas, Haiku (caso físico) | **7 / 7** | 2 / 7 |
 | Activación correcta (20 consultas × 3 modelos) | **60 / 60** | — |
 
-Sin la skill, el modelo explica bien y cita fuentes, pero no modela por niveles, no marca supuestos pieza
-a pieza y nunca cierra con las pruebas de comprensión. Detalle y limitaciones en
-[`evals/resultados-2026-11-01.md`](evals/resultados-2026-11-01.md). Los casos de la 1.1.0, ya públicos,
-están pendientes de correr.
+Sin la skill, el modelo explica bien, cita fuentes y a veces cierra con una pregunta, pero no modela por niveles,
+no marca supuestos pieza a pieza ni deriva las figuras de un guion con las piezas exactas. Con la skill, hasta Haiku entrega el modelo
+validado, la vista explotada con una sola pieza destacada y las dos puertas de comprensión. Detalle,
+evidencia y limitaciones en [`evals/resultados-2026-11-02.md`](evals/resultados-2026-11-02.md); los de la
+1.0, en [`evals/resultados-2026-11-01.md`](evals/resultados-2026-11-01.md).
 
 ## Hoja de ruta
 
-- [ ] Correr las evals públicas de la 1.1.0 (calidad y activación) y publicar los resultados.
-- [ ] Capturas y vídeo de un despiece de punta a punta.
+- [x] Correr las evals públicas (calidad y activación) y publicar los resultados.
+- [x] Un caso con Haiku como ejecutor.
+- [x] Capturas de un despiece de punta a punta ([Demo](docs/demo.md)).
+- [ ] Una página mucho más visual e interactiva: la vista explotada que se abre y se cierra, los flujos que
+      se recorren pieza a pieza y niveles en los que uno entra con el scroll, no solo texto con figuras.
 - [ ] Cortes y vistas isométricas en la vista explotada.
-- [ ] Un caso con Haiku como ejecutor.
+- [ ] Vídeo de un despiece de punta a punta.
 
 ¿Lo usaste para algo? Abrí un issue con tu `modelo.json`: los buenos despieces se convierten en ejemplos.
 
@@ -207,6 +210,15 @@ están pendientes de correr.
 
 <div align="center">
 
-**Un desarrollo de [t28.io](https://t28.io)** · hecho con Claude Code
+<a href="https://t28.io">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://t28.io/press-kit/logos/think28-logo-primary-dark.svg">
+  <img src="https://t28.io/press-kit/logos/think28-logo-reversed-white.svg" alt="Think28" width="220">
+</picture>
+</a>
+
+**Digital Growth Partner**
+
+Un desarrollo de [**Think28**](https://t28.io) · hecho con Claude Code y amor
 
 </div>

@@ -15,7 +15,7 @@ argument-hint: "[qué despiezar]"
 compatibility: Claude Code en Windows, macOS o Linux. Python 3.10 o superior sin dependencias de pip; para capturar la página en PNG, Edge o Chrome.
 allowed-tools: Bash(python -I ${CLAUDE_SKILL_DIR}/scripts/*)
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   author: t28.io (Javier Ledesma)
   updated: "2026-11-02"
 ---

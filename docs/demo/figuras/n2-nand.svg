@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 532" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Dentro de la NAND: la caché SLC es lo que se agota en una copia larga" font-family="'Segoe UI', system-ui, sans-serif">
+<rect width="1240" height="532" fill="#ffffff"/>
+<text x="90" y="52" font-size="26" font-weight="700" fill="#0b3d91">Dentro de la NAND: la caché SLC es lo que se agota en una copia larga</text>
+<text x="90" y="80" font-size="15" fill="#7b8794">Vista explotada · de abajo arriba, el orden de montaje; de arriba abajo, el de desmontaje</text>
+<line x1="300.0" y1="104" x2="300.0" y2="452" stroke="#cbd2d9" stroke-width="2" stroke-dasharray="8,6"/>
+<g id="fv-escena">
+<g class="fv-punto" data-id="nand-bloques">
+<rect x="90" y="120" width="420" height="76" rx="10" fill="#ffffff" stroke="#1f2933" stroke-width="1.6"/>
+<text x="108" y="151" font-size="18" font-weight="600" fill="#1f2933">Bloques y páginas</text>
+<line x1="510" y1="158.0" x2="616" y2="158.0" stroke="#cbd2d9" stroke-width="1.4"/>
+<circle cx="544" cy="158.0" r="15" fill="#0b3d91"/>
+<text x="544" y="163.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+<text x="640" y="152.0" font-size="16" font-weight="600" fill="#1f2933">3. Bloques y páginas<tspan font-weight="400" fill="#7b8794" font-size="13"></tspan></text>
+<text x="640" y="172.0" font-size="14" fill="#7b8794">Se escribe por páginas y se borra por bloques: por eso borrar cuesta y</text>
+<text x="640" y="190.0" font-size="14" fill="#7b8794">hace falta TRIM</text>
+</g>
+<g class="fv-punto" data-id="nand-slc">
+<rect x="90" y="240" width="420" height="76" rx="10" fill="#ffffff" stroke="#1f2933" stroke-width="1.6"/>
+<text x="108" y="271" font-size="18" font-weight="600" fill="#1f2933">Caché SLC</text>
+<line x1="510" y1="278.0" x2="616" y2="278.0" stroke="#cbd2d9" stroke-width="1.4"/>
+<circle cx="544" cy="278.0" r="15" fill="#0b3d91"/>
+<text x="544" y="283.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+<text x="640" y="272.0" font-size="16" font-weight="600" fill="#1f2933">2. Caché SLC<tspan font-weight="400" fill="#7b8794" font-size="13"> ▲ supuesto</tspan></text>
+<text x="640" y="292.0" font-size="14" fill="#7b8794">Parte de la NAND trabaja a 1 bit por celda para absorber ráfagas; al</text>
+<text x="640" y="310.0" font-size="14" fill="#7b8794">llenarse, la velocidad cae</text>
+</g>
+<g class="fv-punto" data-id="nand-celdas">
+<rect x="90" y="360" width="420" height="76" rx="10" fill="#ffffff" stroke="#1f2933" stroke-width="1.6"/>
+<text x="108" y="391" font-size="18" font-weight="600" fill="#1f2933">Celdas (TLC o QLC)</text>
+<line x1="510" y1="398.0" x2="616" y2="398.0" stroke="#cbd2d9" stroke-width="1.4"/>
+<circle cx="544" cy="398.0" r="15" fill="#0b3d91"/>
+<text x="544" y="403.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+<text x="640" y="392.0" font-size="16" font-weight="600" fill="#1f2933">1. Celdas (TLC o QLC)<tspan font-weight="400" fill="#7b8794" font-size="13"> ▲ supuesto</tspan></text>
+<text x="640" y="412.0" font-size="14" fill="#7b8794">Cada celda guarda 3 o 4 bits; cuantos más bits, más barato y más lento</text>
+<text x="640" y="430.0" font-size="14" fill="#7b8794">al escribir</text>
+</g>
+</g>
+<line x1="90" y1="488" x2="1150" y2="488" stroke="#cbd2d9" stroke-width="1"/>
+<text x="90" y="510" font-size="13" fill="#7b8794">Acme Research · Documentación técnica interna</text>
+<text x="1150" y="510" font-size="12" fill="#1b998b" text-anchor="end" letter-spacing="1.5">ENTENDER ANTES DE TOCAR</text>
+</svg>
