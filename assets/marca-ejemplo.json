@@ -1,0 +1,8 @@
+{
+  "nombre": "Acme Research",
+  "primario": "#0b3d91",
+  "secundario": "#1b998b",
+  "fuente": "'Segoe UI', system-ui, sans-serif",
+  "pie": "Acme Research · Documentación técnica interna",
+  "lema": "ENTENDER ANTES DE TOCAR"
+}

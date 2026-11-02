@@ -1,0 +1,49 @@
+{
+  "objeto": "Un SSD NVMe en formato M.2",
+  "tipo": "fisico",
+  "pregunta_foco": "¿Por qué dos SSD del mismo tamaño y precio rinden tan distinto en escrituras largas?",
+  "lector": "técnico de sistemas que compra discos para servidores y no ha abierto ninguno",
+  "profundidad": 2,
+  "nivel0": {
+    "titulo": "Un SSD es una placa con cinco piezas, y solo dos deciden su velocidad",
+    "frontera": "Desde el conector M.2 hasta la etiqueta: lo que viaja en la placa. Queda fuera el bus PCIe de la placa base y el sistema operativo.",
+    "fuera": ["el slot M.2 y el bus PCIe", "el driver NVMe del sistema operativo"]
+  },
+  "fuentes": [
+    {"id": "nvme-spec", "descripcion": "NVM Express Base Specification 2.0 (nvmexpress.org)", "url": "https://nvmexpress.org/specifications/"},
+    {"id": "jedec-m2", "descripcion": "PCI-SIG M.2 Specification: tamaños 2230/2242/2280 y llaves M/B"}
+  ],
+  "piezas": [
+    {"id": "pcb", "nombre": "Placa (PCB)", "padre": null, "orden_montaje": 1, "funcion": "Sostiene y conecta todo; su tamaño (2280 = 22 × 80 mm) fija cuántos chips caben", "fuente": "jedec-m2"},
+    {"id": "conector", "nombre": "Conector M.2 llave M", "padre": null, "orden_montaje": 2, "funcion": "Entrega alimentación y hasta 4 carriles PCIe; la llave impide pinchar un disco SATA", "fuente": "jedec-m2"},
+    {"id": "controladora", "nombre": "Controladora", "padre": null, "orden_montaje": 3, "funcion": "El cerebro: traduce comandos NVMe a operaciones sobre la NAND y reparte el desgaste", "fuente": "nvme-spec"},
+    {"id": "dram", "nombre": "Caché DRAM", "padre": null, "orden_montaje": 4, "funcion": "Guarda la tabla que dice en qué chip está cada bloque; sin ella, el disco la busca en la propia NAND y se frena", "supuesto": true},
+    {"id": "nand", "nombre": "Chips NAND", "padre": null, "orden_montaje": 5, "funcion": "Donde viven los datos; más chips en paralelo, más velocidad sostenida", "cantidad": 4, "fuente": "nvme-spec"},
+    {"id": "nand-celdas", "nombre": "Celdas (TLC o QLC)", "padre": "nand", "funcion": "Cada celda guarda 3 o 4 bits; cuantos más bits, más barato y más lento al escribir", "supuesto": true},
+    {"id": "nand-slc", "nombre": "Caché SLC", "padre": "nand", "funcion": "Parte de la NAND trabaja a 1 bit por celda para absorber ráfagas; al llenarse, la velocidad cae", "supuesto": true},
+    {"id": "nand-bloques", "nombre": "Bloques y páginas", "padre": "nand", "funcion": "Se escribe por páginas y se borra por bloques: por eso borrar cuesta y hace falta TRIM", "fuente": "nvme-spec"}
+  ],
+  "relaciones": [
+    {"de": "conector", "a": "controladora", "tipo": "dato", "etiqueta": "PCIe ×4"},
+    {"de": "controladora", "a": "dram", "tipo": "dato", "etiqueta": "tabla de mapeo"},
+    {"de": "controladora", "a": "nand", "tipo": "dato", "etiqueta": "canales en paralelo"}
+  ],
+  "flujo": ["conector", "controladora", "dram", "nand"],
+  "malentendidos": [
+    "«Más GB es más rápido»: la velocidad sostenida depende de cuántos chips NAND trabajan en paralelo y de si hay DRAM, no de la capacidad total.",
+    "«Un M.2 siempre es NVMe»: hay M.2 SATA con la misma forma y una fracción de la velocidad; la llave del conector lo delata."
+  ],
+  "figuras": [
+    {"nivel": 1, "titulo": "Cinco piezas en una placa, y la controladora en medio de todo", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["pcb", "conector", "controladora", "dram", "nand"], "fichero": "figuras/n1-explosion.svg"},
+    {"nivel": 2, "titulo": "Dentro de la NAND: la caché SLC es lo que se agota en una copia larga", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["nand-celdas", "nand-slc", "nand-bloques"], "fichero": "figuras/n2-nand.svg"}
+  ],
+  "feynman": [
+    "Un SSD es una placa con una controladora que reparte los datos entre varios chips de memoria.",
+    "Va rápido mientras escribe en paralelo en muchos chips y tiene a mano la tabla de dónde está cada cosa.",
+    "Cuando la caché rápida se llena o no hay DRAM, el disco baja a la velocidad real de sus celdas."
+  ],
+  "prediccion": {
+    "pregunta": "Dos SSD de 1 TB: uno con 4 chips NAND y DRAM, otro con 2 chips y sin DRAM. Copiás 200 GB seguidos. ¿Cuál se frena antes y por qué?",
+    "respuesta": "El de 2 chips sin DRAM: tiene la mitad de canales en paralelo y, al agotarse su caché SLC, cada escritura además busca la tabla de mapeo en la propia NAND."
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "skill_name": "despiece",
+  "nota": "Un caso por familia (sistema, físico, proceso, idea). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos: pendientes de correr (los de la 1.0 eran del entorno privado del autor).",
+  "evals": [
+    {
+      "id": 1,
+      "name": "sistema-waf-appgw",
+      "prompt": "No termino de entender cómo una petición puede llegar a un portal saltándose la WAF de la Application Gateway que tiene delante. Despiezámelo para que se lo pueda explicar al equipo de soporte. Dejalo en ./despiece-waf/ y usá la marca de ejemplo de la skill.",
+      "expected_output": "Encuadre breve (pregunta foco y lector inferidos o confirmados en una sola pregunta), tipo sistema, modelo con el camino de la petición (DNS → listener → WAF → regla → backend → App Service) con fuentes de Microsoft Learn, figura delegada a una skill de dibujo o dibujada con un script propio, página con la marca de assets/marca-ejemplo.json, y cierre con tres frases y una pregunta de predicción.",
+      "files": [],
+      "assertions": [
+        "Antes de dibujar nada formula la pregunta foco y el lector (preguntándolo en ≤ 3 preguntas o diciendo qué infiere)",
+        "Existe modelo.json en la carpeta pedida y validar_modelo.py devuelve ok: true",
+        "Ninguna pieza está sin fuente ni marcada como supuesto; las fuentes citan documentación oficial",
+        "El título del nivel 0 es una afirmación (no «Arquitectura de…» ni «Qué es…») y el nivel 1 tiene entre 3 y 7 piezas",
+        "La figura del nivel 1 se dibuja a partir de un guion (skill de dibujo instalada o script propio con skill: propio), no se inventa un diagrama ASCII en el chat",
+        "La página se ensambla con --marca apuntando a assets/marca-ejemplo.json, y el pie y el lema de ese fichero aparecen en el HTML",
+        "La respuesta termina con tres frases y una pregunta de predicción con su respuesta",
+        "No ejecuta ninguna operación de escritura en ninguna nube"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "fisico-raspberry-pi-5",
+      "prompt": "Explicame cómo es por dentro una Raspberry Pi 5: qué partes tiene y qué hace cada una. Es para que la gente del taller entienda qué están comprando y por qué calienta más que la 4.",
+      "expected_output": "Tipo físico; pregunta foco ligada a la compra y al calor; 5–7 piezas de nivel 1 con orden de montaje; lo que no está en la documentación pública de Raspberry Pi marcado como supuesto; vista explotada con explosionado.py numerada y con una pieza destacada; tres frases y predicción.",
+      "files": [],
+      "assertions": [
+        "Clasifica el objeto como físico y fija una pregunta foco ligada a la compra o al calor",
+        "Las raíces del modelo tienen orden_montaje y hay entre 3 y 7",
+        "Lo que no se verificó en la documentación oficial (raspberrypi.com) está marcado con supuesto: true y la respuesta lo dice",
+        "No inventa referencias concretas de chips ni cifras que no estén en una fuente citada",
+        "La figura se genera con explosionado.py (SVG numerado) y se incrusta en la página",
+        "Una sola pieza destacada por figura",
+        "La respuesta termina con tres frases y una pregunta de predicción"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "proceso-pim",
+      "prompt": "No entiendo bien cómo funciona la activación de un rol por PIM, desde que pido el rol hasta que tengo el permiso efectivo. Desmenuzámelo, que siempre me pierdo entre elegible, activo y aprobación.",
+      "expected_output": "Tipo proceso con eje temporal; flujo de ≥ 3 pasos (solicitud, comprobaciones, aprobación, activación, propagación); actores como relaciones o calles; fuente Microsoft Learn; figura de flujo o calles delegada o propia; malentendidos sobre elegible/activo; predicción del tipo «¿qué pasa si el aprobador no responde?».",
+      "files": [],
+      "assertions": [
+        "Clasifica como proceso y el modelo tiene flujo con al menos 3 pasos en orden temporal",
+        "Las piezas son pasos o estados, no personas; los actores aparecen como relaciones o calles",
+        "Cita Microsoft Learn (u otra fuente oficial) para el comportamiento de PIM",
+        "Incluye al menos un malentendido sobre elegible frente a activo",
+        "La figura (flujo o calles) se dibuja a partir de un guion que lista las piezas exactas",
+        "La pregunta de predicción plantea una situación concreta, no una definición"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "idea-idempotencia-sin-marca",
+      "prompt": "Explicame visualmente la idea de idempotencia en una API de pagos: no veo cómo encaja con los reintentos ni cuándo conviene exigir una clave de idempotencia. Sin marca, es para un post personal.",
+      "expected_output": "Tipo idea; arranca por un ejemplo concreto (un cobro que se reintenta tras un timeout) y deja la definición para el final; descomposición MECE en 3–6 piezas con fuente pública (RFC 9110, documentación de una pasarela de pagos); figura de árbol o mapa delegada o propia; --marca ninguna; tres frases y predicción.",
+      "files": [],
+      "assertions": [
+        "Clasifica como idea y el nivel 0 empieza por un ejemplo concreto, no por una definición",
+        "Cada pieza cita una fuente pública (RFC, documentación de una pasarela) o va como supuesto",
+        "La página se ensambla con --marca ninguna y no aparece pie ni lema de marca en ella",
+        "Si usa una metáfora, cabe en una frase y anota qué parte de ella no vale",
+        "La respuesta termina con tres frases y una pregunta de predicción"
+      ]
+    }
+  ]
+}
