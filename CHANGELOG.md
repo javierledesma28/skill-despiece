@@ -3,6 +3,15 @@
 Formato: versión semántica (`metadata.version` de SKILL.md). Una entrada por cambio relevante, con el
 resultado de las evals que lo respaldan.
 
+## [2.1.1] - 2026-11-12
+
+Solo documentación: la skill no cambia.
+
+### Corregido
+- El enlace de `docs/instalacion.md` a la marca propia llevaba a `#tu-marca-en-un-fichero`, que no existe en el
+  README. La sección es un desplegable sin encabezado, así que ahora lleva `id="marca-propia"` y el enlace apunta
+  ahí. Comprobados el resto de enlaces internos de los `.md`: ninguno más roto.
+
 ## [2.1.0] - 2026-11-12
 
 ### Añadido
