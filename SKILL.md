@@ -3,21 +3,21 @@ name: despiece
 description: >-
   Despieza algo para que el lector lo entienda —un aparato, una red, un proceso, una historia, una
   auditoría o una idea— y lo explica por niveles: encuadre, piezas ordenadas por dependencia y agrupadas
-  por pertenencia, cada una con función y fuente, una vista explotada por nivel (3–7 piezas) que se abre
-  a demanda, el flujo o la red delegados a la skill de dibujo instalada, y comprobación de que se
+  por pertenencia, cada una con función y fuente, una vista explotada por nivel (3–7 piezas) que se abre a
+  demanda o con zoom en un explorador, el flujo delegado a la skill de dibujo, y comprobación de que se
   entendió (tres frases y una predicción). Usar cuando pidan «despiezá», «desmenuzá», «desarmá», «cómo
   funciona por dentro», «qué partes tiene», «anatomía de», «explicámelo para entenderlo», «no veo cómo
-  encaja», o una explicación visual de cualquier cosa por capas, aunque no digan «despiece». No usar
-  cuando ya se sabe qué diagrama se quiere (ER, flujo, Gantt, red estilo Learn: la skill de diagramas
-  que corresponda, p. ej. diagram-design), para gráficos de datos (dataviz), presentaciones, hacer
-  interactivo un SVG existente ni para el estado de un proyecto (relevamiento).
+  encaja», navegar con zoom por sus niveles, o una explicación visual de cualquier cosa por capas, aunque
+  no digan «despiece». No usar cuando ya se sabe qué diagrama se quiere (ER, flujo, Gantt, red estilo
+  Learn: la skill de diagramas que corresponda, p. ej. diagram-design), para gráficos de datos (dataviz),
+  presentaciones, hacer interactivo un SVG existente ni para el estado de un proyecto (relevamiento).
 argument-hint: "[qué despiezar]"
-compatibility: Claude Code en Windows, macOS o Linux. Python 3.10 o superior sin dependencias de pip; para capturar la página en PNG, Edge o Chrome, y Node 22 o superior para capturar la interactiva.
+compatibility: Claude Code en Windows, macOS o Linux. Python 3.10 o superior sin dependencias de pip; para capturar la página en PNG, Edge o Chrome, y Node 22 o superior para capturar la interactiva o el explorador.
 allowed-tools:
   - Bash(python -I ${CLAUDE_SKILL_DIR}/scripts/*)
   - Bash(node ${CLAUDE_SKILL_DIR}/scripts/*)
 metadata:
-  version: "2.0.1"
+  version: "2.1.0"
   author: t28.io (Javier Ledesma)
   updated: "2026-11-12"
 ---
@@ -64,6 +64,10 @@ historia de un país; las figuras de flujo, red o secuencia, la skill de dibujo 
   isométrica que se abre, se desarma al bajar y recorre el flujo, pero solo si el modelo tiene `geometria`;
   si no, avisa y escribe la estática. Las alzas no se escriben: se calculan para que nada tape a nada.
   Se usa cuando piden algo que se pueda recorrer, animado o «en 3D»; si no, la estática.
+- **El explorador sirve para cualquier tipo.** `ensamblar.py --explorador` pone una lámina explotada por
+  nivel y se navega con zoom: acercarse a una pieza con «+» la abre y alejarse vuelve. Se usa cuando piden
+  navegar o hacer zoom entre niveles, o el despiece pasa de dos; solo lleva la vista explotada, así que si
+  hay figuras de flujo o red acompaña a la estática.
 - **La interactiva no se revisa con `--screenshot`**: captura antes de que corran el scroll y las
   animaciones. Se captura con `capturar-cdp.mjs`, desplazando con `behavior: 'instant'` (la página usa
   scroll suave y, si no, la captura sale a mitad de camino).
@@ -96,7 +100,7 @@ Despiece <objeto>:
 - [ ] 3. Fuentes consultadas; lo no verificado, marcado como supuesto
 - [ ] 4. modelo.json escrito y validar_modelo.py sin errores
 - [ ] 5. Una figura por nivel: explosionado.py, y la de flujo o red con guion a quien dibuja
-- [ ] 6. Página ensamblada (ensamblar.py, o --interactivo), capturada y revisada a ojo
+- [ ] 6. Página ensamblada (ensamblar.py, --interactivo o --explorador), capturada y revisada a ojo
 - [ ] 7. Entrega: nivel 0, tres frases y pregunta de predicción en la respuesta, más la página
 ```
 
@@ -185,6 +189,14 @@ Salida 1 = oclusiones: alguna pieza tapa a otra en algún paso (la página se es
 oscuro (`TEMA=dark`), móvil (390 de ancho) y sin JavaScript (`SIN_JS=1`); qué mirar en cada una, en
 [references/interactivo.md](references/interactivo.md#capturar-y-revisar).
 
+**Explorador** (cualquier tipo): la misma orden con `--explorador`, sin `--figuras` y con salida propia.
+Leer [references/explorador.md](references/explorador.md) antes del primero: gestos, enlaces `#/<id>` y
+qué capturar (el todo, un nivel abierto en oscuro, móvil y sin JavaScript).
+
+```bash
+python -I ${CLAUDE_SKILL_DIR}/scripts/ensamblar.py <carpeta>/modelo.json --salida <carpeta>/explorador.html --explorador --marca <marca>
+```
+
 **7. Entrega.** En la respuesta: el tipo elegido y por qué, en una línea; el título del nivel 0, las tres frases, la pregunta de predicción con la
 respuesta al final, y la ruta de la página y las figuras. No pegar el modelo. Cerrar diciendo qué piezas
 se pueden abrir: las que responden a algo que el lector todavía no sabe.
@@ -207,15 +219,16 @@ década del 30?»), el despiece crece por ahí y por nada más:
 |---|---|
 | `scripts/validar_modelo.py` | **Ejecutar** en el paso 4: comprueba el modelo contra las reglas del método (`--help`) |
 | `scripts/explosionado.py` | **Ejecutar** en los pasos 5 y 8, en cualquier tipo: vista explotada isométrica, numerada, con lista de piezas (`--help`) |
-| `scripts/ensamblar.py` | **Ejecutar** en el paso 6: página HTML por niveles con las figuras incrustadas, o la interactiva con `--interactivo` (`--help`) |
-| `scripts/capturar-cdp.mjs` | **Ejecutar** en el paso 6 con `--interactivo`: captura la página en tiempo real, con scroll y animaciones (`--help`) |
-| `scripts/isometrico.py`, `scripts/interactiva.py` | Los importa `ensamblar.py --interactivo`; `isometrico.py` también se ejecuta para ver solo las alzas y las oclusiones |
+| `scripts/ensamblar.py` | **Ejecutar** en el paso 6: página HTML por niveles con las figuras incrustadas, la interactiva con `--interactivo` o el explorador con `--explorador` (`--help`) |
+| `scripts/capturar-cdp.mjs` | **Ejecutar** en el paso 6 con `--interactivo` o `--explorador`: captura la página en tiempo real, con scroll y animaciones (`--help`) |
+| `scripts/isometrico.py`, `scripts/interactiva.py`, `scripts/explorador.py` | Los importa `ensamblar.py` con `--interactivo` o `--explorador`; `isometrico.py` también se ejecuta para ver solo las alzas y las oclusiones |
 | `references/metodo-por-tipo.md` | Leer **en el paso 2**: eje, técnica, fuentes y figura de cada tipo; casos mixtos |
 | `references/modelo.md` | Leer **al escribir el primer modelo**: campos, los dos ejes, la tabla rol → silueta y las reglas del validador |
 | `references/interactivo.md` | Leer **antes del primer `--interactivo`**: bloque `geometria`, alzas, parámetros de la página y cómo capturarla |
+| `references/explorador.md` | Leer **antes del primer `--explorador`**: gestos, enlaces, cómo capturarlo y límites |
 | `references/guion-visual.md` | Leer **al delegar la primera figura**: qué pedir a quien dibuja, qué hacer sin skill de dibujo y cómo revisar la figura |
 | `references/fuentes.md` | Leer **si se quiere saber de dónde sale una regla**: skills estudiadas y bibliografía |
 | `assets/ejemplo-*.json` | Modelos completos y válidos, uno por clase de caso, para copiar la estructura |
 | `assets/marca-ejemplo.json` | Copiar y adaptar: los campos del fichero de marca que acepta `--marca` |
-| `assets/plantilla-interactiva.html` | Plantilla de la página interactiva; la rellena `interactiva.py` (no se edita en la tarea) |
+| `assets/plantilla-interactiva.html`, `assets/plantilla-explorador.html` | Plantillas de la interactiva y del explorador; las rellenan `interactiva.py` y `explorador.py` (no se editan en la tarea) |
 | `evals/` | Casos de prueba de la skill y `probar_validador.py`, que prueba cada regla del validador (no se usan en la tarea) |

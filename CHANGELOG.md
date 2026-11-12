@@ -3,6 +3,41 @@
 Formato: versión semántica (`metadata.version` de SKILL.md). Una entrada por cambio relevante, con el
 resultado de las evals que lo respaldan.
 
+## [2.1.0] - 2026-11-12
+
+### Añadido
+- **Explorador con zoom semántico** (`ensamblar.py --explorador`), para los cuatro tipos y sin `geometria`: un
+  solo HTML con una lámina explotada por nivel. La rueda, el pellizco (trackpad o táctil), los botones o las
+  teclas `+` y `-` sobre una pieza con «+» la abren en su lámina; hacia atrás, se vuelve al nivel de arriba. Un
+  panel lleva las migas, el contexto del todo, la lista numerada como la lámina, la ficha con función y fuente
+  (o «▲ supuesto») y las pruebas de comprensión.
+  - Transición con View Transitions que nace en la pieza que se abre; instantánea con movimiento reducido o sin
+    la API.
+  - El historial acompaña: «atrás» sube un nivel, las migas reutilizan las entradas que ya existen y `#/<id>`
+    abre un nivel directamente. `?sel=<id>` y `?tema=` para capturas.
+  - El foco va al título del nivel nuevo o a la pieza de la que se venía; tras un gesto, una región viva lo
+    anuncia. Un gesto no abre dos niveles aunque siga llegando inercia del trackpad.
+  - Sin JavaScript se ve el nivel 1 con un aviso; tema claro y oscuro; móvil con la lámina arriba.
+- `scripts/explorador.py`, `assets/plantilla-explorador.html` y `references/explorador.md` (gestos, enlaces,
+  capturas, límites).
+- **`docs/explorador.md`**: los exploradores del SSD (2 niveles) y de la historia argentina (4) con seis capturas.
+- Caso de eval 8 (`explorador-auditoria`) y cuatro consultas de activación para la frontera con
+  `grafico-interactivo`. Resultados en `evals/resultados-2026-11-12b.md`: calidad 16/16 con skill frente a 9/16
+  sin ella, y activación 89/90.
+- En `references/explorador.md`, cómo probar la rueda con eventos sintéticos: uno solo no abre un nivel, y hay
+  que apuntar al rótulo de la pieza.
+
+### Cambiado
+- La descripción dice que el despiece se recorre con zoom en un explorador, y nombra «navegar con zoom por sus
+  niveles» entre los disparadores. Antes, Sonnet mandaba esas peticiones a `grafico-interactivo`.
+- Un gesto sobre el hueco entre las letras del rótulo de una pieza la abre. El texto SVG solo responde sobre
+  los glifos, así que ahora el respaldo por caja mira también los rótulos.
+- `explosionado.py` expone `figura(modelo, padre, destacar, marca, titulo, explorador=False)`: la misma
+  geometría sirve a la figura estática y a las láminas del explorador, que se precalculan en Python en vez de
+  portarla a JavaScript. Con `explorador=True` la lámina sale sin título, lista ni pie, con las caras marcadas
+  por clase y cada llamada agrupada con el id de su pieza. **Las figuras estáticas no cambian**: los nueve
+  ejemplos y un subconjunto salen idénticos byte a byte a los de la 2.0.1.
+
 ## [2.0.1] - 2026-11-12
 
 Solo documentación: la skill no cambia.

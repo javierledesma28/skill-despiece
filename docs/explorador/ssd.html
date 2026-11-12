@@ -1,0 +1,1323 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Un SSD NVMe en formato M.2 · explorador</title>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* Página generada por ensamblar.py --explorador (skill despiece) desde modelo.json. */
+:root {
+  color-scheme: light dark;
+  --tinta-c:#1f2933; --tinta-o:#e6ebf0; --gris-c:#5c6b7a; --gris-o:#9aa6b2; --linea-c:#cbd2d9; --linea-o:#2b3542;
+  --fondo-c:#eef1f4; --fondo-o:#0f141a; --panel-c:#ffffff; --panel-o:#171e27;
+  --acento-c:#178478; --acento-o:#1b998b; --suave-c:#e4f3f1; --suave-o:#123435;
+  --titulo-c:#0b3d91; --titulo-o:#8aa2ca; --aviso-c:#9a6700; --aviso-o:#e3b341;
+  --tinta:var(--tinta-c); --gris:var(--gris-c); --linea:var(--linea-c); --fondo:var(--fondo-c); --panel:var(--panel-c);
+  --acento:var(--acento-c); --suave:var(--suave-c); --titulo:var(--titulo-c); --aviso:var(--aviso-c);
+  /* La lámina es siempre un papel claro (los colores del dibujo están pensados para él): sus tonos no cambian con el tema. */
+  --hl-s:#cde9e5; --hl-i:#98d1cb; --hl-d:#72c0b7; --hl-b:#147368; --hl-n:#1b998b;
+  --ver-s:#e4f3f1; --ver-i:#c4e4e1; --ver-d:#a8d8d3;
+  --ap-s:#fbfcfd; --ap-i:#f1f4f7; --ap-d:#e7ebef; --ap-b:#c3ccd5;
+  --fuente: 'Segoe UI', system-ui, sans-serif;
+  accent-color: var(--acento);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --tinta:var(--tinta-o); --gris:var(--gris-o); --linea:var(--linea-o); --fondo:var(--fondo-o); --panel:var(--panel-o);
+  --acento:var(--acento-o); --suave:var(--suave-o); --titulo:var(--titulo-o); --aviso:var(--aviso-o);
+} }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --tinta:var(--tinta-o); --gris:var(--gris-o); --linea:var(--linea-o); --fondo:var(--fondo-o); --panel:var(--panel-o);
+  --acento:var(--acento-o); --suave:var(--suave-o); --titulo:var(--titulo-o); --aviso:var(--aviso-o);
+}
+:root[data-theme="light"] { color-scheme: light; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: var(--fuente); color: var(--tinta); background: var(--fondo); line-height: 1.5; -webkit-text-size-adjust: 100%; }
+a { color: var(--acento); text-underline-offset: 2px; }
+h1, h2, h3 { line-height: 1.2; margin: 0; letter-spacing: -.01em; }
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+:where(a:any-link, button, summary, [tabindex="-1"]):focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; border-radius: 4px; }
+button { font: inherit; color: inherit; }
+
+/* ---------- Estructura: barra, escenario y panel ---------- */
+.app { min-height: 100dvh; display: grid; grid-template-rows: auto 1fr; }
+.barra { display: flex; align-items: center; gap: .75rem 1.25rem; padding: .6rem 1rem; background: var(--panel); border-bottom: 1px solid var(--linea); flex-wrap: wrap; }
+.barra .marca { font-weight: 700; letter-spacing: .02em; font-size: .9rem; white-space: nowrap; }
+.barra .marca span { color: var(--gris); font-weight: 400; }
+.barra h1 { font-size: 1rem; font-weight: 600; color: var(--titulo); flex: 1 1 14rem; }
+.boton { min-block-size: 32px; min-inline-size: 32px; padding: .25rem .8rem; border-radius: 8px; border: 1px solid var(--linea); background: var(--panel); cursor: pointer; }
+.boton:hover { border-color: var(--acento); }
+.boton[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.explorador { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 400px); min-height: 0; }
+
+.escena-col { display: grid; grid-template-rows: 1fr auto; min-height: 0; min-width: 0; }
+.escenario { position: relative; overflow: hidden; min-height: 320px; view-transition-name: escenario;
+  /* El pellizco lo maneja la página; el desplazamiento en los dos ejes sigue siendo del navegador. */
+  touch-action: pan-x pan-y; }
+.lamina { position: absolute; inset: 14px; display: grid; place-items: center; container-type: size; transform-origin: 50% 50%; }
+.lamina svg { display: block; inline-size: min(100cqw, calc(100cqh * var(--ar, 1))); block-size: auto; max-block-size: 100cqh;
+  background: #fff; border-radius: 12px; box-shadow: 0 1px 2px rgb(0 0 0 / .08), 0 8px 28px rgb(0 0 0 / .08); }
+.controles { display: flex; align-items: center; gap: .5rem; padding: .5rem 1rem .75rem; flex-wrap: wrap; }
+.controles .boton { font-size: 1.1rem; font-weight: 700; line-height: 1; }
+.pista { margin: 0 0 0 .25rem; color: var(--gris); font-size: .88rem; flex: 1 1 16rem; }
+.pista.ojo { color: var(--aviso); }
+
+.panel { background: var(--panel); border-left: 1px solid var(--linea); overflow-y: auto; min-height: 0; padding: 1rem 1.25rem 0; display: flex; flex-direction: column; gap: .9rem;
+  view-transition-name: panel; }
+.migas ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .1rem .3rem; font-size: .88rem; color: var(--gris); }
+.migas li + li::before { content: "›"; margin-right: .3rem; color: var(--gris); }
+.migas button { border: 0; background: none; padding: .15rem .2rem; min-block-size: 28px; color: var(--acento); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.migas [aria-current] { color: var(--tinta); font-weight: 600; }
+.volver { align-self: flex-start; }
+.etiqueta { margin: 0; color: var(--acento); font-weight: 700; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+#titulo { font-size: 1.35rem; color: var(--titulo); margin-top: .15rem; }
+.eje { margin: .35rem 0 0; color: var(--gris); font-size: .9rem; }
+.contexto { margin: 0; font-size: .92rem; background: var(--suave); border-radius: 8px; padding: .6rem .75rem; }
+.contexto p { margin: 0 0 .35rem; } .contexto p:last-child { margin: 0; }
+
+.lista { list-style: none; margin: 0; padding: 0; display: grid; gap: .25rem; }
+.lista button { inline-size: 100%; display: grid; grid-template-columns: 1.8rem 1fr auto; align-items: center; gap: .6rem; text-align: start;
+  min-block-size: 40px; padding: .35rem .5rem; border-radius: 8px; border: 1px solid transparent; background: none; cursor: pointer; }
+.lista button:hover { background: var(--suave); }
+.lista button[aria-current="true"] { background: var(--suave); border-color: var(--acento); }
+.lista .num { display: inline-grid; place-items: center; inline-size: 1.6rem; block-size: 1.6rem; border-radius: 50%; background: var(--titulo); color: var(--panel); font-weight: 700; font-size: .8rem; }
+.lista [aria-current="true"] .num { background: var(--acento); }
+.lista .mas { color: var(--gris); font-size: .8rem; white-space: nowrap; }
+
+.ficha { border-top: 1px solid var(--linea); padding-top: .9rem; }
+.ficha h3 { font-size: 1.05rem; margin-bottom: .35rem; }
+.ficha p { margin: 0 0 .5rem; }
+.ficha .fuente { color: var(--gris); font-size: .88rem; }
+.ficha .supuesto { color: var(--aviso); font-weight: 600; }
+.ficha .vacia { color: var(--gris); font-size: .92rem; }
+.abrir { margin-top: .25rem; background: var(--acento); color: var(--panel); border-color: var(--acento); font-weight: 600; }
+.abrir:hover { filter: brightness(1.08); }
+.comprension { border-top: 1px solid var(--linea); padding-top: .9rem; }
+.comprension h3 { font-size: 1rem; margin-bottom: .5rem; }
+.comprension ol { margin: 0 0 .75rem; padding-left: 1.2rem; font-size: .92rem; }
+.comprension details { background: var(--suave); border-radius: 8px; padding: .5rem .75rem; font-size: .92rem; }
+.comprension summary { cursor: pointer; font-weight: 600; min-block-size: 28px; }
+.pie { margin-top: auto; padding: 1rem 0; border-top: 1px solid var(--linea); display: flex; justify-content: space-between; gap: .4rem 1rem; flex-wrap: wrap; color: var(--gris); font-size: .8rem; }
+.pie .lema { color: var(--acento); letter-spacing: .14em; font-size: .7rem; font-weight: 600; text-transform: uppercase; }
+.sin-js { margin: 0; padding: .6rem 1rem; background: var(--suave); font-size: .9rem; }
+/* Sin JavaScript no hay zoom ni ficha: se esconde lo que no respondería */
+html:not(.js) :is(.controles, .ficha, .migas, .lista) { display: none; }
+
+/* ---------- La lámina: selección, vista previa y piezas apagadas, pintadas con CSS ---------- */
+.lamina .fv-punto, .lamina .fv-llamada { cursor: pointer; }
+.lamina .fv-punto > *, .lamina .fv-llamada > * { transition: fill .2s, stroke .2s, opacity .2s; }
+.lamina .fv-punto.ver .fs { fill: var(--ver-s); } .lamina .fv-punto.ver .fi { fill: var(--ver-i); } .lamina .fv-punto.ver .fd { fill: var(--ver-d); }
+.lamina .fv-punto.sel .fs { fill: var(--hl-s); } .lamina .fv-punto.sel .fi { fill: var(--hl-i); } .lamina .fv-punto.sel .fd { fill: var(--hl-d); }
+.lamina .fv-punto.sel [stroke] { stroke: var(--hl-b); }
+.lamina svg.hay-sel .fv-punto:not(.sel, .ver) .fs { fill: var(--ap-s); }
+.lamina svg.hay-sel .fv-punto:not(.sel, .ver) .fi { fill: var(--ap-i); }
+.lamina svg.hay-sel .fv-punto:not(.sel, .ver) .fd { fill: var(--ap-d); }
+.lamina svg.hay-sel .fv-punto:not(.sel, .ver) [stroke] { stroke: var(--ap-b); }
+.lamina svg.hay-sel .fv-punto:not(.sel, .ver) > :not(.fs, .fi, .fd) { opacity: .35; }
+.lamina svg.hay-sel .fv-llamada:not(.sel) { opacity: .4; }
+.lamina .fv-llamada.sel circle { fill: var(--hl-n); }
+
+/* ---------- Movimiento: estático por defecto; solo con prefers-reduced-motion: no-preference ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .lamina.vuelve { transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
+  /* Zoom semántico entre niveles: entrar acerca la lámina hacia la pieza abierta; salir la aleja. */
+  /* La lámina ampliada no se sale del escenario (ni tapa la cabecera ni los controles) */
+  ::view-transition-group(escenario) { animation-duration: .45s; animation-timing-function: cubic-bezier(.2, .7, .2, 1); overflow: clip; }
+  /* El panel no se funde en cruz (los dos textos se pisarían): sale el viejo y después entra el nuevo */
+  ::view-transition-old(panel) { animation: .15s ease-out both vt-sale-panel; }
+  ::view-transition-new(panel) { animation: .25s cubic-bezier(.2, .7, .2, 1) .12s both vt-entra-panel; }
+  :is(html:active-view-transition-type(entrar), html[data-vt="entrar"])::view-transition-old(escenario) {
+    animation: .45s cubic-bezier(.4, 0, .2, 1) both vt-sale-cerca; transform-origin: var(--zx, 50%) var(--zy, 50%); }
+  :is(html:active-view-transition-type(entrar), html[data-vt="entrar"])::view-transition-new(escenario) {
+    animation: .45s cubic-bezier(.2, .7, .2, 1) both vt-entra-lejos; }
+  :is(html:active-view-transition-type(salir), html[data-vt="salir"])::view-transition-old(escenario) {
+    animation: .45s cubic-bezier(.4, 0, .2, 1) both vt-sale-lejos; }
+  :is(html:active-view-transition-type(salir), html[data-vt="salir"])::view-transition-new(escenario) {
+    animation: .45s cubic-bezier(.2, .7, .2, 1) both vt-entra-cerca; transform-origin: var(--zx, 50%) var(--zy, 50%); }
+}
+@keyframes vt-sale-cerca { to { transform: scale(2.4); opacity: 0; } }
+@keyframes vt-entra-lejos { from { transform: scale(.55); opacity: 0; } }
+@keyframes vt-sale-lejos { to { transform: scale(.55); opacity: 0; } }
+@keyframes vt-entra-cerca { from { transform: scale(2.4); opacity: 0; } }
+@keyframes vt-sale-panel { to { opacity: 0; } }
+@keyframes vt-entra-panel { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+
+/* ---------- Pantallas estrechas: escenario arriba, panel debajo; la página se desplaza ---------- */
+@media (max-width: 860px) {
+  .explorador { grid-template-columns: 1fr; }
+  .escenario { block-size: min(68svh, 620px); }
+  .panel { border-left: 0; border-top: 1px solid var(--linea); overflow: visible; }
+}
+@media (min-width: 861px) {
+  .app { block-size: 100dvh; }
+  .explorador { min-height: 0; overflow: hidden; }
+}
+@media (pointer: coarse) {
+  .boton { min-block-size: 44px; min-inline-size: 44px; }
+  .lista button { min-block-size: 48px; }
+  .migas button { min-block-size: 44px; }
+}
+@media (forced-colors: active) {
+  .lista button[aria-current="true"] { outline: 2px solid CanvasText; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="barra">
+    <div class="marca">Acme Research <span>· despiece</span></div>
+    <h1>Un SSD NVMe en formato M.2</h1>
+    <button id="tema" class="boton" type="button" hidden>Tema: auto</button>
+  </header>
+
+  <main class="explorador">
+    <section class="escena-col" aria-label="Lámina">
+      <div class="escenario" id="escenario">
+        <div class="lamina" id="lamina"><svg style="--ar:0.7691;aspect-ratio:676/879" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 676 879" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cinco piezas en una placa, y la controladora en medio de todo" font-family="'Segoe UI', system-ui, sans-serif">
+<rect width="676" height="879" fill="#ffffff"/>
+<ellipse cx="330.0" cy="745.0" rx="190" ry="34" fill="#000000" fill-opacity="0.05"/>
+<line x1="330.0" y1="749.0" x2="330.0" y2="132.5" stroke="#cbd2d9" stroke-width="1.6" stroke-dasharray="7,6"/>
+<g id="fv-escena">
+<g class="fv-punto" data-id="pcb" data-forma="placa">
+<polygon class="fi" points="126.5,692.5 386.3,842.5 386.3,836.5 126.5,686.5" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="386.3,842.5 533.5,757.5 533.5,751.5 386.3,836.5" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="273.7,601.5 533.5,751.5 386.3,836.5 126.5,686.5" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polyline points="265.9,629.9 436.1,728.2 424.0,735.2" fill="none" stroke="#8a97a4" stroke-width="0.9" stroke-opacity="0.5"/>
+<circle cx="424.0" cy="735.2" r="1.6" fill="#8a97a4" fill-opacity="0.6"/>
+<polyline points="236.5,646.9 371.8,725.0 359.7,732.0" fill="none" stroke="#8a97a4" stroke-width="0.9" stroke-opacity="0.5"/>
+<circle cx="359.7" cy="732.0" r="1.6" fill="#8a97a4" fill-opacity="0.6"/>
+<polyline points="208.8,662.9 392.1,768.7 380.0,775.7" fill="none" stroke="#8a97a4" stroke-width="0.9" stroke-opacity="0.5"/>
+<circle cx="380.0" cy="775.7" r="1.6" fill="#8a97a4" fill-opacity="0.6"/>
+<polyline points="181.0,678.9 301.1,748.2 289.0,755.2" fill="none" stroke="#8a97a4" stroke-width="0.9" stroke-opacity="0.5"/>
+<circle cx="289.0" cy="755.2" r="1.6" fill="#8a97a4" fill-opacity="0.6"/>
+<polygon points="269.4,653.9 321.3,683.9 269.4,713.9 217.4,683.9" fill="none" stroke="#8a97a4" stroke-width="0.7" stroke-dasharray="3,3" stroke-opacity="0.5"/>
+<polygon points="338.7,693.9 390.6,723.9 338.7,753.9 286.7,723.9" fill="none" stroke="#8a97a4" stroke-width="0.7" stroke-dasharray="3,3" stroke-opacity="0.5"/>
+<polygon points="407.9,733.9 459.9,763.9 407.9,793.9 356.0,763.9" fill="none" stroke="#8a97a4" stroke-width="0.7" stroke-dasharray="3,3" stroke-opacity="0.5"/>
+<ellipse cx="273.7" cy="617.4" rx="4.5" ry="2.6" fill="#ffffff" stroke="#8a97a4" stroke-width="0.9"/>
+<ellipse cx="505.8" cy="751.4" rx="4.5" ry="2.6" fill="#ffffff" stroke="#8a97a4" stroke-width="0.9"/>
+<ellipse cx="154.2" cy="686.4" rx="4.5" ry="2.6" fill="#ffffff" stroke="#8a97a4" stroke-width="0.9"/>
+<ellipse cx="386.3" cy="820.4" rx="4.5" ry="2.6" fill="#ffffff" stroke="#8a97a4" stroke-width="0.9"/>
+<polygon points="291.0,787.6 301.4,793.6 310.1,782.4 299.7,776.4" fill="#ffffff" stroke="#8a97a4" stroke-width="0.8"/>
+<polygon points="277.2,625.4 284.1,629.4 278.9,632.4 272.0,628.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="290.2,632.9 297.1,636.9 291.9,639.9 285.0,635.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="177.6,682.9 184.5,686.9 179.3,689.9 172.4,685.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="190.6,690.4 197.5,694.4 192.3,697.4 185.4,693.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="486.8,744.4 493.7,748.4 488.5,751.4 481.6,747.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="499.7,751.9 506.7,755.9 501.5,758.9 494.5,754.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="329.1,775.4 336.1,779.4 330.9,782.4 323.9,778.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="342.1,782.9 349.1,786.9 343.9,789.9 336.9,785.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="369.0,672.4 375.9,676.4 370.7,679.4 363.8,675.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="382.0,679.9 388.9,683.9 383.7,686.9 376.8,682.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="271.1,644.9 475.5,762.9 406.2,802.9 201.8,684.9" fill="none" stroke="#8a97a4" stroke-width="0.6" stroke-opacity="0.35"/>
+<polyline points="126.5,692.5 386.3,842.5 533.5,757.5" fill="none" stroke="#8a97a4" stroke-width="1.4" stroke-opacity="0.6"/>
+</g>
+<g class="fv-punto" data-id="conector" data-forma="conector">
+<polygon points="183.6,689.2 391.5,809.2 369.0,822.2 161.1,702.2" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="171.5,586.5 379.4,706.5 379.4,688.5 171.5,568.5" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="379.4,706.5 391.5,699.5 391.5,681.5 379.4,688.5" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="183.6,561.5 391.5,681.5 379.4,688.5 171.5,568.5" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fi" points="167.2,599.0 357.7,709.0 357.7,705.0 167.2,595.0" fill="#d8c48a" stroke="#8a97a4" stroke-width="0.96" stroke-linejoin="round"/>
+<polygon class="fd" points="357.7,709.0 366.4,704.0 366.4,700.0 357.7,705.0" fill="#c9b273" stroke="#8a97a4" stroke-width="0.96" stroke-linejoin="round"/>
+<polygon class="fs" points="175.8,590.0 366.4,700.0 357.7,705.0 167.2,595.0" fill="#e8d9a8" stroke="#8a97a4" stroke-width="0.96" stroke-linejoin="round"/>
+<line x1="182.8" y1="593.8" x2="174.1" y2="598.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="193.2" y1="599.8" x2="184.5" y2="604.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="203.6" y1="605.8" x2="194.9" y2="610.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="214.0" y1="611.8" x2="205.3" y2="616.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="224.3" y1="617.8" x2="215.7" y2="622.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="234.7" y1="623.8" x2="226.1" y2="628.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="245.1" y1="629.8" x2="236.5" y2="634.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="255.5" y1="635.8" x2="246.9" y2="640.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="265.9" y1="641.8" x2="257.3" y2="646.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="276.3" y1="647.8" x2="267.6" y2="652.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="286.7" y1="653.8" x2="278.0" y2="658.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="297.1" y1="659.8" x2="288.4" y2="664.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="307.5" y1="665.8" x2="298.8" y2="670.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="317.9" y1="671.8" x2="309.2" y2="676.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="328.3" y1="677.8" x2="319.6" y2="682.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="338.7" y1="683.8" x2="330.0" y2="688.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="349.1" y1="689.8" x2="340.4" y2="694.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="359.4" y1="695.8" x2="350.8" y2="700.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<polygon points="186.2,574.0 376.8,684.0 374.2,685.5 183.6,575.5" fill="#8a97a4" fill-opacity="0.35"/>
+<polygon class="fi" points="173.2,569.5 180.2,573.5 180.2,568.5 173.2,564.5" fill="#e3e8ed" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fd" points="180.2,573.5 192.3,566.5 192.3,561.5 180.2,568.5" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fs" points="185.4,557.5 192.3,561.5 180.2,568.5 173.2,564.5" fill="#f6f8fa" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fi" points="370.7,683.5 377.6,687.5 377.6,682.5 370.7,678.5" fill="#e3e8ed" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fd" points="377.6,687.5 389.8,680.5 389.8,675.5 377.6,682.5" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fs" points="382.8,671.5 389.8,675.5 377.6,682.5 370.7,678.5" fill="#f6f8fa" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon points="305.8,664.7 316.1,670.7 307.5,675.7 297.1,669.7" fill="#ffffff" stroke="#8a97a4" stroke-width="0.7"/>
+</g>
+<g class="fv-punto" data-id="controladora" data-forma="chip">
+<polygon points="330.0,560.7 402.7,602.7 330.0,644.7 257.3,602.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="257.3,493.0 330.0,535.0 330.0,525.0 257.3,483.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="330.0,535.0 402.7,493.0 402.7,483.0 330.0,525.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="330.0,441.0 402.7,483.0 330.0,525.0 257.3,483.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="330.0,450.9 385.4,482.9 330.0,514.9 274.6,482.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="259.9,494.5 265.0,497.5 259.0,502.0 253.8,499.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="400.1,494.5 395.0,497.5 401.0,502.0 406.2,499.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="270.2,500.5 275.4,503.5 269.4,508.0 264.2,505.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="389.8,500.5 384.6,503.5 390.6,508.0 395.8,505.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="280.6,506.5 285.8,509.5 279.8,514.0 274.6,511.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="379.4,506.5 374.2,509.5 380.2,514.0 385.4,511.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="291.0,512.5 296.2,515.5 290.2,520.0 285.0,517.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="369.0,512.5 363.8,515.5 369.8,520.0 375.0,517.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="301.4,518.5 306.6,521.5 300.6,526.0 295.4,523.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="358.6,518.5 353.4,521.5 359.4,526.0 364.6,523.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="311.8,524.5 317.0,527.5 310.9,532.0 305.8,529.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="348.2,524.5 343.0,527.5 349.1,532.0 354.2,529.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="322.2,530.5 327.4,533.5 321.3,538.0 316.1,535.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="337.8,530.5 332.6,533.5 338.7,538.0 343.9,535.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="330.0,450.9 385.4,482.9 274.6,482.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="330.0" cy="456.8" r="2.6" fill="#8a97a4"/>
+</g>
+<g class="fv-punto" data-id="dram" data-forma="chip">
+<polygon points="330.0,446.7 402.7,488.7 330.0,530.7 257.3,488.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="257.3,379.0 330.0,421.0 330.0,411.0 257.3,369.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="330.0,421.0 402.7,379.0 402.7,369.0 330.0,411.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="330.0,327.0 402.7,369.0 330.0,411.0 257.3,369.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="330.0,336.9 385.4,368.9 330.0,400.9 274.6,368.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="259.9,380.5 265.0,383.5 259.0,388.0 253.8,385.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="400.1,380.5 395.0,383.5 401.0,388.0 406.2,385.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="270.2,386.5 275.4,389.5 269.4,394.0 264.2,391.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="389.8,386.5 384.6,389.5 390.6,394.0 395.8,391.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="280.6,392.5 285.8,395.5 279.8,400.0 274.6,397.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="379.4,392.5 374.2,395.5 380.2,400.0 385.4,397.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="291.0,398.5 296.2,401.5 290.2,406.0 285.0,403.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="369.0,398.5 363.8,401.5 369.8,406.0 375.0,403.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="301.4,404.5 306.6,407.5 300.6,412.0 295.4,409.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="358.6,404.5 353.4,407.5 359.4,412.0 364.6,409.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="311.8,410.5 317.0,413.5 310.9,418.0 305.8,415.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="348.2,410.5 343.0,413.5 349.1,418.0 354.2,415.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="322.2,416.5 327.4,419.5 321.3,424.0 316.1,421.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="337.8,416.5 332.6,419.5 338.7,424.0 343.9,421.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="330.0,336.9 385.4,368.9 274.6,368.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="330.0" cy="342.8" r="2.6" fill="#8a97a4"/>
+</g>
+<g class="fv-punto" data-id="nand" data-forma="chip">
+<polygon points="187.1,250.2 545.6,457.2 472.9,499.2 114.4,292.2" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="114.4,100.0 187.1,142.0 187.1,132.0 114.4,90.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="187.1,142.0 259.9,100.0 259.9,90.0 187.1,132.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="187.1,48.0 259.9,90.0 187.1,132.0 114.4,90.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="187.1,57.9 242.5,89.9 187.1,121.9 131.7,89.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="117.0,101.5 122.2,104.5 116.1,109.0 110.9,106.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="257.3,101.5 252.1,104.5 258.1,109.0 263.3,106.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="127.4,107.5 132.5,110.5 126.5,115.0 121.3,112.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="246.9,107.5 241.7,110.5 247.7,115.0 252.9,112.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="137.7,113.5 142.9,116.5 136.9,121.0 131.7,118.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="236.5,113.5 231.3,116.5 237.3,121.0 242.5,118.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="148.1,119.5 153.3,122.5 147.3,127.0 142.1,124.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="226.1,119.5 220.9,122.5 226.9,127.0 232.1,124.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="158.5,125.5 163.7,128.5 157.7,133.0 152.5,130.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="215.7,125.5 210.5,128.5 216.6,133.0 221.7,130.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="168.9,131.5 174.1,134.5 168.1,139.0 162.9,136.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="205.3,131.5 200.1,134.5 206.2,139.0 211.4,136.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="179.3,137.5 184.5,140.5 178.4,145.0 173.2,142.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="194.9,137.5 189.7,140.5 195.8,145.0 201.0,142.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="187.1,57.9 242.5,89.9 131.7,89.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="187.1" cy="63.8" r="2.6" fill="#8a97a4"/>
+<polygon class="fi" points="209.6,155.0 282.4,197.0 282.4,187.0 209.6,145.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="282.4,197.0 355.1,155.0 355.1,145.0 282.4,187.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="282.4,103.0 355.1,145.0 282.4,187.0 209.6,145.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="282.4,112.9 337.8,144.9 282.4,176.9 226.9,144.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="212.2,156.5 217.4,159.5 211.4,164.0 206.2,161.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="352.5,156.5 347.3,159.5 353.4,164.0 358.6,161.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="222.6,162.5 227.8,165.5 221.7,170.0 216.6,167.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="342.1,162.5 336.9,165.5 343.0,170.0 348.2,167.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="233.0,168.5 238.2,171.5 232.1,176.0 226.9,173.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="331.7,168.5 326.5,171.5 332.6,176.0 337.8,173.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="243.4,174.5 248.6,177.5 242.5,182.0 237.3,179.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="321.3,174.5 316.1,177.5 322.2,182.0 327.4,179.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="253.8,180.5 259.0,183.5 252.9,188.0 247.7,185.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="310.9,180.5 305.8,183.5 311.8,188.0 317.0,185.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="264.2,186.5 269.4,189.5 263.3,194.0 258.1,191.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="300.6,186.5 295.4,189.5 301.4,194.0 306.6,191.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="274.6,192.5 279.8,195.5 273.7,200.0 268.5,197.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="290.2,192.5 285.0,195.5 291.0,200.0 296.2,197.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="282.4,112.9 337.8,144.9 226.9,144.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="282.4" cy="118.8" r="2.6" fill="#8a97a4"/>
+<polygon class="fi" points="304.9,210.0 377.6,252.0 377.6,242.0 304.9,200.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="377.6,252.0 450.4,210.0 450.4,200.0 377.6,242.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="377.6,158.0 450.4,200.0 377.6,242.0 304.9,200.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="377.6,167.9 433.1,199.9 377.6,231.9 322.2,199.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="307.5,211.5 312.7,214.5 306.6,219.0 301.4,216.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="447.8,211.5 442.6,214.5 448.6,219.0 453.8,216.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="317.9,217.5 323.1,220.5 317.0,225.0 311.8,222.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="437.4,217.5 432.2,220.5 438.3,225.0 443.4,222.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="328.3,223.5 333.5,226.5 327.4,231.0 322.2,228.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="427.0,223.5 421.8,226.5 427.9,231.0 433.1,228.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="338.7,229.5 343.9,232.5 337.8,237.0 332.6,234.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="416.6,229.5 411.4,232.5 417.5,237.0 422.7,234.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="349.1,235.5 354.2,238.5 348.2,243.0 343.0,240.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="406.2,235.5 401.0,238.5 407.1,243.0 412.3,240.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="359.4,241.5 364.6,244.5 358.6,249.0 353.4,246.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="395.8,241.5 390.6,244.5 396.7,249.0 401.9,246.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="369.8,247.5 375.0,250.5 369.0,255.0 363.8,252.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="385.4,247.5 380.2,250.5 386.3,255.0 391.5,252.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="377.6,167.9 433.1,199.9 322.2,199.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="377.6" cy="173.8" r="2.6" fill="#8a97a4"/>
+<polygon class="fi" points="400.1,265.0 472.9,307.0 472.9,297.0 400.1,255.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="472.9,307.0 545.6,265.0 545.6,255.0 472.9,297.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="472.9,213.0 545.6,255.0 472.9,297.0 400.1,255.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="472.9,222.9 528.3,254.9 472.9,286.9 417.5,254.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="402.7,266.5 407.9,269.5 401.9,274.0 396.7,271.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="543.0,266.5 537.8,269.5 543.9,274.0 549.1,271.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="413.1,272.5 418.3,275.5 412.3,280.0 407.1,277.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="532.6,272.5 527.5,275.5 533.5,280.0 538.7,277.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="423.5,278.5 428.7,281.5 422.7,286.0 417.5,283.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="522.3,278.5 517.1,281.5 523.1,286.0 528.3,283.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="433.9,284.5 439.1,287.5 433.1,292.0 427.9,289.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="511.9,284.5 506.7,287.5 512.7,292.0 517.9,289.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="444.3,290.5 449.5,293.5 443.4,298.0 438.3,295.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="501.5,290.5 496.3,293.5 502.3,298.0 507.5,295.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="454.7,296.5 459.9,299.5 453.8,304.0 448.6,301.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="491.1,296.5 485.9,299.5 491.9,304.0 497.1,301.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="465.1,302.5 470.3,305.5 464.2,310.0 459.0,307.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="480.7,302.5 475.5,305.5 481.6,310.0 486.8,307.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="472.9,222.9 528.3,254.9 417.5,254.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="472.9" cy="228.8" r="2.6" fill="#8a97a4"/>
+<circle cx="187.1" cy="64.0" r="9" fill="#ffffff" stroke="#8a97a4" stroke-width="1.2"/>
+<text x="187.1" y="68.0" font-size="13" font-weight="700" fill="#8a97a4" text-anchor="middle">+</text>
+</g>
+</g>
+<g id="fv-llamadas"><g class="fv-llamada" data-id="pcb">
+<polyline points="459.9,797.0 584.0,797.0 584.0,797.0 616.0,797.0" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="459.9" cy="797.0" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="797.0" r="15" fill="#0b3d91"/>
+<text x="632" y="802.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+</g>
+<g class="fv-llamada" data-id="conector">
+<polyline points="380.2,697.0 584.0,697.0 584.0,697.0 616.0,697.0" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="380.2" cy="697.0" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="697.0" r="15" fill="#0b3d91"/>
+<text x="632" y="702.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+</g>
+<g class="fv-llamada" data-id="controladora">
+<polyline points="372.4,512.5 584.0,512.5 584.0,512.5 616.0,512.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="372.4" cy="512.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="512.5" r="15" fill="#0b3d91"/>
+<text x="632" y="517.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+</g>
+<g class="fv-llamada" data-id="dram">
+<polyline points="372.4,398.5 584.0,398.5 584.0,398.5 616.0,398.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="372.4" cy="398.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="398.5" r="15" fill="#0b3d91"/>
+<text x="632" y="403.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">4</text>
+</g>
+<g class="fv-llamada" data-id="nand">
+<polyline points="515.3,284.5 584.0,284.5 584.0,284.5 616.0,284.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="515.3" cy="284.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="284.5" r="15" fill="#0b3d91"/>
+<text x="632" y="289.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">5</text>
+</g></g>
+</svg></div>
+      </div>
+      <div class="controles" role="group" aria-label="Zoom">
+        <button id="alejar" class="boton" type="button" aria-keyshortcuts="-" aria-label="Alejar">−</button>
+        <button id="acercar" class="boton" type="button" aria-keyshortcuts="+" aria-label="Acercar">+</button>
+        <p class="pista" id="pista">Rueda o pellizco sobre una pieza con «+» para abrirla; hacia atrás, para volver. Teclas + y −.</p>
+      </div>
+    </section>
+
+    <aside class="panel" id="panel" aria-label="Piezas del nivel">
+      <noscript><p class="sin-js">Sin JavaScript solo se ve el primer nivel: para abrir las piezas y ver su ficha hace falta activarlo.</p></noscript>
+      <nav class="migas" aria-label="Ruta"><ol id="migas"></ol></nav>
+      <button id="volver" class="boton volver" type="button" hidden>← Volver</button>
+      <div>
+        <p class="etiqueta" id="etiqueta">Nivel 1 · las piezas</p>
+        <h2 id="titulo" tabindex="-1">Cinco piezas en una placa, y la controladora en medio de todo</h2>
+        <p class="eje" id="eje"></p>
+      </div>
+      <div class="contexto" id="contexto" hidden></div>
+      <ol class="lista" id="lista"></ol>
+      <section class="ficha" id="ficha" aria-labelledby="ficha-t"></section>
+      <section class="comprension" id="comprension" aria-labelledby="comprension-t" hidden></section>
+      <footer class="pie"><span>Acme Research · Documentación técnica interna</span><span class="lema">ENTENDER ANTES DE TOCAR</span></footer>
+    </aside>
+  </main>
+</div>
+<div class="sr" id="aviso" aria-live="polite"></div>
+
+<template data-nivel=""><svg style="--ar:0.7691;aspect-ratio:676/879" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 676 879" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cinco piezas en una placa, y la controladora en medio de todo" font-family="'Segoe UI', system-ui, sans-serif">
+<rect width="676" height="879" fill="#ffffff"/>
+<ellipse cx="330.0" cy="745.0" rx="190" ry="34" fill="#000000" fill-opacity="0.05"/>
+<line x1="330.0" y1="749.0" x2="330.0" y2="132.5" stroke="#cbd2d9" stroke-width="1.6" stroke-dasharray="7,6"/>
+<g id="fv-escena">
+<g class="fv-punto" data-id="pcb" data-forma="placa">
+<polygon class="fi" points="126.5,692.5 386.3,842.5 386.3,836.5 126.5,686.5" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="386.3,842.5 533.5,757.5 533.5,751.5 386.3,836.5" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="273.7,601.5 533.5,751.5 386.3,836.5 126.5,686.5" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polyline points="265.9,629.9 436.1,728.2 424.0,735.2" fill="none" stroke="#8a97a4" stroke-width="0.9" stroke-opacity="0.5"/>
+<circle cx="424.0" cy="735.2" r="1.6" fill="#8a97a4" fill-opacity="0.6"/>
+<polyline points="236.5,646.9 371.8,725.0 359.7,732.0" fill="none" stroke="#8a97a4" stroke-width="0.9" stroke-opacity="0.5"/>
+<circle cx="359.7" cy="732.0" r="1.6" fill="#8a97a4" fill-opacity="0.6"/>
+<polyline points="208.8,662.9 392.1,768.7 380.0,775.7" fill="none" stroke="#8a97a4" stroke-width="0.9" stroke-opacity="0.5"/>
+<circle cx="380.0" cy="775.7" r="1.6" fill="#8a97a4" fill-opacity="0.6"/>
+<polyline points="181.0,678.9 301.1,748.2 289.0,755.2" fill="none" stroke="#8a97a4" stroke-width="0.9" stroke-opacity="0.5"/>
+<circle cx="289.0" cy="755.2" r="1.6" fill="#8a97a4" fill-opacity="0.6"/>
+<polygon points="269.4,653.9 321.3,683.9 269.4,713.9 217.4,683.9" fill="none" stroke="#8a97a4" stroke-width="0.7" stroke-dasharray="3,3" stroke-opacity="0.5"/>
+<polygon points="338.7,693.9 390.6,723.9 338.7,753.9 286.7,723.9" fill="none" stroke="#8a97a4" stroke-width="0.7" stroke-dasharray="3,3" stroke-opacity="0.5"/>
+<polygon points="407.9,733.9 459.9,763.9 407.9,793.9 356.0,763.9" fill="none" stroke="#8a97a4" stroke-width="0.7" stroke-dasharray="3,3" stroke-opacity="0.5"/>
+<ellipse cx="273.7" cy="617.4" rx="4.5" ry="2.6" fill="#ffffff" stroke="#8a97a4" stroke-width="0.9"/>
+<ellipse cx="505.8" cy="751.4" rx="4.5" ry="2.6" fill="#ffffff" stroke="#8a97a4" stroke-width="0.9"/>
+<ellipse cx="154.2" cy="686.4" rx="4.5" ry="2.6" fill="#ffffff" stroke="#8a97a4" stroke-width="0.9"/>
+<ellipse cx="386.3" cy="820.4" rx="4.5" ry="2.6" fill="#ffffff" stroke="#8a97a4" stroke-width="0.9"/>
+<polygon points="291.0,787.6 301.4,793.6 310.1,782.4 299.7,776.4" fill="#ffffff" stroke="#8a97a4" stroke-width="0.8"/>
+<polygon points="277.2,625.4 284.1,629.4 278.9,632.4 272.0,628.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="290.2,632.9 297.1,636.9 291.9,639.9 285.0,635.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="177.6,682.9 184.5,686.9 179.3,689.9 172.4,685.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="190.6,690.4 197.5,694.4 192.3,697.4 185.4,693.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="486.8,744.4 493.7,748.4 488.5,751.4 481.6,747.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="499.7,751.9 506.7,755.9 501.5,758.9 494.5,754.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="329.1,775.4 336.1,779.4 330.9,782.4 323.9,778.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="342.1,782.9 349.1,786.9 343.9,789.9 336.9,785.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="369.0,672.4 375.9,676.4 370.7,679.4 363.8,675.4" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="382.0,679.9 388.9,683.9 383.7,686.9 376.8,682.9" fill="#8a97a4" fill-opacity="0.25"/>
+<polygon points="271.1,644.9 475.5,762.9 406.2,802.9 201.8,684.9" fill="none" stroke="#8a97a4" stroke-width="0.6" stroke-opacity="0.35"/>
+<polyline points="126.5,692.5 386.3,842.5 533.5,757.5" fill="none" stroke="#8a97a4" stroke-width="1.4" stroke-opacity="0.6"/>
+</g>
+<g class="fv-punto" data-id="conector" data-forma="conector">
+<polygon points="183.6,689.2 391.5,809.2 369.0,822.2 161.1,702.2" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="171.5,586.5 379.4,706.5 379.4,688.5 171.5,568.5" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="379.4,706.5 391.5,699.5 391.5,681.5 379.4,688.5" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="183.6,561.5 391.5,681.5 379.4,688.5 171.5,568.5" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fi" points="167.2,599.0 357.7,709.0 357.7,705.0 167.2,595.0" fill="#d8c48a" stroke="#8a97a4" stroke-width="0.96" stroke-linejoin="round"/>
+<polygon class="fd" points="357.7,709.0 366.4,704.0 366.4,700.0 357.7,705.0" fill="#c9b273" stroke="#8a97a4" stroke-width="0.96" stroke-linejoin="round"/>
+<polygon class="fs" points="175.8,590.0 366.4,700.0 357.7,705.0 167.2,595.0" fill="#e8d9a8" stroke="#8a97a4" stroke-width="0.96" stroke-linejoin="round"/>
+<line x1="182.8" y1="593.8" x2="174.1" y2="598.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="193.2" y1="599.8" x2="184.5" y2="604.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="203.6" y1="605.8" x2="194.9" y2="610.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="214.0" y1="611.8" x2="205.3" y2="616.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="224.3" y1="617.8" x2="215.7" y2="622.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="234.7" y1="623.8" x2="226.1" y2="628.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="245.1" y1="629.8" x2="236.5" y2="634.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="255.5" y1="635.8" x2="246.9" y2="640.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="265.9" y1="641.8" x2="257.3" y2="646.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="276.3" y1="647.8" x2="267.6" y2="652.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="286.7" y1="653.8" x2="278.0" y2="658.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="297.1" y1="659.8" x2="288.4" y2="664.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="307.5" y1="665.8" x2="298.8" y2="670.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="317.9" y1="671.8" x2="309.2" y2="676.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="328.3" y1="677.8" x2="319.6" y2="682.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="338.7" y1="683.8" x2="330.0" y2="688.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<line x1="349.1" y1="689.8" x2="340.4" y2="694.8" stroke="#8a97a4" stroke-width="0.8" stroke-opacity="0.6"/>
+<line x1="359.4" y1="695.8" x2="350.8" y2="700.8" stroke="#b89b55" stroke-width="1.4" stroke-opacity="0.6"/>
+<polygon points="186.2,574.0 376.8,684.0 374.2,685.5 183.6,575.5" fill="#8a97a4" fill-opacity="0.35"/>
+<polygon class="fi" points="173.2,569.5 180.2,573.5 180.2,568.5 173.2,564.5" fill="#e3e8ed" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fd" points="180.2,573.5 192.3,566.5 192.3,561.5 180.2,568.5" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fs" points="185.4,557.5 192.3,561.5 180.2,568.5 173.2,564.5" fill="#f6f8fa" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fi" points="370.7,683.5 377.6,687.5 377.6,682.5 370.7,678.5" fill="#e3e8ed" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fd" points="377.6,687.5 389.8,680.5 389.8,675.5 377.6,682.5" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon class="fs" points="382.8,671.5 389.8,675.5 377.6,682.5 370.7,678.5" fill="#f6f8fa" stroke="#8a97a4" stroke-width="0.84" stroke-linejoin="round"/>
+<polygon points="305.8,664.7 316.1,670.7 307.5,675.7 297.1,669.7" fill="#ffffff" stroke="#8a97a4" stroke-width="0.7"/>
+</g>
+<g class="fv-punto" data-id="controladora" data-forma="chip">
+<polygon points="330.0,560.7 402.7,602.7 330.0,644.7 257.3,602.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="257.3,493.0 330.0,535.0 330.0,525.0 257.3,483.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="330.0,535.0 402.7,493.0 402.7,483.0 330.0,525.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="330.0,441.0 402.7,483.0 330.0,525.0 257.3,483.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="330.0,450.9 385.4,482.9 330.0,514.9 274.6,482.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="259.9,494.5 265.0,497.5 259.0,502.0 253.8,499.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="400.1,494.5 395.0,497.5 401.0,502.0 406.2,499.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="270.2,500.5 275.4,503.5 269.4,508.0 264.2,505.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="389.8,500.5 384.6,503.5 390.6,508.0 395.8,505.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="280.6,506.5 285.8,509.5 279.8,514.0 274.6,511.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="379.4,506.5 374.2,509.5 380.2,514.0 385.4,511.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="291.0,512.5 296.2,515.5 290.2,520.0 285.0,517.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="369.0,512.5 363.8,515.5 369.8,520.0 375.0,517.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="301.4,518.5 306.6,521.5 300.6,526.0 295.4,523.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="358.6,518.5 353.4,521.5 359.4,526.0 364.6,523.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="311.8,524.5 317.0,527.5 310.9,532.0 305.8,529.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="348.2,524.5 343.0,527.5 349.1,532.0 354.2,529.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="322.2,530.5 327.4,533.5 321.3,538.0 316.1,535.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="337.8,530.5 332.6,533.5 338.7,538.0 343.9,535.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="330.0,450.9 385.4,482.9 274.6,482.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="330.0" cy="456.8" r="2.6" fill="#8a97a4"/>
+</g>
+<g class="fv-punto" data-id="dram" data-forma="chip">
+<polygon points="330.0,446.7 402.7,488.7 330.0,530.7 257.3,488.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="257.3,379.0 330.0,421.0 330.0,411.0 257.3,369.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="330.0,421.0 402.7,379.0 402.7,369.0 330.0,411.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="330.0,327.0 402.7,369.0 330.0,411.0 257.3,369.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="330.0,336.9 385.4,368.9 330.0,400.9 274.6,368.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="259.9,380.5 265.0,383.5 259.0,388.0 253.8,385.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="400.1,380.5 395.0,383.5 401.0,388.0 406.2,385.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="270.2,386.5 275.4,389.5 269.4,394.0 264.2,391.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="389.8,386.5 384.6,389.5 390.6,394.0 395.8,391.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="280.6,392.5 285.8,395.5 279.8,400.0 274.6,397.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="379.4,392.5 374.2,395.5 380.2,400.0 385.4,397.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="291.0,398.5 296.2,401.5 290.2,406.0 285.0,403.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="369.0,398.5 363.8,401.5 369.8,406.0 375.0,403.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="301.4,404.5 306.6,407.5 300.6,412.0 295.4,409.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="358.6,404.5 353.4,407.5 359.4,412.0 364.6,409.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="311.8,410.5 317.0,413.5 310.9,418.0 305.8,415.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="348.2,410.5 343.0,413.5 349.1,418.0 354.2,415.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="322.2,416.5 327.4,419.5 321.3,424.0 316.1,421.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="337.8,416.5 332.6,419.5 338.7,424.0 343.9,421.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="330.0,336.9 385.4,368.9 274.6,368.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="330.0" cy="342.8" r="2.6" fill="#8a97a4"/>
+</g>
+<g class="fv-punto" data-id="nand" data-forma="chip">
+<polygon points="187.1,250.2 545.6,457.2 472.9,499.2 114.4,292.2" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="114.4,100.0 187.1,142.0 187.1,132.0 114.4,90.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="187.1,142.0 259.9,100.0 259.9,90.0 187.1,132.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="187.1,48.0 259.9,90.0 187.1,132.0 114.4,90.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="187.1,57.9 242.5,89.9 187.1,121.9 131.7,89.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="117.0,101.5 122.2,104.5 116.1,109.0 110.9,106.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="257.3,101.5 252.1,104.5 258.1,109.0 263.3,106.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="127.4,107.5 132.5,110.5 126.5,115.0 121.3,112.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="246.9,107.5 241.7,110.5 247.7,115.0 252.9,112.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="137.7,113.5 142.9,116.5 136.9,121.0 131.7,118.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="236.5,113.5 231.3,116.5 237.3,121.0 242.5,118.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="148.1,119.5 153.3,122.5 147.3,127.0 142.1,124.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="226.1,119.5 220.9,122.5 226.9,127.0 232.1,124.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="158.5,125.5 163.7,128.5 157.7,133.0 152.5,130.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="215.7,125.5 210.5,128.5 216.6,133.0 221.7,130.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="168.9,131.5 174.1,134.5 168.1,139.0 162.9,136.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="205.3,131.5 200.1,134.5 206.2,139.0 211.4,136.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="179.3,137.5 184.5,140.5 178.4,145.0 173.2,142.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="194.9,137.5 189.7,140.5 195.8,145.0 201.0,142.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="187.1,57.9 242.5,89.9 131.7,89.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="187.1" cy="63.8" r="2.6" fill="#8a97a4"/>
+<polygon class="fi" points="209.6,155.0 282.4,197.0 282.4,187.0 209.6,145.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="282.4,197.0 355.1,155.0 355.1,145.0 282.4,187.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="282.4,103.0 355.1,145.0 282.4,187.0 209.6,145.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="282.4,112.9 337.8,144.9 282.4,176.9 226.9,144.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="212.2,156.5 217.4,159.5 211.4,164.0 206.2,161.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="352.5,156.5 347.3,159.5 353.4,164.0 358.6,161.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="222.6,162.5 227.8,165.5 221.7,170.0 216.6,167.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="342.1,162.5 336.9,165.5 343.0,170.0 348.2,167.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="233.0,168.5 238.2,171.5 232.1,176.0 226.9,173.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="331.7,168.5 326.5,171.5 332.6,176.0 337.8,173.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="243.4,174.5 248.6,177.5 242.5,182.0 237.3,179.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="321.3,174.5 316.1,177.5 322.2,182.0 327.4,179.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="253.8,180.5 259.0,183.5 252.9,188.0 247.7,185.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="310.9,180.5 305.8,183.5 311.8,188.0 317.0,185.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="264.2,186.5 269.4,189.5 263.3,194.0 258.1,191.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="300.6,186.5 295.4,189.5 301.4,194.0 306.6,191.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="274.6,192.5 279.8,195.5 273.7,200.0 268.5,197.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="290.2,192.5 285.0,195.5 291.0,200.0 296.2,197.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="282.4,112.9 337.8,144.9 226.9,144.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="282.4" cy="118.8" r="2.6" fill="#8a97a4"/>
+<polygon class="fi" points="304.9,210.0 377.6,252.0 377.6,242.0 304.9,200.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="377.6,252.0 450.4,210.0 450.4,200.0 377.6,242.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="377.6,158.0 450.4,200.0 377.6,242.0 304.9,200.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="377.6,167.9 433.1,199.9 377.6,231.9 322.2,199.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="307.5,211.5 312.7,214.5 306.6,219.0 301.4,216.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="447.8,211.5 442.6,214.5 448.6,219.0 453.8,216.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="317.9,217.5 323.1,220.5 317.0,225.0 311.8,222.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="437.4,217.5 432.2,220.5 438.3,225.0 443.4,222.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="328.3,223.5 333.5,226.5 327.4,231.0 322.2,228.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="427.0,223.5 421.8,226.5 427.9,231.0 433.1,228.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="338.7,229.5 343.9,232.5 337.8,237.0 332.6,234.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="416.6,229.5 411.4,232.5 417.5,237.0 422.7,234.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="349.1,235.5 354.2,238.5 348.2,243.0 343.0,240.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="406.2,235.5 401.0,238.5 407.1,243.0 412.3,240.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="359.4,241.5 364.6,244.5 358.6,249.0 353.4,246.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="395.8,241.5 390.6,244.5 396.7,249.0 401.9,246.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="369.8,247.5 375.0,250.5 369.0,255.0 363.8,252.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="385.4,247.5 380.2,250.5 386.3,255.0 391.5,252.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="377.6,167.9 433.1,199.9 322.2,199.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="377.6" cy="173.8" r="2.6" fill="#8a97a4"/>
+<polygon class="fi" points="400.1,265.0 472.9,307.0 472.9,297.0 400.1,255.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="472.9,307.0 545.6,265.0 545.6,255.0 472.9,297.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="472.9,213.0 545.6,255.0 472.9,297.0 400.1,255.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="472.9,222.9 528.3,254.9 472.9,286.9 417.5,254.9" fill="#8a97a4" fill-opacity="0.08" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="402.7,266.5 407.9,269.5 401.9,274.0 396.7,271.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="543.0,266.5 537.8,269.5 543.9,274.0 549.1,271.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="413.1,272.5 418.3,275.5 412.3,280.0 407.1,277.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="532.6,272.5 527.5,275.5 533.5,280.0 538.7,277.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="423.5,278.5 428.7,281.5 422.7,286.0 417.5,283.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="522.3,278.5 517.1,281.5 523.1,286.0 528.3,283.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="433.9,284.5 439.1,287.5 433.1,292.0 427.9,289.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="511.9,284.5 506.7,287.5 512.7,292.0 517.9,289.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="444.3,290.5 449.5,293.5 443.4,298.0 438.3,295.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="501.5,290.5 496.3,293.5 502.3,298.0 507.5,295.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="454.7,296.5 459.9,299.5 453.8,304.0 448.6,301.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="491.1,296.5 485.9,299.5 491.9,304.0 497.1,301.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="465.1,302.5 470.3,305.5 464.2,310.0 459.0,307.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="480.7,302.5 475.5,305.5 481.6,310.0 486.8,307.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="0.6"/>
+<polygon points="472.9,222.9 528.3,254.9 417.5,254.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="472.9" cy="228.8" r="2.6" fill="#8a97a4"/>
+<circle cx="187.1" cy="64.0" r="9" fill="#ffffff" stroke="#8a97a4" stroke-width="1.2"/>
+<text x="187.1" y="68.0" font-size="13" font-weight="700" fill="#8a97a4" text-anchor="middle">+</text>
+</g>
+</g>
+<g id="fv-llamadas"><g class="fv-llamada" data-id="pcb">
+<polyline points="459.9,797.0 584.0,797.0 584.0,797.0 616.0,797.0" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="459.9" cy="797.0" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="797.0" r="15" fill="#0b3d91"/>
+<text x="632" y="802.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+</g>
+<g class="fv-llamada" data-id="conector">
+<polyline points="380.2,697.0 584.0,697.0 584.0,697.0 616.0,697.0" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="380.2" cy="697.0" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="697.0" r="15" fill="#0b3d91"/>
+<text x="632" y="702.0" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+</g>
+<g class="fv-llamada" data-id="controladora">
+<polyline points="372.4,512.5 584.0,512.5 584.0,512.5 616.0,512.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="372.4" cy="512.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="512.5" r="15" fill="#0b3d91"/>
+<text x="632" y="517.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+</g>
+<g class="fv-llamada" data-id="dram">
+<polyline points="372.4,398.5 584.0,398.5 584.0,398.5 616.0,398.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="372.4" cy="398.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="398.5" r="15" fill="#0b3d91"/>
+<text x="632" y="403.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">4</text>
+</g>
+<g class="fv-llamada" data-id="nand">
+<polyline points="515.3,284.5 584.0,284.5 584.0,284.5 616.0,284.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="515.3" cy="284.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="284.5" r="15" fill="#0b3d91"/>
+<text x="632" y="289.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">5</text>
+</g></g>
+</svg></template>
+<template data-nivel="nand"><svg style="--ar:1.3602;aspect-ratio:676/497" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 676 497" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Dentro de la NAND: la caché SLC es lo que se agota en una copia larga" font-family="'Segoe UI', system-ui, sans-serif">
+<rect width="676" height="497" fill="#ffffff"/>
+<ellipse cx="330.0" cy="363.5" rx="190" ry="34" fill="#000000" fill-opacity="0.05"/>
+<line x1="330.0" y1="367.5" x2="330.0" y2="80.5" stroke="#cbd2d9" stroke-width="1.6" stroke-dasharray="7,6"/>
+<g id="fv-escena">
+<g class="fv-punto" data-id="nand-celdas" data-forma="capa">
+<polygon class="fi" points="204.4,331.0 351.7,416.0 351.7,411.0 204.4,326.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="351.7,416.0 455.6,356.0 455.6,351.0 351.7,411.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="308.3,266.0 455.6,351.0 351.7,411.0 204.4,326.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<line x1="332.9" y1="280.1" x2="229.0" y2="340.1" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="357.4" y1="294.2" x2="253.5" y2="354.2" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="382.0" y1="308.4" x2="278.0" y2="368.4" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="406.5" y1="322.6" x2="302.6" y2="382.6" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="431.0" y1="336.7" x2="327.1" y2="396.7" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="282.4" y1="280.9" x2="429.6" y2="365.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="256.4" y1="295.9" x2="403.6" y2="380.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="230.4" y1="310.9" x2="377.6" y2="395.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<polygon points="308.3,265.8 332.9,280.0 306.9,295.0 282.4,280.8" fill="#8a97a4" fill-opacity="0.18"/>
+</g>
+<g class="fv-punto" data-id="nand-slc" data-forma="capa">
+<polygon points="308.3,271.7 455.6,356.7 351.7,416.7 204.4,331.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="204.4,222.0 351.7,307.0 351.7,302.0 204.4,217.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="351.7,307.0 455.6,247.0 455.6,242.0 351.7,302.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="308.3,157.0 455.6,242.0 351.7,302.0 204.4,217.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<line x1="332.9" y1="171.1" x2="229.0" y2="231.1" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="357.4" y1="185.2" x2="253.5" y2="245.2" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="382.0" y1="199.4" x2="278.0" y2="259.4" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="406.5" y1="213.6" x2="302.6" y2="273.6" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="431.0" y1="227.7" x2="327.1" y2="287.7" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="282.4" y1="171.9" x2="429.6" y2="256.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="256.4" y1="186.9" x2="403.6" y2="271.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="230.4" y1="201.9" x2="377.6" y2="286.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<polygon points="308.3,156.8 332.9,171.0 306.9,186.0 282.4,171.8" fill="#8a97a4" fill-opacity="0.18"/>
+</g>
+<g class="fv-punto" data-id="nand-bloques" data-forma="capa">
+<polygon points="308.3,162.7 455.6,247.7 351.7,307.7 204.4,222.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon class="fi" points="204.4,113.0 351.7,198.0 351.7,193.0 204.4,108.0" fill="#e3e8ed" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fd" points="351.7,198.0 455.6,138.0 455.6,133.0 351.7,193.0" fill="#d0d7de" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon class="fs" points="308.3,48.0 455.6,133.0 351.7,193.0 204.4,108.0" fill="#f6f8fa" stroke="#8a97a4" stroke-width="1.2" stroke-linejoin="round"/>
+<line x1="332.9" y1="62.1" x2="229.0" y2="122.1" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="357.4" y1="76.2" x2="253.5" y2="136.2" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="382.0" y1="90.4" x2="278.0" y2="150.4" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="406.5" y1="104.6" x2="302.6" y2="164.6" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="431.0" y1="118.7" x2="327.1" y2="178.7" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="282.4" y1="62.9" x2="429.6" y2="147.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="256.4" y1="77.9" x2="403.6" y2="162.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="230.4" y1="92.9" x2="377.6" y2="177.9" stroke="#8a97a4" stroke-width="0.7" stroke-opacity="0.45"/>
+<polygon points="308.3,47.8 332.9,62.0 306.9,77.0 282.4,62.8" fill="#8a97a4" fill-opacity="0.18"/>
+</g>
+</g>
+<g id="fv-llamadas"><g class="fv-llamada" data-id="nand-celdas">
+<polyline points="403.6,383.5 584.0,383.5 584.0,383.5 616.0,383.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="403.6" cy="383.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="383.5" r="15" fill="#0b3d91"/>
+<text x="632" y="388.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+</g>
+<g class="fv-llamada" data-id="nand-slc">
+<polyline points="403.6,274.5 584.0,274.5 584.0,274.5 616.0,274.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="403.6" cy="274.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="274.5" r="15" fill="#0b3d91"/>
+<text x="632" y="279.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+</g>
+<g class="fv-llamada" data-id="nand-bloques">
+<polyline points="403.6,165.5 584.0,165.5 584.0,165.5 616.0,165.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="403.6" cy="165.5" r="3" fill="#0b3d91"/>
+<circle cx="632" cy="165.5" r="15" fill="#0b3d91"/>
+<text x="632" y="170.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+</g></g>
+</svg></template>
+<script type="application/json" id="vista">{
+ "objeto": "Un SSD NVMe en formato M.2",
+ "niveles": {
+  "": {
+   "titulo": "Cinco piezas en una placa, y la controladora en medio de todo",
+   "subtitulo": "De abajo arriba, el orden de montaje",
+   "piezas": [
+    "pcb",
+    "conector",
+    "controladora",
+    "dram",
+    "nand"
+   ],
+   "prof": 1
+  },
+  "nand": {
+   "titulo": "Dentro de la NAND: la caché SLC es lo que se agota en una copia larga",
+   "subtitulo": "Las partes de Chips NAND",
+   "piezas": [
+    "nand-celdas",
+    "nand-slc",
+    "nand-bloques"
+   ],
+   "prof": 2
+  }
+ },
+ "piezas": {
+  "pcb": {
+   "nombre": "Placa (PCB)",
+   "funcion": "Sostiene y conecta todo; su tamaño (2280 = 22 × 80 mm) fija cuántos chips caben",
+   "padre": "",
+   "cantidad": null,
+   "fuente": {
+    "texto": "PCI-SIG M.2 Specification: tamaños 2230/2242/2280 y llaves M/B",
+    "url": null
+   },
+   "hijos": 0,
+   "num": 1
+  },
+  "conector": {
+   "nombre": "Conector M.2 llave M",
+   "funcion": "Entrega alimentación y hasta 4 carriles PCIe; la llave impide pinchar un disco SATA",
+   "padre": "",
+   "cantidad": null,
+   "fuente": {
+    "texto": "PCI-SIG M.2 Specification: tamaños 2230/2242/2280 y llaves M/B",
+    "url": null
+   },
+   "hijos": 0,
+   "num": 2
+  },
+  "controladora": {
+   "nombre": "Controladora",
+   "funcion": "El cerebro: traduce comandos NVMe a operaciones sobre la NAND y reparte el desgaste",
+   "padre": "",
+   "cantidad": null,
+   "fuente": {
+    "texto": "NVM Express Base Specification 2.0 (nvmexpress.org)",
+    "url": "https://nvmexpress.org/specifications/"
+   },
+   "hijos": 0,
+   "num": 3
+  },
+  "dram": {
+   "nombre": "Caché DRAM",
+   "funcion": "Guarda la tabla que dice en qué chip está cada bloque; sin ella, el disco la busca en la propia NAND y se frena",
+   "padre": "",
+   "cantidad": null,
+   "fuente": null,
+   "hijos": 0,
+   "num": 4
+  },
+  "nand": {
+   "nombre": "Chips NAND",
+   "funcion": "Donde viven los datos; más chips en paralelo, más velocidad sostenida",
+   "padre": "",
+   "cantidad": 4,
+   "fuente": {
+    "texto": "NVM Express Base Specification 2.0 (nvmexpress.org)",
+    "url": "https://nvmexpress.org/specifications/"
+   },
+   "hijos": 3,
+   "num": 5
+  },
+  "nand-celdas": {
+   "nombre": "Celdas (TLC o QLC)",
+   "funcion": "Cada celda guarda 3 o 4 bits; cuantos más bits, más barato y más lento al escribir",
+   "padre": "nand",
+   "cantidad": null,
+   "fuente": null,
+   "hijos": 0,
+   "num": 1
+  },
+  "nand-slc": {
+   "nombre": "Caché SLC",
+   "funcion": "Parte de la NAND trabaja a 1 bit por celda para absorber ráfagas; al llenarse, la velocidad cae",
+   "padre": "nand",
+   "cantidad": null,
+   "fuente": null,
+   "hijos": 0,
+   "num": 2
+  },
+  "nand-bloques": {
+   "nombre": "Bloques y páginas",
+   "funcion": "Se escribe por páginas y se borra por bloques: por eso borrar cuesta y hace falta TRIM",
+   "padre": "nand",
+   "cantidad": null,
+   "fuente": {
+    "texto": "NVM Express Base Specification 2.0 (nvmexpress.org)",
+    "url": "https://nvmexpress.org/specifications/"
+   },
+   "hijos": 0,
+   "num": 3
+  }
+ },
+ "comprension": {
+  "feynman": [
+   "Un SSD es una placa con una controladora que reparte los datos entre varios chips de memoria.",
+   "Va rápido mientras escribe en paralelo en muchos chips y tiene a mano la tabla de dónde está cada cosa.",
+   "Cuando la caché rápida se llena o no hay DRAM, el disco baja a la velocidad real de sus celdas."
+  ],
+  "pregunta": "Dos SSD de 1 TB: uno con 4 chips NAND y DRAM, otro con 2 chips y sin DRAM. Copiás 200 GB seguidos. ¿Cuál se frena antes y por qué?",
+  "respuesta": "El de 2 chips sin DRAM: tiene la mitad de canales en paralelo y, al agotarse su caché SLC, cada escritura además busca la tabla de mapeo en la propia NAND."
+ },
+ "raiz": {
+  "titulo": "Un SSD es una placa con cinco piezas, y solo dos deciden su velocidad",
+  "frontera": "Desde el conector M.2 hasta la etiqueta: lo que viaja en la placa. Queda fuera el bus PCIe de la placa base y el sistema operativo.",
+  "fuera": [
+   "el slot M.2 y el bus PCIe",
+   "el driver NVMe del sistema operativo"
+  ],
+  "foco": "¿Por qué dos SSD del mismo tamaño y precio rinden tan distinto en escrituras largas?",
+  "lector": "técnico de sistemas que compra discos para servidores y no ha abierto ninguno"
+ }
+}</script>
+<script>
+(() => {
+  'use strict';
+  const V = JSON.parse(document.getElementById('vista').textContent);
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const params = new URLSearchParams(location.search);
+  const escenario = $('escenario'), lamina = $('lamina'), panel = $('panel');
+  const UMBRAL_DENTRO = 1.5, UMBRAL_FUERA = 0.72;
+
+  /* ---------- Tema: automático, claro u oscuro; se recuerda en este navegador si se puede ---------- */
+  const btnTema = $('tema');
+  const ciclo = ['auto', 'light', 'dark'], nombres = { auto: 'auto', light: 'claro', dark: 'oscuro' };
+  let tema = params.get('tema') || (() => { try { return localStorage.getItem('despiece-tema'); } catch { return null; } })() || 'auto';
+  function aplicarTema(t) {
+    tema = ciclo.includes(t) ? t : 'auto';
+    if (tema === 'auto') root.removeAttribute('data-theme'); else root.dataset.theme = tema;
+    btnTema.textContent = 'Tema: ' + nombres[tema];
+    btnTema.setAttribute('aria-label', 'Tema de color: ' + nombres[tema] + '. Cambiar');
+    try { localStorage.setItem('despiece-tema', tema); } catch {}
+  }
+  btnTema.hidden = false;
+  aplicarTema(tema);
+  btnTema.addEventListener('click', () => aplicarTema(ciclo[(ciclo.indexOf(tema) + 1) % ciclo.length]));
+
+  /* ---------- Estado ---------- */
+  let nivel = '';          // pieza abierta; '' = las raíces
+  let sel = null;          // pieza elegida en el nivel
+  let navegando = false;
+  let profundidad = 0;     // posición en el historial propio
+  const entradas = new Map(); // profundidad del historial → nivel (el History API no deja leer las otras entradas)
+  let origenPendiente = null;
+
+  const P = V.piezas, N = V.niveles;
+  const nombre = id => id ? P[id].nombre : V.objeto;
+  const tituloNivel = n => N[n].titulo;
+  const profArbol = n => N[n] ? N[n].prof : 0;
+  const plantilla = n => document.querySelector(`template[data-nivel="${CSS.escape(n)}"]`);
+  const svgActual = () => lamina.querySelector('svg');
+  const hashDe = n => '#/' + encodeURIComponent(n);
+  // Un #/<id> que no es un nivel (escrito a mano, o de una versión anterior del modelo) se quita de la barra
+  const urlDe = n => n ? hashDe(n) : location.pathname + location.search;
+  function leerHash() {
+    const h = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+    return N[h] ? h : '';
+  }
+  function cadena(n) { // de la raíz a n: ['', abuelo, padre, n]
+    const r = [];
+    for (let q = n; q; q = P[q].padre) r.unshift(q);
+    return ['', ...r];
+  }
+
+  /* ---------- Aviso para lectores de pantalla: una sola región, con un poco de retardo ---------- */
+  let tAviso;
+  function avisar(texto) {
+    clearTimeout(tAviso);
+    $('aviso').textContent = '';
+    tAviso = setTimeout(() => { $('aviso').textContent = texto; }, 160);
+  }
+  // En pantallas táctiles no hay rueda ni teclas: la pista habla del pellizco y de los botones
+  if (matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) {
+    $('pista').textContent = 'Pellizcá sobre una pieza con «+» para abrirla y al revés para volver, o usá + y −.';
+  }
+  const pistaBase = $('pista').textContent;
+  let tPista;
+  function pista(texto) {
+    const el = $('pista');
+    el.textContent = texto; el.classList.add('ojo');
+    clearTimeout(tPista);
+    tPista = setTimeout(() => { el.textContent = pistaBase; el.classList.remove('ojo'); }, 3200);
+  }
+
+  /* ---------- Pintar un nivel: lámina, migas, lista y ficha ---------- */
+  function piezaEn(svg, id) { return svg?.querySelector(`.fv-punto[data-id="${CSS.escape(id)}"]`); }
+  function centroDe(id) { // en px, relativo al escenario: origen de la transición
+    const g = piezaEn(svgActual(), id), er = escenario.getBoundingClientRect();
+    if (!g) return null;
+    const r = g.getBoundingClientRect();
+    return { x: r.left + r.width / 2 - er.left, y: r.top + r.height / 2 - er.top };
+  }
+  function fijarOrigen(p) {
+    root.style.setProperty('--zx', p ? p.x + 'px' : '50%');
+    root.style.setProperty('--zy', p ? p.y + 'px' : '50%');
+  }
+
+  function pintarNivel() {
+    const tpl = plantilla(nivel);
+    lamina.replaceChildren(tpl.content.firstElementChild.cloneNode(true));
+    lamina.style.transform = '';
+    escala = 1;
+    const datos = N[nivel];
+    // Migas: la última es la página actual
+    const migas = $('migas');
+    migas.replaceChildren(...cadena(nivel).map((n, i, todo) => {
+      const li = document.createElement('li');
+      if (i === todo.length - 1) { li.textContent = nombre(n); li.setAttribute('aria-current', 'page'); }
+      else {
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = nombre(n); b.dataset.ir = n;
+        li.append(b);
+      }
+      return li;
+    }));
+    const volver = $('volver');
+    volver.hidden = !nivel;
+    if (nivel) {
+      const destino = P[nivel].padre;
+      volver.textContent = '← Volver a ' + nombre(destino);
+      volver.setAttribute('aria-label', 'Volver a ' + nombre(destino));
+    }
+    $('etiqueta').textContent = nivel ? `Nivel ${datos.prof} · dentro de ${nombre(nivel)}` : 'Nivel 1 · las piezas';
+    $('titulo').textContent = datos.titulo;
+    $('eje').textContent = datos.subtitulo;
+    $('eje').hidden = !datos.subtitulo;
+    // Contexto: en la raíz, la pregunta, la frontera y lo que queda fuera
+    const ctx = $('contexto');
+    ctx.replaceChildren();
+    if (!nivel) {
+      const R = V.raiz;
+      const filas = [['El todo', R.titulo], ['La pregunta', R.foco], ['Frontera', R.frontera], ['Queda fuera', R.fuera.join('; ')], ['Para', R.lector]];
+      for (const [k, v] of filas) {
+        if (!v) continue;
+        const p = document.createElement('p'), b = document.createElement('b');
+        b.textContent = k + ': '; p.append(b, v); ctx.append(p);
+      }
+    }
+    ctx.hidden = !ctx.childElementCount;
+    // Lista de piezas, numerada como la lámina
+    $('lista').replaceChildren(...datos.piezas.map(id => {
+      const p = P[id], li = document.createElement('li'), b = document.createElement('button');
+      b.type = 'button'; b.dataset.id = id;
+      const num = document.createElement('span'); num.className = 'num'; num.textContent = p.num; num.setAttribute('aria-hidden', 'true');
+      const nom = document.createElement('span'); nom.textContent = p.nombre + (p.cantidad ? ` ×${p.cantidad}` : '');
+      const mas = document.createElement('span'); mas.className = 'mas';
+      if (p.hijos) { mas.textContent = `+ ${p.hijos} dentro`; }
+      b.setAttribute('aria-label', `${p.num}. ${nom.textContent}` + (p.hijos ? `, contiene ${p.hijos} piezas` : ''));
+      b.append(num, nom, mas); li.append(b);
+      return li;
+    }));
+    pintarComprension();
+    pintarSel();
+    document.title = nivel ? `${datos.titulo} · ${V.objeto}` : `${V.objeto} · explorador`;
+  }
+
+  function pintarComprension() {
+    const c = $('comprension'), C = V.comprension;
+    c.replaceChildren();
+    c.hidden = !!nivel || (!C.feynman.length && !C.pregunta);
+    if (c.hidden) return;
+    const h = document.createElement('h3'); h.id = 'comprension-t'; h.textContent = 'En tres frases';
+    const ol = document.createElement('ol');
+    for (const f of C.feynman) { const li = document.createElement('li'); li.textContent = f; ol.append(li); }
+    c.append(h, ol);
+    if (C.pregunta) {
+      const d = document.createElement('details'), s = document.createElement('summary'), q = document.createElement('p'), r = document.createElement('p');
+      s.textContent = 'Ponete a prueba'; q.textContent = C.pregunta; r.textContent = C.respuesta || '';
+      const ver = document.createElement('p'); ver.append(document.createElement('b')); ver.firstChild.textContent = 'Respuesta: ';
+      ver.append(r.textContent);
+      d.append(s, q, ver);
+      c.append(d);
+      // La respuesta queda plegada: primero se predice, después se mira
+      d.open = false;
+      q.style.margin = '.5rem 0';
+    }
+  }
+
+  function pintarSel() {
+    const svg = svgActual();
+    svg?.classList.toggle('hay-sel', !!sel);
+    svg?.querySelectorAll('.fv-punto, .fv-llamada').forEach(g => g.classList.toggle('sel', g.dataset.id === sel));
+    $('lista').querySelectorAll('button').forEach(b => b.setAttribute('aria-current', String(b.dataset.id === sel)));
+    pintarFicha();
+    const acercar = $('acercar');
+    const abrible = sel && P[sel].hijos;
+    acercar.setAttribute('aria-label', abrible ? `Acercar: abrir ${P[sel].nombre}` : 'Acercar: elegí antes una pieza con +');
+    $('alejar').setAttribute('aria-disabled', String(!nivel));
+    $('alejar').setAttribute('aria-label', nivel ? `Alejar: volver a ${nombre(P[nivel].padre)}` : 'Alejar: ya estás en el todo');
+  }
+
+  function pintarFicha() {
+    const f = $('ficha');
+    f.replaceChildren();
+    if (!sel) {
+      const h = document.createElement('h3'); h.id = 'ficha-t'; h.className = 'sr'; h.textContent = 'Pieza elegida';
+      const p = document.createElement('p'); p.className = 'vacia';
+      p.textContent = 'Elegí una pieza en la lámina o en la lista para ver qué hace y de dónde sale.';
+      f.append(h, p);
+      return;
+    }
+    const p = P[sel];
+    const h = document.createElement('h3'); h.id = 'ficha-t'; h.textContent = `${p.num} · ${p.nombre}` + (p.cantidad ? ` ×${p.cantidad}` : '');
+    const fn = document.createElement('p'); fn.textContent = p.funcion;
+    const fu = document.createElement('p'); fu.className = 'fuente';
+    if (p.fuente) {
+      fu.append('Fuente: ');
+      if (p.fuente.url) { const a = document.createElement('a'); a.href = p.fuente.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = p.fuente.texto; fu.append(a); }
+      else fu.append(p.fuente.texto);
+    } else {
+      const s = document.createElement('span'); s.className = 'supuesto'; s.textContent = '▲ supuesto'; fu.append(s, ' · sin fuente verificada');
+    }
+    f.append(h, fn, fu);
+    if (p.hijos) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'boton abrir'; b.dataset.abrir = sel;
+      b.textContent = `Abrir ${p.nombre} · ${p.hijos} piezas`;
+      f.append(b);
+    }
+  }
+
+  function seleccionar(id, { alternar = false } = {}) {
+    sel = (alternar && sel === id) ? null : id;
+    pintarSel();
+  }
+
+  /* ---------- Navegar entre niveles: historial y transición ---------- */
+  const tipos = typeof ViewTransition !== 'undefined' && 'types' in ViewTransition.prototype;
+  function transicion(dir, actualizar) {
+    if (!document.startViewTransition || dir === 'ninguna') { actualizar(); return Promise.resolve(); }
+    root.dataset.vt = dir; // respaldo para navegadores sin tipos de transición
+    const t = tipos ? document.startViewTransition({ update: actualizar, types: [dir] }) : document.startViewTransition(actualizar);
+    return t.finished.catch(() => {}).finally(() => { delete root.dataset.vt; });
+  }
+
+  function mostrar(destino, dir, op = {}) {
+    const focoDentro = panel.contains(document.activeElement) || escenario.contains(document.activeElement);
+    const desde = nivel;
+    if (dir === 'entrar') fijarOrigen(op.punto || centroDe(destino));
+    navegando = true;
+    const actualizar = () => {
+      nivel = destino; sel = null;
+      // Al subir, queda elegida la pieza por la que se salió: el lector ve dónde estaba
+      if (dir !== 'entrar') {
+        const vuelta = cadena(desde).find(n => n && P[n].padre === destino);
+        if (vuelta) sel = vuelta;
+      }
+      pintarNivel();
+      if (dir === 'salir') fijarOrigen(sel ? centroDe(sel) : null);
+    };
+    return transicion(dir, actualizar).finally(() => {
+      navegando = false;
+      calma = performance.now() + 250;
+      if (op.origen === 'carga') return;
+      const porTeclado = op.origen === 'teclado' || op.origen === 'boton';
+      if (porTeclado || focoDentro) {
+        // Al entrar, el foco va al título del nivel nuevo; al salir, a la pieza de la que se volvió
+        const volverA = dir !== 'entrar' && sel ? $('lista').querySelector(`button[data-id="${CSS.escape(sel)}"]`) : null;
+        (volverA || $('titulo')).focus({ preventScroll: true });
+        if (volverA) avisar(`${N[nivel].titulo}. ${N[nivel].piezas.length} piezas.`);
+      } else {
+        avisar(`${N[nivel].titulo}. ${N[nivel].piezas.length} piezas.`);
+      }
+    });
+  }
+
+  function entrar(id, op = {}) {
+    if (navegando || !N[id] || id === nivel) return;
+    const d = profundidad + 1;
+    history.pushState({ depth: d, nivel: id }, '', hashDe(id));
+    for (const k of [...entradas.keys()]) if (k >= d) entradas.delete(k);
+    profundidad = d; entradas.set(d, id);
+    mostrar(id, 'entrar', op);
+  }
+
+  function irA(destino, op = {}) {
+    if (navegando || destino === nivel || !N[destino]) return;
+    // Si el destino ya está detrás en el historial, se vuelve a él; si no (se llegó por un enlace directo), se apila
+    for (const [d, n] of entradas) {
+      if (n === destino && d < profundidad) { origenPendiente = op.origen; history.go(d - profundidad); return; }
+    }
+    const d = profundidad + 1;
+    history.pushState({ depth: d, nivel: destino }, '', hashDe(destino));
+    profundidad = d; entradas.set(d, destino);
+    mostrar(destino, profArbol(destino) < profArbol(nivel) ? 'salir' : 'entrar', op);
+  }
+
+  function subir(op = {}) {
+    if (!nivel) { pista('Ya estás en el todo: no hay nivel de arriba.'); if (op.origen === 'teclado') avisar('Ya estás en el todo.'); return; }
+    irA(P[nivel].padre, op);
+  }
+
+  addEventListener('popstate', ev => {
+    const st = ev.state;
+    let destino;
+    if (st && typeof st.nivel === 'string' && N[st.nivel]) { destino = st.nivel; profundidad = st.depth ?? 0; }
+    else { // el usuario cambió el #/… a mano: entrada nueva sin estado
+      destino = leerHash(); profundidad += 1;
+      history.replaceState({ depth: profundidad, nivel: destino }, '', urlDe(destino));
+      for (const k of [...entradas.keys()]) if (k > profundidad) entradas.delete(k); // el navegador descartó las de delante
+    }
+    entradas.set(profundidad, destino);
+    const origen = origenPendiente || 'historial';
+    origenPendiente = null;
+    if (destino === nivel) return;
+    // Hacia arriba se anima; hacia abajo desde el historial (adelante) se cambia sin animar
+    mostrar(destino, profArbol(destino) < profArbol(nivel) ? 'salir' : 'ninguna', { origen });
+  });
+
+  /* ---------- Zoom semántico: rueda, pellizco, botones y teclado ---------- */
+  let escala = 1, objetivo = undefined, tSoltar, calma = 0;
+  // Tras cambiar de nivel, la inercia del trackpad sigue mandando rueda: se absorbe hasta que haya 250 ms de
+  // quietud, para que un solo gesto no abra dos niveles seguidos. El pellizco no tiene inercia: solo espera a
+  // que acabe la calma (extender = false) y sigue desde donde estén los dedos.
+  function bloqueado(extender = true) {
+    if (!navegando && performance.now() >= calma) return false;
+    if (extender) calma = Math.max(calma, performance.now() + 250);
+    return true;
+  }
+  function piezaBajo(x, y) {
+    const g = document.elementFromPoint(x, y)?.closest('.fv-punto, .fv-llamada');
+    if (g && lamina.contains(g)) return g.dataset.id;
+    // En hueco (entre las copias de una pieza ×N, junto a una pieza fina o entre las letras de un rótulo, que
+    // en SVG solo responde sobre los glifos): la pieza o el rótulo de caja más pequeña que contenga el punto.
+    // Así el gesto sobre «la zona» de una pieza la abre aunque no toque su dibujo.
+    let mejor = null, area = Infinity;
+    for (const p of lamina.querySelectorAll('.fv-punto, .fv-llamada')) {
+      const r = p.getBoundingClientRect();
+      if (x < r.left || x > r.right || y < r.top || y > r.bottom) continue;
+      if (r.width * r.height < area) { area = r.width * r.height; mejor = p.dataset.id; }
+    }
+    return mejor;
+  }
+  function soltar() {
+    escala = 1; objetivo = undefined;
+    lamina.classList.add('vuelve');
+    lamina.style.transform = '';
+  }
+  function gesto(factor, x, y) {
+    if (navegando) return;
+    const er = escenario.getBoundingClientRect();
+    if (objetivo === undefined) {
+      objetivo = piezaBajo(x, y);
+      lamina.classList.remove('vuelve');
+      // El origen del zoom es el punto del gesto, en la caja sin transformar de la lámina (inset 14px)
+      lamina.style.transformOrigin = `${x - er.left - 14}px ${y - er.top - 14}px`;
+    }
+    escala = Math.min(1.8, Math.max(.6, escala * factor));
+    if (escala >= UMBRAL_DENTRO) {
+      if (objetivo && P[objetivo].hijos) {
+        const id = objetivo, p = { x: x - er.left, y: y - er.top };
+        soltarTarde();
+        entrar(id, { punto: p, origen: 'gesto' });
+        return;
+      }
+      escala = UMBRAL_DENTRO - .02;
+      pista(objetivo ? `«${P[objetivo].nombre}» no tiene piezas dentro.` : 'Acercá sobre una pieza con «+» para abrirla.');
+    } else if (escala <= UMBRAL_FUERA) {
+      if (nivel) { soltarTarde(); subir({ origen: 'gesto' }); return; }
+      escala = UMBRAL_FUERA + .02;
+      pista('Ya estás en el todo: no hay nivel de arriba.');
+    }
+    lamina.style.transform = `scale(${escala})`;
+    clearTimeout(tSoltar);
+    tSoltar = setTimeout(soltar, 280);
+  }
+  function soltarTarde() { clearTimeout(tSoltar); objetivo = undefined; escala = 1; }
+
+  escenario.addEventListener('wheel', ev => {
+    // Sin Ctrl (el pellizco del trackpad llega como Ctrl + rueda), la rueda solo hace zoom si la página no
+    // tiene nada que desplazar: nunca se le roba el scroll al lector.
+    const desplazable = document.scrollingElement.scrollHeight > innerHeight + 2;
+    if (!ev.ctrlKey && desplazable) return;
+    ev.preventDefault(); // también evita que Ctrl + rueda haga zoom de toda la página
+    if (bloqueado()) return;
+    const dy = ev.deltaMode === 1 ? ev.deltaY * 16 : ev.deltaY;
+    gesto(Math.exp(-dy * (ev.ctrlKey ? .012 : .0018)), ev.clientX, ev.clientY);
+  }, { passive: false });
+
+  const punteros = new Map();
+  let dist0 = 0, escala0 = 1;
+  const distancia = () => { const [a, b] = [...punteros.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
+  escenario.addEventListener('pointerdown', ev => {
+    if (ev.pointerType === 'mouse') return;
+    punteros.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (punteros.size === 2) { dist0 = distancia(); escala0 = escala; }
+  });
+  escenario.addEventListener('pointermove', ev => {
+    if (!punteros.has(ev.pointerId)) return;
+    punteros.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (punteros.size !== 2 || !dist0) return;
+    if (bloqueado(false)) { dist0 = distancia(); escala0 = escala; return; } // sigue desde aquí, no desde antes del salto
+    const [a, b] = [...punteros.values()];
+    gesto((escala0 * distancia() / dist0) / escala, (a.x + b.x) / 2, (a.y + b.y) / 2);
+  });
+  const fuera = ev => { punteros.delete(ev.pointerId); if (punteros.size < 2) dist0 = 0; };
+  escenario.addEventListener('pointerup', fuera);
+  escenario.addEventListener('pointercancel', fuera);
+
+  // Clic en la lámina: elige (volver a tocarla la suelta); doble clic en una pieza con «+»: la abre
+  lamina.addEventListener('click', ev => {
+    const g = ev.target.closest('.fv-punto, .fv-llamada');
+    if (!g) { if (sel) seleccionar(null); return; }
+    seleccionar(g.dataset.id, { alternar: true });
+  });
+  lamina.addEventListener('dblclick', ev => {
+    const g = ev.target.closest('.fv-punto, .fv-llamada');
+    if (g && P[g.dataset.id].hijos) {
+      const er = escenario.getBoundingClientRect();
+      entrar(g.dataset.id, { punto: { x: ev.clientX - er.left, y: ev.clientY - er.top }, origen: 'puntero' });
+    }
+  });
+  // Vista previa: pasar por la lista ilumina la pieza en la lámina
+  function previa(id, si) { piezaEn(svgActual(), id)?.classList.toggle('ver', si); }
+  $('lista').addEventListener('pointerover', ev => { const b = ev.target.closest('button'); if (b) previa(b.dataset.id, true); });
+  $('lista').addEventListener('pointerout', ev => { const b = ev.target.closest('button'); if (b) previa(b.dataset.id, false); });
+  $('lista').addEventListener('focusin', ev => { if (ev.target.dataset.id) previa(ev.target.dataset.id, true); });
+  $('lista').addEventListener('focusout', ev => { if (ev.target.dataset.id) previa(ev.target.dataset.id, false); });
+  $('lista').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) seleccionar(b.dataset.id); });
+  $('ficha').addEventListener('click', ev => {
+    const b = ev.target.closest('[data-abrir]');
+    if (b) entrar(b.dataset.abrir, { origen: 'boton' });
+  });
+  $('migas').addEventListener('click', ev => { const b = ev.target.closest('[data-ir]'); if (b) irA(b.dataset.ir, { origen: 'boton' }); });
+  $('volver').addEventListener('click', () => subir({ origen: 'boton' }));
+  function acercar(origen) {
+    if (sel && P[sel].hijos) { entrar(sel, { origen }); return; }
+    const texto = sel ? `«${P[sel].nombre}» no tiene piezas dentro.` : 'Elegí antes una pieza con «+» en la lámina o en la lista.';
+    pista(texto);
+    if (origen !== 'gesto') avisar(texto);
+  }
+  $('acercar').addEventListener('click', () => acercar('boton'));
+  $('alejar').addEventListener('click', () => subir({ origen: 'boton' }));
+  addEventListener('keydown', ev => {
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (ev.target instanceof Element && ev.target.closest('input, textarea, select, [contenteditable]')) return;
+    if (ev.key === '+' || ev.key === '=') { ev.preventDefault(); acercar('teclado'); }
+    else if (ev.key === '-' || ev.key === '_') { ev.preventDefault(); subir({ origen: 'teclado' }); }
+  });
+
+  /* ---------- Arranque: el nivel del enlace (#/<id>) o la raíz, sin animar ni mover el foco ---------- */
+  const inicial = leerHash();
+  history.replaceState({ depth: 0, nivel: inicial }, '', urlDe(inicial));
+  entradas.set(0, inicial);
+  nivel = null;
+  mostrar(inicial, 'ninguna', { origen: 'carga' });
+  if (params.get('sel') && P[params.get('sel')] && P[params.get('sel')].padre === inicial) seleccionar(params.get('sel'));
+})();
+</script>
+</body>
+</html>

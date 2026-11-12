@@ -1,6 +1,6 @@
 {
   "skill_name": "despiece",
-  "nota": "Un caso por familia (sistema, físico, proceso, idea), uno de la página interactiva (físico, 1.2.0) y dos de la 2.0.0: la vista explotada fuera de lo físico (6) y abrir una pieza a demanda sobre un modelo ya hecho (7). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); los cuatro primeros, corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku (resultados-2026-11-02.md); el quinto, en resultados-2026-11-02b.md; el sexto y el séptimo, en resultados-2026-11-12.md.",
+  "nota": "Un caso por familia (sistema, físico, proceso, idea), uno de la página interactiva (físico, 1.2.0) y dos de la 2.0.0: la vista explotada fuera de lo físico (6) y abrir una pieza a demanda sobre un modelo ya hecho (7); y uno de la 2.1.0, el explorador con zoom sobre un modelo que no es físico (8). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); los cuatro primeros, corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku (resultados-2026-11-02.md); el quinto, en resultados-2026-11-02b.md; el sexto y el séptimo, en resultados-2026-11-12.md; el octavo, en resultados-2026-11-12b.md.",
   "evals": [
     {
       "id": 1,
@@ -115,6 +115,25 @@
         "Dibuja solo la figura nueva con explosionado.py --subconjunto <id del NSG> y no regenera las otras",
         "No toca ningún recurso real de Azure ni pide tenant o suscripción: el modelo ya trae sus fuentes",
         "La respuesta entrega solo lo nuevo y termina con tres frases y una predicción sobre ese nivel"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "explorador-auditoria",
+      "prompt": "Tengo el despiece de una auditoría ISO 27001 en despiece-iso/modelo.json. Quiero recorrerlo con zoom: acercarme a una fase y que se abra, alejarme y volver, y poder pasarle a alguien un enlace que abra directamente dentro de una pieza. Dejalo en despiece-iso/.",
+      "expected_output": "Reconoce que el modelo es de tipo proceso y que el explorador sirve para cualquier tipo: valida el modelo sin rehacerlo, ensambla con ensamblar.py --explorador (no --interactivo, que es solo físico con geometria, ni --figuras), revisa la página capturándola o abriéndola, y entrega cómo se navega, un enlace #/<id> a una pieza con hijas que existe en el modelo, las tres frases y la predicción.",
+      "files": [
+        "assets/ejemplo-auditoria-iso27001.json"
+      ],
+      "assertions": [
+        "Parte del modelo existente (copiado como despiece-iso/modelo.json) y no cambia sus piezas",
+        "El modelo pasa validar_modelo.py sin errores antes de generar la página",
+        "Genera la página con ensamblar.py --explorador; no usa --interactivo ni añade un bloque geometria",
+        "La página es un solo HTML sin scripts, hojas ni imágenes externas, con una lámina por nivel que se puede abrir (todas las piezas con hijas y el todo)",
+        "Revisa la página antes de entregarla (captura con capturar-cdp.mjs o la abre en un navegador) y dice qué comprobó",
+        "Explica cómo se navega: acercar sobre una pieza con «+» la abre, alejar vuelve, y hay botones o teclas + y −",
+        "Da un enlace directo con la forma #/<id>, y ese id es una pieza con hijas del modelo",
+        "La respuesta incluye las tres frases y la pregunta de predicción del modelo"
       ]
     }
   ]
