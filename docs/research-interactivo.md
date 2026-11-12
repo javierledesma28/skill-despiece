@@ -42,6 +42,8 @@ el mismo `modelo.json` y una geometría opcional.
 3. **Primera entrega: fases 1 a 3, solo tipo físico.** Procesos, sistemas e ideas (fase 4) quedan para después.
 4. **`explosionado.py` sigue en 2D.** La figura isométrica solo existe en la página interactiva.
 5. **El prototipo y este research van a `docs/`, sin GitHub Pages.** Se ven descargando el HTML y abriéndolo.
+   *Revisada en la 2.1.2*: `docs/` se publica con GitHub Pages en [despiece.t28.io](https://despiece.t28.io), y el
+   prototipo se abre en [despiece.t28.io/prototipo-interactivo/](https://despiece.t28.io/prototipo-interactivo/).
 
 ## 1. Qué hacen los referentes
 

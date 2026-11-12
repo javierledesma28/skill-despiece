@@ -17,7 +17,7 @@ allowed-tools:
   - Bash(python -I ${CLAUDE_SKILL_DIR}/scripts/*)
   - Bash(node ${CLAUDE_SKILL_DIR}/scripts/*)
 metadata:
-  version: "2.1.1"
+  version: "2.1.2"
   author: t28.io (Javier Ledesma)
   updated: "2026-11-12"
 ---

@@ -14,7 +14,7 @@ movimiento reducido y en el móvil.
 | Fichero | En esta demo |
 |---|---|
 | El modelo, con su bloque `geometria` | [`assets/ejemplo-fisico.json`](../assets/ejemplo-fisico.json) |
-| La página | [`interactivo/index.html`](interactivo/index.html) (descargala y abrila) |
+| La página | [`interactivo/index.html`](interactivo/index.html) · [abrila en el navegador](https://despiece.t28.io/interactivo/) |
 | Las capturas | [`interactivo/capturas/`](interactivo/capturas/) |
 
 Solo para el tipo físico, y opcional: sin `--interactivo`, o sin `geometria` en el modelo, la skill escribe la
