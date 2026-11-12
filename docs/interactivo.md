@@ -1,6 +1,6 @@
 <div align="center">
 
-[**← README**](../README.md) · [**Demo**](demo.md) · **Interactiva** · [**Instalación**](instalacion.md) · [**Changelog**](../CHANGELOG.md) · [**Licencia**](../LICENSE)
+[**← README**](../README.md) · [**Demo**](demo.md) · **Interactiva** · [**Explorador**](explorador.md) · [**Instalación**](instalacion.md) · [**Changelog**](../CHANGELOG.md) · [**Licencia**](../LICENSE)
 
 </div>
 

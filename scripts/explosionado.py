@@ -171,8 +171,14 @@ def forma_de(p: dict, tipo: str = "fisico") -> str:
 class Iso:
     """Proyección isométrica: x hacia la derecha-abajo, y hacia la izquierda-abajo, z hacia arriba."""
 
-    def __init__(self, ox: float, oy: float):
+    def __init__(self, ox: float, oy: float, marcar: bool = False):
         self.ox, self.oy = ox, oy
+        # marcar: cada cara lleva clase (fs superior, fi izquierda, fd derecha) para que el explorador
+        # pinte la selección con CSS; la figura estática no la necesita y sale igual que siempre.
+        self.marcar = marcar
+
+    def _clase(self, c: str) -> str:
+        return f'class="{c}" ' if self.marcar else ""
 
     def p(self, x: float, y: float, z: float) -> tuple[float, float]:
         return (self.ox + (x - y) * COS, self.oy + (x + y) * SIN - z)
@@ -184,9 +190,9 @@ class Iso:
         """Un prisma con tres caras visibles: superior, frontal-izquierda (y+) y frontal-derecha (x+)."""
         x0, x1, y0, y1 = cx - w / 2, cx + w / 2, cy - d / 2, cy + d / 2
         s = []
-        s.append(f'<polygon points="{self.pts((x0, y1, z), (x1, y1, z), (x1, y1, z + h), (x0, y1, z + h))}" fill="{col["izq"]}" stroke="{col["borde"]}" stroke-width="{sw}" stroke-linejoin="round"{extra}/>')
-        s.append(f'<polygon points="{self.pts((x1, y1, z), (x1, y0, z), (x1, y0, z + h), (x1, y1, z + h))}" fill="{col["der"]}" stroke="{col["borde"]}" stroke-width="{sw}" stroke-linejoin="round"{extra}/>')
-        s.append(f'<polygon points="{self.pts((x0, y0, z + h), (x1, y0, z + h), (x1, y1, z + h), (x0, y1, z + h))}" fill="{col["sup"]}" stroke="{col["borde"]}" stroke-width="{sw}" stroke-linejoin="round"{extra}/>')
+        s.append(f'<polygon {self._clase("fi")}points="{self.pts((x0, y1, z), (x1, y1, z), (x1, y1, z + h), (x0, y1, z + h))}" fill="{col["izq"]}" stroke="{col["borde"]}" stroke-width="{sw}" stroke-linejoin="round"{extra}/>')
+        s.append(f'<polygon {self._clase("fd")}points="{self.pts((x1, y1, z), (x1, y0, z), (x1, y0, z + h), (x1, y1, z + h))}" fill="{col["der"]}" stroke="{col["borde"]}" stroke-width="{sw}" stroke-linejoin="round"{extra}/>')
+        s.append(f'<polygon {self._clase("fs")}points="{self.pts((x0, y0, z + h), (x1, y0, z + h), (x1, y1, z + h), (x0, y1, z + h))}" fill="{col["sup"]}" stroke="{col["borde"]}" stroke-width="{sw}" stroke-linejoin="round"{extra}/>')
         return "\n".join(s)
 
 
@@ -339,45 +345,29 @@ def paleta(mk: dict, destacada: bool, apagada: bool) -> tuple[dict, float]:
     return {"sup": "#f6f8fa", "izq": "#e3e8ed", "der": "#d0d7de", "borde": "#8a97a4"}, 1.2
 
 
-def main(argv: list[str]) -> int:
-    _utf8_stdout()
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("modelo")
-    ap.add_argument("--salida", required=True)
-    ap.add_argument("--subconjunto", default=None, help="id de la pieza cuyos hijos se explotan")
-    ap.add_argument("--destacar", default=None, help="id de la única pieza que va en color")
-    ap.add_argument("--marca", default="ninguna", help="ruta de un JSON de marca (ver assets/marca-ejemplo.json) o «ninguna»")
-    ap.add_argument("--titulo", default=None, help="título de la figura; por defecto, el de la figura del modelo con las mismas piezas")
-    a = ap.parse_args(argv[1:])
+W_EXPLORADOR = X_LLAMADA + 44  # lámina del explorador: escena y llamadas numeradas, sin la lista
 
-    ruta = Path(a.modelo)
-    if not ruta.is_file():
-        print(f"ERROR: no existe {ruta}", file=sys.stderr)
-        return 2
-    try:
-        m = json.loads(ruta.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as e:
-        print(f"ERROR: JSON inválido: {e}. Pasar antes por validar_modelo.py.", file=sys.stderr)
-        return 2
+
+def figura(m: dict, padre: str | None = None, destacar: str | None = None, mk: dict | None = None,
+           titulo: str | None = None, explorador: bool = False) -> tuple[str, dict]:
+    """El SVG de un nivel: los hijos de «padre» (None = las raíces) en vista explotada.
+
+    Devuelve (svg, info) con info = {"piezas", "formas", "viewBox", "titulo", "subtitulo", "criterio"}.
+    Lanza ValueError si «padre» o «destacar» no existen o si «padre» no tiene hijos.
+    explorador=True da la lámina de explorador.py: sin título, subtítulo, lista ni pie (van en el HTML),
+    con las caras marcadas por clase para pintar la selección con CSS y cada llamada agrupada con el id de
+    su pieza.
+    """
+    mk = mk or dict(MARCA_NINGUNA)
     tipo = m.get("tipo") if m.get("tipo") in EJE_POR_TIPO else "fisico"
-    try:
-        mk = cargar_marca(a.marca)
-    except ValueError as e:
-        print(f"ERROR: {e}", file=sys.stderr)
-        return 2
-
     piezas = {p["id"]: p for p in m.get("piezas", []) if isinstance(p, dict) and "id" in p}
-    if a.subconjunto and a.subconjunto not in piezas:
-        print(f"ERROR: --subconjunto «{a.subconjunto}» no existe en piezas", file=sys.stderr)
-        return 2
-    if a.destacar and a.destacar not in piezas:
-        print(f"ERROR: --destacar «{a.destacar}» no existe en piezas", file=sys.stderr)
-        return 2
-    padre = a.subconjunto
+    if padre and padre not in piezas:
+        raise ValueError(f"--subconjunto «{padre}» no existe en piezas")
+    if destacar and destacar not in piezas:
+        raise ValueError(f"--destacar «{destacar}» no existe en piezas")
     grupo = [p for p in piezas.values() if p.get("padre") == padre]
     if not grupo:
-        print(f"ERROR: «{padre}» no tiene hijos que explotar", file=sys.stderr)
-        return 2
+        raise ValueError(f"«{padre}» no tiene hijos que explotar")
     # Orden ascendente: la 1 abajo. Sin «orden» en todas, el del flujo; si tampoco, el de escritura.
     flujo = [f for f in m.get("flujo") or [] if isinstance(f, str)]
     criterio = None
@@ -387,8 +377,9 @@ def main(argv: list[str]) -> int:
     elif all(p["id"] in flujo for p in grupo):
         grupo.sort(key=lambda p: flujo.index(p["id"]))
         criterio = "flujo"
-    n = len(grupo)
     formas = [forma_de(p, tipo) for p in grupo]
+    ancho = W_EXPLORADOR if explorador else W
+    top = 36 if explorador else TOP
 
     # Alturas: la escena se construye de abajo arriba; cada pieza a SEP de la anterior más su propio alto.
     # Una fila de chips iguales va centrada en el eje: su mitad izquierda sube en pantalla y hay que dejarle
@@ -420,13 +411,12 @@ def main(argv: list[str]) -> int:
         zs.append(z)
         cima = max(cima, z + fo["h"] + sube + ((fo["w"] + fo["d"]) / 2 - fo.get("dy", 0)) * SIN)
         z += fo["h"] + SEP + sube
-    pie_h = 56 if mk["pie"] else 24
-    oy = TOP + 12 + cima
+    pie_h = 56 if mk["pie"] and not explorador else 24
+    oy = top + 12 + cima
     H = int(oy + 130 + pie_h)
-    iso = Iso(ESCENA_CX, oy)  # origen (0,0,0) en pantalla: la base de la pieza 1
+    iso = Iso(ESCENA_CX, oy, marcar=explorador)  # origen (0,0,0) en pantalla: la base de la pieza 1
 
     ids_grupo = {p["id"] for p in grupo}
-    titulo = a.titulo
     if not titulo:
         for f in m.get("figuras", []):
             if isinstance(f, dict) and set(f.get("piezas") or []) == ids_grupo and f.get("titulo"):
@@ -447,11 +437,12 @@ def main(argv: list[str]) -> int:
         subt = f"Vista explotada · las partes de {recortar(piezas[padre]['nombre'], 60)}" if padre else "Vista explotada"
 
     s: list[str] = []
-    s.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMid meet" '
+    s.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {ancho} {H}" preserveAspectRatio="xMidYMid meet" '
              f'role="img" aria-label="{escape(recortar(titulo, 120))}" font-family="{escape(mk["fuente"])}">')
-    s.append(f'<rect width="{W}" height="{H}" fill="{PAPEL}"/>')
-    s.append(f'<text x="64" y="52" font-size="26" font-weight="700" fill="{mk["primario"]}">{escape(recortar(titulo, 78))}</text>')
-    s.append(f'<text x="64" y="80" font-size="15" fill="{GRIS}">{escape(subt)}</text>')
+    s.append(f'<rect width="{ancho}" height="{H}" fill="{PAPEL}"/>')
+    if not explorador:
+        s.append(f'<text x="64" y="52" font-size="26" font-weight="700" fill="{mk["primario"]}">{escape(recortar(titulo, 78))}</text>')
+        s.append(f'<text x="64" y="80" font-size="15" fill="{GRIS}">{escape(subt)}</text>')
 
     # Sombra suave bajo la pieza base y eje de montaje.
     sx, sy = iso.p(0, 0, -6)
@@ -463,8 +454,8 @@ def main(argv: list[str]) -> int:
     # Primera pasada: dibujar las piezas y recoger los anclajes; después repartir la lista sin solapes.
     dibujos: list[tuple[dict, str, str, tuple[float, float], float, bool, bool, dict]] = []
     for i, (p, forma) in enumerate(zip(grupo, formas)):
-        destacada = a.destacar == p["id"]
-        apagada = bool(a.destacar) and not destacada
+        destacada = destacar == p["id"]
+        apagada = bool(destacar) and not destacada
         col, sw = paleta(mk, destacada, apagada)
         cuerpo, ancla, h = dibujar_pieza(iso, p, forma, zs[i], col, sw)
         dibujos.append((p, forma, cuerpo, ancla, h, destacada, apagada, col))
@@ -476,7 +467,7 @@ def main(argv: list[str]) -> int:
         ys_lista.append(y)
         tope = y - FILA
     # Si la primera se salió por arriba, empujar todo hacia abajo lo justo.
-    desplazar = max(0.0, (TOP - 10) - ys_lista[0])
+    desplazar = max(0.0, (top - 10) - ys_lista[0])
     ys_lista = [y + desplazar for y in ys_lista]
 
     s.append('<g id="fv-escena">')
@@ -514,10 +505,15 @@ def main(argv: list[str]) -> int:
         xk = xq - abs(dy)
         if xk < ancla[0] + 12:
             xk = ancla[0] + 12
+        if explorador:
+            llamadas.append(f'<g class="fv-llamada" data-id="{escape(p["id"])}">')
         llamadas.append(f'<polyline points="{ancla[0]:.1f},{ancla[1]:.1f} {xk:.1f},{ancla[1]:.1f} {xq:.1f},{yc:.1f} {X_LLAMADA - 16:.1f},{yc:.1f}" fill="none" stroke="{LINEA}" stroke-width="1.3" stroke-linejoin="round"/>')
         llamadas.append(f'<circle cx="{ancla[0]:.1f}" cy="{ancla[1]:.1f}" r="3" fill="{color_num}"/>')
         llamadas.append(f'<circle cx="{X_LLAMADA}" cy="{yc:.1f}" r="15" fill="{color_num}"/>')
         llamadas.append(f'<text x="{X_LLAMADA}" y="{yc + 5:.1f}" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">{num}</text>')
+        if explorador:
+            llamadas.append("</g>")
+            continue
         # Lista a la derecha, alineada con la llamada.
         detalle = []
         if p.get("cantidad") and p["cantidad"] != 1:
@@ -533,15 +529,45 @@ def main(argv: list[str]) -> int:
             lista.append(f'<text x="{X_LISTA}" y="{yc + 12 + 18 * k:.1f}" font-size="14" fill="{GRIS}">{escape(linea)}</text>')
     s.append("</g>")
     s.append('<g id="fv-llamadas">' + "\n".join(llamadas) + "</g>")
-    s.append('<g id="fv-lista">' + "\n".join(lista) + "</g>")
-    if mk["pie"]:
+    if not explorador:
+        s.append('<g id="fv-lista">' + "\n".join(lista) + "</g>")
+    if mk["pie"] and not explorador:
         yp = H - 22
         s.append(f'<line x1="64" y1="{yp - 22}" x2="{W - 64}" y2="{yp - 22}" stroke="{LINEA}" stroke-width="1"/>')
         s.append(f'<text x="64" y="{yp}" font-size="13" fill="{GRIS}">{escape(mk["pie"])}</text>')
         s.append(f'<text x="{W - 64}" y="{yp}" font-size="12" fill="{mk["secundario"]}" text-anchor="end" letter-spacing="1.5">{escape(mk["lema"])}</text>')
     s.append("</svg>")
-    svg = "\n".join(s)
+    info = {"piezas": [p["id"] for p in grupo], "formas": dict(zip([p["id"] for p in grupo], formas)),
+            "viewBox": f"0 0 {ancho} {H}", "titulo": titulo, "subtitulo": subt, "criterio": criterio}
+    return "\n".join(s), info
 
+
+def main(argv: list[str]) -> int:
+    _utf8_stdout()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("modelo")
+    ap.add_argument("--salida", required=True)
+    ap.add_argument("--subconjunto", default=None, help="id de la pieza cuyos hijos se explotan")
+    ap.add_argument("--destacar", default=None, help="id de la única pieza que va en color")
+    ap.add_argument("--marca", default="ninguna", help="ruta de un JSON de marca (ver assets/marca-ejemplo.json) o «ninguna»")
+    ap.add_argument("--titulo", default=None, help="título de la figura; por defecto, el de la figura del modelo con las mismas piezas")
+    a = ap.parse_args(argv[1:])
+
+    ruta = Path(a.modelo)
+    if not ruta.is_file():
+        print(f"ERROR: no existe {ruta}", file=sys.stderr)
+        return 2
+    try:
+        m = json.loads(ruta.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        print(f"ERROR: JSON inválido: {e}. Pasar antes por validar_modelo.py.", file=sys.stderr)
+        return 2
+    try:
+        mk = cargar_marca(a.marca)
+        svg, info = figura(m, a.subconjunto, a.destacar, mk, a.titulo)
+    except ValueError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        return 2
     try:
         ET.fromstring(svg)
     except ET.ParseError as e:
@@ -550,8 +576,8 @@ def main(argv: list[str]) -> int:
     salida = Path(a.salida)
     salida.parent.mkdir(parents=True, exist_ok=True)
     salida.write_text(svg, encoding="utf-8")
-    print(json.dumps({"salida": str(salida), "piezas": [p["id"] for p in grupo], "viewBox": f"0 0 {W} {H}",
-                      "destacada": a.destacar, "subconjunto": padre, "formas": dict(zip([p["id"] for p in grupo], formas))}, ensure_ascii=False))
+    print(json.dumps({"salida": str(salida), "piezas": info["piezas"], "viewBox": info["viewBox"],
+                      "destacada": a.destacar, "subconjunto": a.subconjunto, "formas": info["formas"]}, ensure_ascii=False))
     return 0
 
 

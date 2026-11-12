@@ -31,8 +31,12 @@ Con `--interactivo`, el mismo modelo sale como una página que **se abre y se re
 cargar, se desmonta pieza a pieza, sigue el flujo paso a paso y te deja entrar en la pieza que decide.
 [Mirá la demo interactiva](docs/interactivo.md).
 
+Con `--explorador`, cualquier modelo sale como un **explorador con zoom**: te acercás a una pieza con «+» y se abre
+en su propia lámina; te alejás y volvés. Sirve para un SSD y para la historia de un país.
+[Mirá la demo del explorador](docs/explorador.md).
+
 > Sin dependencias: Python 3.10 o superior y nada más. La figura sale con `viewBox`, así que escala donde la pongas.
-> Node 22 solo hace falta para capturar la página interactiva, y es opcional.
+> Node 22 solo hace falta para capturar la interactiva o el explorador, y es opcional.
 
 <table>
   <tr>
@@ -80,6 +84,7 @@ python -I scripts/validar_modelo.py assets/ejemplo-fisico.json
 python -I scripts/explosionado.py assets/ejemplo-fisico.json --salida figuras/n1.svg --destacar controladora
 python -I scripts/ensamblar.py assets/ejemplo-fisico.json --figuras figuras/ --salida despiece.html
 python -I scripts/ensamblar.py assets/ejemplo-fisico.json --salida interactivo.html --interactivo
+python -I scripts/ensamblar.py assets/ejemplo-historia-argentina.json --salida explorador.html --explorador
 ```
 
 Paso a paso para Mac y Windows, con lo que puede fallar, en [docs/instalacion.md](docs/instalacion.md).
@@ -187,16 +192,19 @@ despiece/
 │   ├── ensamblar.py          ← página HTML claro/oscuro con todos los niveles
 │   ├── isometrico.py         ← geometría y alturas de la página interactiva
 │   ├── interactiva.py        ← página interactiva (--interactivo)
+│   ├── explorador.py         ← explorador con zoom entre niveles (--explorador)
 │   └── capturar-cdp.mjs      ← captura en tiempo real para revisarla (Node 22, opcional)
 ├── references/               ← guion visual, formato del modelo, pruebas de comprensión
 ├── assets/
 │   ├── ejemplo-*.json        ← un modelo por clase de caso: SSD, red, historia, auditoría…
 │   ├── plantilla-interactiva.html
+│   ├── plantilla-explorador.html
 │   └── marca-ejemplo.json
 ├── evals/                    ← casos para comprobar que la skill no se rompe
 ├── docs/ejemplos.md          ← los 9 ejemplos con sus figuras, nivel por nivel
 ├── docs/demo/                ← SVG de demostración (iso/ el SSD, ejemplos/ el resto)
 ├── docs/interactivo/         ← la página interactiva del SSD y sus capturas
+├── docs/explorador/          ← los exploradores del SSD y de la historia argentina, con capturas
 └── CHANGELOG.md
 ```
 
@@ -215,7 +223,7 @@ Los scripts corren con `python -I` (modo aislado) a propósito: nada de tu entor
 - [x] Profundidad a demanda: cada pieza se abre cuando la pedís (2.0.0)
 - [x] Página HTML claro/oscuro con pruebas de comprensión
 - [x] [Página interactiva](docs/interactivo.md) que se abre y se recorre con el scroll (1.2.0, solo físico)
-- [ ] **Explorador interactivo** con zoom semántico: acercás una pieza y se abre; te alejás y se cierra
+- [x] [Explorador](docs/explorador.md) con zoom semántico: acercás una pieza y se abre; te alejás y se cierra (2.1.0)
 - [ ] Figuras propias de flujo y de red (hoy se delegan a una skill de diagramas)
 - [ ] Exportar un nivel a PNG/PDF desde la propia página
 

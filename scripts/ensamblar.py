@@ -1,6 +1,6 @@
 """Ensambla la página HTML del despiece a partir del modelo y de las figuras ya dibujadas.
 
-Usage: python -I ensamblar.py MODELO.json --salida PAGINA.html [--figuras CARPETA] [--marca RUTA.json|ninguna] [--interactivo]
+Usage: python -I ensamblar.py MODELO.json --salida PAGINA.html [--figuras CARPETA] [--marca RUTA.json|ninguna] [--interactivo | --explorador]
 
 La plantilla es fija y el modelo solo aporta el contenido: cabecera con la pregunta foco y el lector;
 nivel 0 (el todo y su frontera); nivel 1 con su figura y la lista de piezas, cada una con su fuente;
@@ -16,16 +16,25 @@ se abre en su propia lámina y predicción con opciones. Las figuras se dibujan 
 --figuras no se usa. Sin geometría o en otro tipo, escribe la página estática y lo dice («interactivo»:
 false y «motivo» en la salida).
 
+--explorador, en cualquier tipo, escribe en su lugar el explorador (assets/plantilla-explorador.html,
+detalle en references/explorador.md): una lámina explotada por nivel, dibujada con la misma geometría que
+explosionado.py, y zoom semántico entre ellas (rueda, pellizco, botones o teclas + y −: acercar sobre una
+pieza con «+» la abre; alejar vuelve al nivel de arriba). Un panel lateral lleva las migas, las piezas del
+nivel y la ficha de la elegida (función y fuente); «atrás» del navegador sube un nivel y #/<id> abre uno
+directamente. No usa --figuras. Incompatible con --interactivo.
+
 --marca acepta la ruta de un fichero JSON con la marca del proyecto (assets/marca-ejemplo.json enseña
 los campos: nombre, primario, secundario, fuente, pie, lema) o «ninguna», el valor por defecto: la skill
 no trae la marca de ninguna organización. Tema claro y oscuro respetando los colores de marca.
 Salida en stdout: JSON {"salida", "interactivo", "figuras_incrustadas", "figuras_pendientes", "secciones"};
-con --interactivo, además «oclusiones» (piezas que otra tapa en algún paso del desmontaje) y «alzas».
+con --interactivo, además «oclusiones» (piezas que otra tapa en algún paso del desmontaje) y «alzas»;
+con --explorador, «explorador»: true y «niveles» (los que se pueden abrir; "" es el todo).
 Códigos de salida: 0 OK · 1 hay figuras pendientes u oclusiones (la página se escribe igual) · 2
-argumentos, fichero del modelo, fichero de marca o geometría inválidos.
+argumentos, fichero del modelo, fichero de marca, geometría o niveles inválidos.
 Ejemplo:
   python -I ensamblar.py despiece/modelo.json --salida despiece/index.html --figuras despiece/figuras --marca marca.json
   python -I ensamblar.py despiece/modelo.json --salida despiece/interactivo.html --interactivo
+  python -I ensamblar.py despiece/modelo.json --salida despiece/explorador.html --explorador
 """
 from __future__ import annotations
 
@@ -168,7 +177,13 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--marca", default="ninguna", help="ruta de un JSON de marca (ver assets/marca-ejemplo.json) o «ninguna»")
     ap.add_argument("--interactivo", action="store_true",
                     help="página interactiva (tipo físico con «geometria»); si no se puede, la estática")
+    ap.add_argument("--explorador", action="store_true",
+                    help="explorador con zoom semántico entre niveles (cualquier tipo; references/explorador.md)")
     a = ap.parse_args(argv[1:])
+    if a.interactivo and a.explorador:
+        print("ERROR: --interactivo y --explorador son dos páginas distintas: elegir una (o ensamblar dos veces "
+              "con --salida distinta).", file=sys.stderr)
+        return 2
 
     ruta = Path(a.modelo)
     if not ruta.is_file():
@@ -186,6 +201,8 @@ def main(argv: list[str]) -> int:
         return 2
     mk["primario_oscuro"] = aclarar(mk["primario"])
     mk["secundario_oscuro"] = aclarar(mk["secundario"])
+    if a.explorador:
+        return explorador(m, mk, Path(a.salida))
     motivo = None
     if a.interactivo:
         if m.get("tipo") != "fisico":
@@ -308,6 +325,27 @@ def interactiva(m: dict, mk: dict, salida: Path) -> int:
                       "secciones": info["secciones"], "oclusiones": info["oclusiones"], "alzas": info["alzas"]},
                      ensure_ascii=False))
     return 1 if info["oclusiones"] else 0
+
+
+def explorador(m: dict, mk: dict, salida: Path) -> int:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import xml.etree.ElementTree as ET  # noqa: E402
+    import explorador as exp  # noqa: E402
+    try:
+        texto, info = exp.pagina(m, mk)
+    except ValueError as ex:
+        print(f"ERROR: {ex}. validar_modelo.py dice qué corregir en el modelo.", file=sys.stderr)
+        return 2
+    except ET.ParseError as ex:
+        print(f"ERROR: una lámina no es SVG válido ({ex}); revisar nombres con caracteres raros y avisar del fallo.", file=sys.stderr)
+        return 2
+    salida.parent.mkdir(parents=True, exist_ok=True)
+    salida.write_text(texto, encoding="utf-8")
+    print(json.dumps({"salida": str(salida), "explorador": True, "interactivo": False, "niveles": info["niveles"],
+                      "piezas": info["piezas"], "figuras_incrustadas": [], "figuras_pendientes": [],
+                      "secciones": ["nivel" + (":" + n if n else "0") for n in info["niveles"]]},
+                     ensure_ascii=False))
+    return 0
 
 
 if __name__ == "__main__":

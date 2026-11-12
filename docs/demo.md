@@ -1,6 +1,6 @@
 <div align="center">
 
-[**← README**](../README.md) · **Demo** · [**Interactiva**](interactivo.md) · [**Instalación**](instalacion.md) · [**Changelog**](../CHANGELOG.md) · [**Licencia**](../LICENSE)
+[**← README**](../README.md) · **Demo** · [**Interactiva**](interactivo.md) · [**Explorador**](explorador.md) · [**Instalación**](instalacion.md) · [**Changelog**](../CHANGELOG.md) · [**Licencia**](../LICENSE)
 
 </div>
 
@@ -66,6 +66,7 @@ Al final de la página (y en la conversación) van las dos puertas de comprensi�
 Páginas completas: [tema claro](demo/pagina-claro.png) · [tema oscuro](demo/pagina-oscuro.png).
 
 La misma explicación como página que se abre, se desmonta al bajar y recorre el flujo: [**Interactiva**](interactivo.md).
+O como explorador con zoom, una lámina por nivel: [**Explorador**](explorador.md).
 
 ## Reproducilo en tu máquina
 
