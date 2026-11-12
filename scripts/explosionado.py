@@ -11,7 +11,8 @@ con --destacar una sola pieza va en color y el resto queda en gris. Llamadas num
 hasta la lista de piezas, a la derecha, para que las guías no se crucen.
 
 Forma de cada pieza: campo opcional «forma» en la pieza (placa | chip | conector | modulo | carcasa |
-disipador | cable). Sin él, se infiere del nombre; si no se reconoce, módulo.
+disipador | cable | capa). Sin él, se infiere del nombre; si no se reconoce, módulo en una raíz y capa
+(loseta con retícula, para partes lógicas o internas) en una pieza hija.
 
 --marca acepta la ruta de un JSON con la marca del proyecto (assets/marca-ejemplo.json enseña los campos)
 o «ninguna», el valor por defecto: la skill no trae la marca de ninguna organización.
@@ -39,19 +40,20 @@ CAMPOS_MARCA = {"nombre", "primario", "secundario", "fuente", "pie", "lema"}
 HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
 TINTA, GRIS, LINEA, PAPEL = "#1f2933", "#7b8794", "#cbd2d9", "#ffffff"
 # Lienzo: escena isométrica a la izquierda, lista de piezas a la derecha.
-W, X_LISTA, X_LLAMADA, TOP, SEP = 1240, 700, 612, 128, 96
+W, X_LISTA, X_LLAMADA, TOP, SEP = 1240, 720, 632, 128, 104
 COS, SIN = math.cos(math.radians(30)), math.sin(math.radians(30))
 ESCENA_CX, ESCENA_W = 330, 560  # centro horizontal de la escena en pantalla
 
 # Formas: (ancho x, fondo y, alto z) en unidades de escena, y cómo se colocan.
 FORMAS = {
-    "placa":     dict(w=300, d=170, h=8),
-    "chip":      dict(w=78, d=78, h=12),
-    "conector":  dict(w=240, d=26, h=16, dy=62),      # pegado al borde frontal
-    "modulo":    dict(w=140, d=100, h=34),
-    "carcasa":   dict(w=330, d=196, h=44, hueco=True),
-    "disipador": dict(w=220, d=120, h=22, aletas=6),
-    "cable":     dict(w=260, d=14, h=10, dy=-50),
+    "placa":     dict(w=300, d=170, h=6),
+    "chip":      dict(w=84, d=84, h=10),          # encapsulado con pines a los lados y bisel
+    "conector":  dict(w=240, d=26, h=18, dy=62),  # bloque con lengüeta de contactos dorados
+    "modulo":    dict(w=150, d=100, h=36),        # bloque con bisel y rejilla
+    "carcasa":   dict(w=330, d=196, h=48),        # bandeja abierta, paredes finas
+    "disipador": dict(w=220, d=120, h=30),        # base + aletas
+    "cable":     dict(w=260, d=16, h=8, dy=-50),  # cinta plana con pliegue
+    "capa":      dict(w=170, d=120, h=5),         # loseta fina con retícula: partes lógicas o internas (celdas, bloques, firmware)
 }
 PISTAS = [  # palabra en el nombre → forma (se evalúan en orden)
     (r"\b(pcb|placa|board|mainboard|tarjeta)\b", "placa"),
@@ -135,11 +137,12 @@ def forma_de(p: dict) -> str:
     f = p.get("forma")
     if isinstance(f, str) and f in FORMAS:
         return f
-    nombre = (p.get("nombre", "") + " " + p.get("id", "")).lower()
+    nombre = str(p.get("nombre", "")).lower()
     for patron, forma in PISTAS:
         if re.search(patron, nombre):
             return forma
-    return "modulo"
+    # Sin pista en el nombre: una raíz es un módulo; una pieza interior (hija) suele ser lógica → capa.
+    return "capa" if p.get("padre") else "modulo"
 
 
 class Iso:
@@ -164,6 +167,27 @@ class Iso:
         return "\n".join(s)
 
 
+def _chip(iso: Iso, cx: float, cy: float, z: float, w: float, d: float, h: float, col: dict, sw: float) -> list[str]:
+    """Encapsulado: cuerpo con bisel superior, pines en los dos lados visibles y marca de pin 1."""
+    s = [iso.caja(cx, cy, z, w, d, h, col, sw)]
+    # Bisel: rectángulo interior más claro en la cara superior.
+    b = 10
+    s.append(f'<polygon points="{iso.pts((cx - w/2 + b, cy - d/2 + b, z + h + 0.1), (cx + w/2 - b, cy - d/2 + b, z + h + 0.1), (cx + w/2 - b, cy + d/2 - b, z + h + 0.1), (cx - w/2 + b, cy + d/2 - b, z + h + 0.1))}" fill="{col["borde"]}" fill-opacity="0.08" stroke="{col["borde"]}" stroke-width="0.7" stroke-opacity="0.6"/>')
+    # Pines: pequeños salientes en las caras izquierda (y+) y derecha (x+).
+    n = 7
+    for k in range(n):
+        t = (k + 0.5) / n
+        # cara y+ (izquierda en pantalla): pines a lo largo de x
+        xx = cx - w/2 + t * w
+        s.append(f'<polygon points="{iso.pts((xx - 3, cy + d/2, z), (xx + 3, cy + d/2, z), (xx + 3, cy + d/2 + 7, z - 1), (xx - 3, cy + d/2 + 7, z - 1))}" fill="{col["der"]}" stroke="{col["borde"]}" stroke-width="0.6"/>')
+        # cara x+ (derecha): pines a lo largo de y
+        yy = cy - d/2 + t * d
+        s.append(f'<polygon points="{iso.pts((cx + w/2, yy - 3, z), (cx + w/2, yy + 3, z), (cx + w/2 + 7, yy + 3, z - 1), (cx + w/2 + 7, yy - 3, z - 1))}" fill="{col["der"]}" stroke="{col["borde"]}" stroke-width="0.6"/>')
+    px, py = iso.p(cx - w/2 + 16, cy - d/2 + 16, z + h + 0.2)
+    s.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="2.6" fill="{col["borde"]}"/>')
+    return s
+
+
 def dibujar_pieza(iso: Iso, p: dict, forma: str, z: float, col: dict, sw: float) -> tuple[str, tuple[float, float], float]:
     """Devuelve (svg, punto de anclaje derecho para la llamada, alto total de la pieza)."""
     f = FORMAS[forma]
@@ -171,56 +195,94 @@ def dibujar_pieza(iso: Iso, p: dict, forma: str, z: float, col: dict, sw: float)
     cy = f.get("dy", 0)
     s: list[str] = []
     cantidad = p.get("cantidad") if isinstance(p.get("cantidad"), int) and p.get("cantidad", 1) > 1 else 1
-    if forma == "chip" and cantidad > 1:
-        # Varios chips iguales en una fila sobre el eje x, centrados.
+    if forma == "chip":
         n = min(cantidad, 6)
-        paso = w + 18
+        paso = w + 26
         x0 = -(n - 1) * paso / 2
         for k in range(n):
-            s.append(iso.caja(x0 + k * paso, 0, z, w, d, h, col, sw))
-            # Marca del encapsulado: punto del pin 1.
-            px, py = iso.p(x0 + k * paso - w / 2 + 12, -d / 2 + 12, z + h + 0.1)
-            s.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="2.2" fill="{col["borde"]}"/>')
+            s += _chip(iso, x0 + k * paso, 0, z, w, d, h, col, sw)
         ancho_total = (n - 1) * paso + w
-        ancla = iso.p(ancho_total / 2, 0, z + h / 2)
+        ancla = iso.p(ancho_total / 2 + 7, 0, z + h / 2)
         return "\n".join(s), ancla, h
-    if forma == "carcasa":
-        s.append(iso.caja(0, 0, z, w, d, h, col, sw, ' fill-opacity="0.55"'))
-        # Hueco interior: la carcasa se ve como bandeja.
-        s.append(f'<polygon points="{iso.pts((-w/2+14, -d/2+14, z+h), (w/2-14, -d/2+14, z+h), (w/2-14, d/2-14, z+h), (-w/2+14, d/2-14, z+h))}" fill="{PAPEL}" fill-opacity="0.9" stroke="{col["borde"]}" stroke-width="{sw*0.8}" stroke-dasharray="4,3"/>')
-    elif forma == "placa":
+    if forma == "placa":
         s.append(iso.caja(0, 0, z, w, d, h, col, sw))
-        # Pistas sugeridas: tres líneas finas sobre la placa (sin pretender fidelidad).
-        for k, yy in enumerate((-40, 0, 40)):
-            a = iso.p(-w / 2 + 30, yy, z + h + 0.1)
-            b = iso.p(w / 2 - 30, yy + (18 if k == 1 else 0), z + h + 0.1)
-            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col["borde"]}" stroke-width="0.8" stroke-opacity="0.45"/>')
-        # Taladros de fijación en las esquinas.
-        for xx, yy in ((-w / 2 + 16, -d / 2 + 16), (w / 2 - 16, -d / 2 + 16), (-w / 2 + 16, d / 2 - 16), (w / 2 - 16, d / 2 - 16)):
+        # Pistas: trazos finos en L con vías, sobre la cara superior.
+        for k, (yy, largo) in enumerate(((-52, 0.78), (-18, 0.62), (14, 0.84), (46, 0.55))):
+            a = iso.p(-w/2 + 24, yy, z + h + 0.1)
+            m_ = iso.p(-w/2 + 24 + (w - 48) * largo, yy, z + h + 0.1)
+            b = iso.p(-w/2 + 24 + (w - 48) * largo, yy + 14, z + h + 0.1)
+            s.append(f'<polyline points="{a[0]:.1f},{a[1]:.1f} {m_[0]:.1f},{m_[1]:.1f} {b[0]:.1f},{b[1]:.1f}" fill="none" stroke="{col["borde"]}" stroke-width="0.9" stroke-opacity="0.5"/>')
+            s.append(f'<circle cx="{b[0]:.1f}" cy="{b[1]:.1f}" r="1.6" fill="{col["borde"]}" fill-opacity="0.6"/>')
+        # Huellas (pads) donde irán los chips: rectángulos punteados.
+        for xx in (-70, 10, 90):
+            s.append(f'<polygon points="{iso.pts((xx - 30, -30, z + h + 0.1), (xx + 30, -30, z + h + 0.1), (xx + 30, 30, z + h + 0.1), (xx - 30, 30, z + h + 0.1))}" fill="none" stroke="{col["borde"]}" stroke-width="0.7" stroke-dasharray="3,3" stroke-opacity="0.5"/>')
+        # Taladros de fijación.
+        for xx, yy in ((-w/2 + 16, -d/2 + 16), (w/2 - 16, -d/2 + 16), (-w/2 + 16, d/2 - 16), (w/2 - 16, d/2 - 16)):
             px, py = iso.p(xx, yy, z + h + 0.1)
-            s.append(f'<ellipse cx="{px:.1f}" cy="{py:.1f}" rx="4" ry="2.3" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="0.8"/>')
+            s.append(f'<ellipse cx="{px:.1f}" cy="{py:.1f}" rx="4.5" ry="2.6" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="0.9"/>')
+        # Muesca de la llave en el borde del conector (lado y+).
+        s.append(f'<polygon points="{iso.pts((40, d/2, z - 0.1), (52, d/2, z - 0.1), (52, d/2 - 10, z + h + 0.1), (40, d/2 - 10, z + h + 0.1))}" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="0.8"/>')
     elif forma == "conector":
-        s.append(iso.caja(0, cy, z, w, d, h, col, sw))
-        # Contactos: peine de líneas en la cara frontal.
-        for k in range(14):
-            xx = -w / 2 + 14 + k * (w - 28) / 13
-            a = iso.p(xx, cy + d / 2, z + 2)
-            b = iso.p(xx, cy + d / 2, z + h - 2)
-            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col["borde"]}" stroke-width="1" stroke-opacity="0.6"/>')
+        # Cuerpo bajo y, delante, la lengüeta de contactos (más baja, más ancha, dorada).
+        s.append(iso.caja(0, cy - 6, z, w, d - 12, h, col, sw))
+        leng_h = 4
+        s.append(iso.caja(0, cy + d/2 - 2, z, w - 20, 10, leng_h, {"sup": "#e8d9a8", "izq": "#d8c48a", "der": "#c9b273", "borde": col["borde"]}, sw * 0.8))
+        for k in range(18):
+            xx = -w/2 + 18 + k * (w - 36) / 17
+            a = iso.p(xx, cy + d/2 - 7, z + leng_h + 0.2)
+            b = iso.p(xx, cy + d/2 + 3, z + leng_h + 0.2)
+            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col["borde"]}" stroke-width="0.8" stroke-opacity="0.55"/>')
+        # Muesca de llave en la lengüeta.
+        s.append(f'<polygon points="{iso.pts((40, cy + d/2 - 7, z + leng_h + 0.3), (52, cy + d/2 - 7, z + leng_h + 0.3), (52, cy + d/2 + 3, z + leng_h + 0.3), (40, cy + d/2 + 3, z + leng_h + 0.3))}" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="0.7"/>')
+    elif forma == "carcasa":
+        # Bandeja: base fina + cuatro paredes; el interior se ve.
+        s.append(iso.caja(0, 0, z, w, d, 4, col, sw))
+        t = 8
+        s.append(iso.caja(0, -d/2 + t/2, z + 4, w, t, h - 4, col, sw))          # pared trasera (y-)
+        s.append(iso.caja(-w/2 + t/2, 0, z + 4, t, d, h - 4, col, sw))          # pared izquierda (x-)
+        s.append(iso.caja(w/2 - t/2, 0, z + 4, t, d, h - 4, col, sw, ' fill-opacity="0.9"'))  # pared derecha (x+)
+        s.append(iso.caja(0, d/2 - t/2, z + 4, w, t, h - 4, col, sw, ' fill-opacity="0.9"'))  # pared frontal (y+)
+        # Rejilla de ventilación en la pared frontal.
+        for k in range(8):
+            xx = -w/2 + 40 + k * 22
+            a = iso.p(xx, d/2, z + 14); b = iso.p(xx, d/2, z + h - 10)
+            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col["borde"]}" stroke-width="1" stroke-opacity="0.5"/>')
     elif forma == "disipador":
         base = 6
         s.append(iso.caja(0, 0, z, w, d, base, col, sw))
-        n = f.get("aletas", 6)
+        n = 9
         for k in range(n):
-            xx = -w / 2 + 14 + k * (w - 28) / (n - 1)
-            s.append(iso.caja(xx, 0, z + base, 8, d - 16, h - base, col, sw * 0.8))
+            xx = -w/2 + 12 + k * (w - 24) / (n - 1)
+            s.append(iso.caja(xx, 0, z + base, 5, d - 12, h - base, col, sw * 0.7))
     elif forma == "cable":
+        # Cinta plana con un pliegue en zigzag y conductores paralelos.
         s.append(iso.caja(0, cy, z, w, d, h, col, sw))
-    else:  # modulo y chip simple
+        for k in range(1, 6):
+            yy = cy - d/2 + k * d / 6
+            a = iso.p(-w/2 + 6, yy, z + h + 0.1); b = iso.p(w/2 - 6, yy, z + h + 0.1)
+            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col["borde"]}" stroke-width="0.7" stroke-opacity="0.5"/>')
+    elif forma == "capa":
         s.append(iso.caja(0, cy, z, w, d, h, col, sw))
-        if forma == "chip":
-            px, py = iso.p(-w / 2 + 12, -d / 2 + 12, z + h + 0.1)
-            s.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="2.4" fill="{col["borde"]}"/>')
+        # Retícula sobre la loseta: sugiere celdas/bloques sin pretender fidelidad.
+        nx, ny = 6, 4
+        for k in range(1, nx):
+            xx = -w/2 + k * w / nx
+            a = iso.p(xx, -d/2, z + h + 0.1); b = iso.p(xx, d/2, z + h + 0.1)
+            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col["borde"]}" stroke-width="0.7" stroke-opacity="0.45"/>')
+        for k in range(1, ny):
+            yy = -d/2 + k * d / ny
+            a = iso.p(-w/2, yy, z + h + 0.1); b = iso.p(w/2, yy, z + h + 0.1)
+            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col["borde"]}" stroke-width="0.7" stroke-opacity="0.45"/>')
+        # Una celda rellena como «unidad» de la retícula.
+        s.append(f'<polygon points="{iso.pts((-w/2, -d/2, z + h + 0.2), (-w/2 + w/nx, -d/2, z + h + 0.2), (-w/2 + w/nx, -d/2 + d/ny, z + h + 0.2), (-w/2, -d/2 + d/ny, z + h + 0.2))}" fill="{col["borde"]}" fill-opacity="0.18"/>')
+    else:  # modulo: bloque con bisel superior y etiqueta
+        s.append(iso.caja(0, cy, z, w, d, h, col, sw))
+        b = 12
+        s.append(f'<polygon points="{iso.pts((-w/2 + b, cy - d/2 + b, z + h + 0.1), (w/2 - b, cy - d/2 + b, z + h + 0.1), (w/2 - b, cy + d/2 - b, z + h + 0.1), (-w/2 + b, cy + d/2 - b, z + h + 0.1))}" fill="{PAPEL}" fill-opacity="0.5" stroke="{col["borde"]}" stroke-width="0.8" stroke-opacity="0.7"/>')
+        for k in range(5):
+            yy = cy - d/2 + 18 + k * 12
+            a = iso.p(w/2, yy, z + 8); b2 = iso.p(w/2, yy, z + h - 8)
+            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b2[0]:.1f}" y2="{b2[1]:.1f}" stroke="{col["borde"]}" stroke-width="1" stroke-opacity="0.45"/>')
     ancla = iso.p(w / 2, cy, z + h / 2)
     return "\n".join(s), ancla, h
 
@@ -290,7 +352,7 @@ def main(argv: list[str]) -> int:
         zs.append(z)
         extra = 0
         if f == "chip" and isinstance(p.get("cantidad"), int) and p["cantidad"] > 1:
-            extra = (min(p["cantidad"], 6) - 1) * (FORMAS["chip"]["w"] + 18) * SIN  # la fila baja en pantalla
+            extra = (min(p["cantidad"], 6) - 1) * (FORMAS["chip"]["w"] + 26) * SIN  # la fila baja en pantalla
         z += FORMAS[f]["h"] + SEP + extra
     alto_pila = z - SEP  # de la base de la pieza 1 a la cima de la última
     pie_h = 56 if mk["pie"] else 24
@@ -354,7 +416,10 @@ def main(argv: list[str]) -> int:
         s.append(cuerpo)
         if hijos and not destacada:
             # Pieza cerrada que se abre en otra figura: un pequeño «+» sobre ella.
-            px, py = iso.p(0, 0, zs[i] + h + 22)
+            cx_mas = 0.0
+            if forma == "chip" and isinstance(p.get("cantidad"), int) and p["cantidad"] > 1:
+                cx_mas = -(min(p["cantidad"], 6) - 1) * (FORMAS["chip"]["w"] + 26) / 2  # sobre el primer chip de la fila
+            px, py = iso.p(cx_mas, 0, zs[i] + h + 26)
             s.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="9" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="1.2"/>')
             s.append(f'<text x="{px:.1f}" y="{py + 4:.1f}" font-size="13" font-weight="700" fill="{col["borde"]}" text-anchor="middle">+</text>')
         s.append("</g>")
