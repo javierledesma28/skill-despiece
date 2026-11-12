@@ -1,6 +1,6 @@
 {
   "skill_name": "despiece",
-  "nota": "Un caso por familia (sistema, físico, proceso, idea). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku: ver resultados-2026-11-02.md.",
+  "nota": "Un caso por familia (sistema, físico, proceso, idea) más uno de la página interactiva (físico, 1.2.0). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); los cuatro primeros, corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku (resultados-2026-11-02.md); el quinto, en resultados-2026-11-02b.md.",
   "evals": [
     {
       "id": 1,
@@ -61,6 +61,23 @@
         "Cada pieza cita una fuente pública (RFC, documentación de una pasarela) o va como supuesto",
         "La página se ensambla con --marca ninguna y no aparece pie ni lema de marca en ella",
         "Si usa una metáfora, cabe en una frase y anota qué parte de ella no vale",
+        "La respuesta termina con tres frases y una pregunta de predicción"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "fisico-interactivo-ddr5",
+      "prompt": "Armame una página que se pueda abrir y recorrer con el scroll, tipo despiece en 3D, de un módulo de memoria DDR5 SO-DIMM de portátil: qué piezas tiene y por dónde pasa un dato desde el conector hasta los chips. Es para la sección de hardware de nuestra web, que lee gente que arma sus propias PC. Usá la marca de marca.json.",
+      "expected_output": "Tipo físico; pregunta foco ligada a qué cambia DDR5 en el módulo (PMIC y SPD hub en la placa, dos subcanales); modelo con bloque geometria (medidas de la norma JEDEC o dadas por aproximadas) que pasa validar_modelo.py; página con ensamblar.py --interactivo y la marca, sin oclusiones y sin alzas escritas a mano; capturas en varios estados con capturar-cdp.mjs revisadas a ojo; tres frases y predicción.",
+      "files": [],
+      "assertions": [
+        "Clasifica el objeto como físico y fija una pregunta foco; el modelo trae un bloque geometria y pasa validar_modelo.py sin errores",
+        "La página sale de ensamblar.py --interactivo (salida con interactivo: true) y lleva la marca de marca.json",
+        "La página se abre y se desarma con un gesto del lector, recorre el flujo paso a paso y sin JavaScript muestra la figura abierta",
+        "Ninguna pieza queda tapada: ensamblar.py termina sin oclusiones, o las corrige antes de entregar",
+        "No escribe a mano las alturas de explosión (lift) en el modelo",
+        "Las medidas salen de una fuente citada o la respuesta las da por aproximadas, y lo no verificado va como supuesto",
+        "Captura la página en varios estados con capturar-cdp.mjs (no con --screenshot) y dice qué revisó",
         "La respuesta termina con tres frases y una pregunta de predicción"
       ]
     }

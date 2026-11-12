@@ -27,7 +27,12 @@ Le pedís `/despiece SSD NVMe` (o `una turbina`, `el pipeline de CI`, `la inflac
 3. **Ensambla una página HTML** (modo claro y oscuro) que se lee de arriba abajo: nivel 0 → nivel 1 → nivel 2…
 4. **Te pone a prueba**: tres frases al estilo Feynman y una predicción. Si no las podés contestar, todavía no lo entendiste.
 
-> Sin dependencias. Tres scripts de Python y nada más. La figura sale con `viewBox`, así que escala donde la pongas.
+Con `--interactivo`, el mismo modelo sale como una página que **se abre y se recorre con el scroll**: se arma al
+cargar, se desmonta pieza a pieza, sigue el flujo paso a paso y te deja entrar en la pieza que decide.
+[Mirá la demo interactiva](docs/interactivo.md).
+
+> Sin dependencias: Python 3.10 o superior y nada más. La figura sale con `viewBox`, así que escala donde la pongas.
+> Node 22 solo hace falta para capturar la página interactiva, y es opcional.
 
 <p align="center">
   <a href="docs/demo/iso/n1-explosion.svg"><img src="docs/demo/iso/n1-explosion.svg" alt="Nivel 1: vista explotada del SSD con la controladora destacada" width="90%"></a>
@@ -63,7 +68,10 @@ Los scripts corren con Python 3.10 o superior, sin instalar paquetes. Si querés
 python -I scripts/validar_modelo.py assets/ejemplo-fisico.json
 python -I scripts/explosionado.py assets/ejemplo-fisico.json --salida figuras/n1.svg --destacar controladora
 python -I scripts/ensamblar.py assets/ejemplo-fisico.json --figuras figuras/ --salida despiece.html
+python -I scripts/ensamblar.py assets/ejemplo-fisico.json --salida interactivo.html --interactivo
 ```
+
+Paso a paso para Mac y Windows, con lo que puede fallar, en [docs/instalacion.md](docs/instalacion.md).
 
 </details>
 
@@ -155,14 +163,19 @@ despiece/
 ├── scripts/
 │   ├── validar_modelo.py     ← valida el JSON antes de dibujar (códigos de salida claros)
 │   ├── explosionado.py       ← vista explotada isométrica → SVG
-│   └── ensamblar.py          ← página HTML claro/oscuro con todos los niveles
+│   ├── ensamblar.py          ← página HTML claro/oscuro con todos los niveles
+│   ├── isometrico.py         ← geometría y alturas de la página interactiva
+│   ├── interactiva.py        ← página interactiva (--interactivo)
+│   └── capturar-cdp.mjs      ← captura en tiempo real para revisarla (Node 22, opcional)
 ├── references/               ← guion visual, formato del modelo, pruebas de comprensión
 ├── assets/
 │   ├── ejemplo-fisico.json   ← SSD NVMe, el ejemplo de todas las demos
 │   ├── ejemplo-sistema.json  ← un sistema, para ver el otro camino
+│   ├── plantilla-interactiva.html
 │   └── marca-ejemplo.json
 ├── evals/                    ← casos para comprobar que la skill no se rompe
 ├── docs/demo/iso/            ← SVG de demostración
+├── docs/interactivo/         ← la página interactiva del SSD y sus capturas
 └── CHANGELOG.md
 ```
 
@@ -178,6 +191,7 @@ Los scripts corren con `python -I` (modo aislado) a propósito: nada de tu entor
 - [x] Modelo validado con fuentes por dato
 - [x] Vista explotada isométrica con siluetas por tipo de pieza
 - [x] Página HTML claro/oscuro con pruebas de comprensión
+- [x] [Página interactiva](docs/interactivo.md) que se abre y se recorre con el scroll (1.2.0, solo físico)
 - [ ] **Explorador interactivo** con zoom semántico: acercás una pieza y se abre; te alejás y se cierra
 - [ ] Figuras propias para `proceso`, `sistema` e `idea` (hoy se delegan a una skill de diagramas)
 - [ ] Exportar un nivel a PNG/PDF desde la propia página
