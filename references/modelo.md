@@ -2,7 +2,15 @@
 
 Leer la primera vez que se escriba un modelo. Es la única fuente de verdad del despiece: las figuras y la
 página salen de él, y `validar_modelo.py` lo comprueba antes de dibujar. Ejemplos completos y válidos en
-`assets/ejemplo-fisico.json` (SSD NVMe) y `assets/ejemplo-sistema.json` (Application Gateway con WAF).
+`assets/ejemplo-*.json`, uno por clase de caso (un SSD, una red, una historia, una auditoría…).
+
+## Contenido
+
+1. Campos, y los de cada pieza
+2. Los dos ejes: dependencia y pertenencia
+3. Rol → silueta
+4. Reglas que impone el validador
+5. Convenciones
 
 ## Campos
 
@@ -35,11 +43,12 @@ página salen de él, y `validar_modelo.py` lo comprueba antes de dibujar. Ejemp
 | `id` | sí | Corto, sin espacios, único (`waf-custom`) |
 | `nombre` | sí | Como se ve en la figura; ≤ 40 caracteres |
 | `padre` | sí (`null` en el nivel 1) | Id de la pieza que la contiene |
-| `funcion` | sí | Una línea, verbo + complemento: qué hace y por qué importa (≤ 160) |
+| `funcion` | sí | Una línea, verbo + complemento: qué hace y por qué importa (≤ 125: la figura muestra dos líneas y recorta el resto) |
 | `fuente` | sí, o `supuesto` | Id de `fuentes[]` o texto libre («Microsoft Learn: WAF custom rules») |
 | `supuesto` | — | `true` cuando no hay fuente: se muestra como «▲ supuesto» en la página |
 | `orden` | físico, en raíces | Entero, único entre hermanas: qué tiene que existir antes. 1 queda abajo en la figura. Es el montaje en un aparato, el despliegue en un sistema, la cronología en una historia, la profundidad en un terreno. `orden_montaje` es su nombre antiguo y sigue valiendo |
 | `rol` | no (aviso fuera de lo físico) | El papel de la pieza, sin vocabulario del dominio; elige su silueta en la vista explotada (tabla de abajo) |
+| `eje` | no | En una pieza con hijas: qué ordena el `orden` de sus hijas, para el subtítulo de su figura. Sin él, uno genérico según el tipo («el orden de montaje», «el orden de los pasos»), no el del modelo: lo que ordena las raíces rara vez ordena a las hijas. Si las hijas no traen `orden` ni están en el `flujo`, la figura no afirma ningún orden |
 | `forma` | no | La silueta exacta, si el rol no basta: `placa`, `chip`, `conector`, `modulo`, `carcasa`, `disipador`, `cable` o `capa`. Gana a `rol` |
 | `cantidad` | no | Si hay varias iguales («×4») |
 

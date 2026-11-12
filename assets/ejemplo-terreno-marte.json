@@ -1,0 +1,64 @@
+{
+  "objeto": "El subsuelo de Marte, del polvo a la corteza",
+  "tipo": "fisico",
+  "eje": "la profundidad, de lo más hondo a la superficie",
+  "pregunta_foco": "¿Por qué una sonda que excava unos centímetros en Marte puede encontrar hielo y otra, a otra latitud, no?",
+  "lector": "aficionado a la ciencia que sigue las misiones a Marte y no sabe geología planetaria",
+  "profundidad": 2,
+  "nivel0": {
+    "titulo": "Bajo el polvo de Marte hay cinco capas, y la del hielo cambia de hondura con la latitud",
+    "frontera": "Desde el polvo de la superficie hasta la base de la corteza, en una columna tipo: no todas las capas están en todos los sitios. Quedan fuera el manto, la atmósfera y los casquetes polares.",
+    "fuera": ["el manto y el núcleo", "la atmósfera y su vapor de agua", "los casquetes polares"]
+  },
+  "fuentes": [
+    {"id": "knapmeyer-2021", "descripcion": "Knapmeyer-Endrun, B. et al. (2021). Thickness and structure of the martian crust from InSight seismic data. Science 373: 438–443", "url": "https://doi.org/10.1126/science.abf8966"},
+    {"id": "golombek-2020", "descripcion": "Golombek, M. P. et al. (2020). Geology of the InSight landing site on Mars. Nature Communications 11: 1014", "url": "https://doi.org/10.1038/s41467-020-14679-1"},
+    {"id": "boynton-2002", "descripcion": "Boynton, W. V. et al. (2002). Distribution of hydrogen in the near surface of Mars: evidence for subsurface ice deposits. Science 297: 81–85 (Mars Odyssey, GRS)", "url": "https://doi.org/10.1126/science.1073722"},
+    {"id": "mellon-2009", "descripcion": "Mellon, M. T. et al. (2009). Ground ice at the Phoenix Landing Site: stability state and origin. Journal of Geophysical Research 114, E00E07", "url": "https://doi.org/10.1029/2009JE003417"},
+    {"id": "dundas-2018", "descripcion": "Dundas, C. M. et al. (2018). Exposed subsurface ice sheets in the Martian mid-latitudes. Science 359: 199–201", "url": "https://doi.org/10.1126/science.aao1619"},
+    {"id": "byrne-2009", "descripcion": "Byrne, S. et al. (2009). Distribution of mid-latitude ground ice on Mars from new impact craters. Science 325: 1674–1676", "url": "https://doi.org/10.1126/science.1175307"},
+    {"id": "nasa-phoenix", "descripcion": "NASA Science: misión Phoenix (lugar de aterrizaje a 68,22° N)", "url": "https://science.nasa.gov/mission/phoenix/"}
+  ],
+  "piezas": [
+    {"id": "corteza", "rol": "base", "nombre": "Corteza basáltica", "padre": null, "orden": 1, "funcion": "Sostiene todo: entre 24 y 72 km de espesor medio, con dos o tres interfaces internas que vieron los sismos de InSight", "fuente": "knapmeyer-2021"},
+    {"id": "coladas", "rol": "capa", "nombre": "Coladas de basalto", "padre": null, "orden": 2, "funcion": "Forman el lecho de roca: en InSight, lava basáltica que los impactos trituraron hasta hacerla regolito", "fuente": "golombek-2020"},
+    {"id": "hielo", "rol": "componente", "nombre": "Hielo subterráneo", "padre": null, "orden": 3, "eje": "la profundidad, del hielo más hondo al contacto con el aire", "funcion": "Guarda agua bajo una capa seca: hacia los polos, el hielo es en torno al 35 % del peso de esa capa", "fuente": "boynton-2002"},
+    {"id": "hielo-puro", "rol": "componente", "nombre": "Hielo casi puro", "padre": "hielo", "orden": 1, "funcion": "Forma mantos de más de 100 m en latitudes medias, desde 1–2 m de hondura; probablemente nieve de épocas de eje más inclinado", "fuente": "dundas-2018"},
+    {"id": "hielo-poros", "rol": "capa", "nombre": "Hielo de poros", "padre": "hielo", "orden": 2, "funcion": "Cementa el suelo con vapor helado entre los granos: fue cerca del 90 % del hielo que se destapó en Phoenix", "fuente": "mellon-2009"},
+    {"id": "hielo-tabla", "rol": "interfaz", "nombre": "Tabla de hielo", "padre": "hielo", "orden": 3, "funcion": "Marca dónde empieza el suelo helado: en Phoenix, a 4,6 cm de media bajo el suelo seco", "fuente": "mellon-2009"},
+    {"id": "hielo-sublimacion", "rol": "enlace", "nombre": "Sublimación", "padre": "hielo", "orden": 4, "funcion": "Devuelve al aire el hielo que queda expuesto: el que destaparon cráteres nuevos en latitudes medias se fue apagando en meses", "fuente": "byrne-2009"},
+    {"id": "hielo-equilibrio", "rol": "regulador", "nombre": "Equilibrio con el aire", "padre": "hielo", "orden": 5, "funcion": "Fija a qué hondura dura el hielo: la capa seca de encima adelgaza del 42° S al 77° S, como predicen los modelos", "fuente": "boynton-2002"},
+    {"id": "regolito", "rol": "limite", "nombre": "Regolito seco", "padre": null, "orden": 4, "funcion": "Tapa el hielo con suelo seco; su inercia térmica y la pendiente cambian más de 10 veces la hondura del hielo", "fuente": "mellon-2009"},
+    {"id": "polvo", "rol": "interfaz", "nombre": "Polvo superficial", "padre": null, "orden": 5, "funcion": "Toca la atmósfera: una película fina sobre arena suelta; los retrocohetes de InSight la barrieron y dejaron ver lo de abajo", "fuente": "golombek-2020"}
+  ],
+  "relaciones": [
+    {"de": "corteza", "a": "coladas", "tipo": "depende", "etiqueta": "se apoyan en ella"},
+    {"de": "coladas", "a": "regolito", "tipo": "causa", "etiqueta": "los impactos la trituran"},
+    {"de": "polvo", "a": "regolito", "tipo": "flujo", "etiqueta": "vapor de agua del aire"},
+    {"de": "regolito", "a": "hielo", "tipo": "flujo", "etiqueta": "el vapor se difunde por los poros"},
+    {"de": "regolito", "a": "hielo", "tipo": "energia", "etiqueta": "su inercia térmica fija la temperatura del hielo"},
+    {"de": "hielo-equilibrio", "a": "hielo-tabla", "tipo": "controla", "etiqueta": "fija su hondura"},
+    {"de": "hielo-sublimacion", "a": "hielo-tabla", "tipo": "causa", "etiqueta": "lo expuesto se pierde"}
+  ],
+  "flujo": ["polvo", "regolito", "hielo"],
+  "flujo_entrada": "la atmósfera y su vapor de agua",
+  "malentendidos": [
+    "«Marte está seco por debajo»: cerca de los polos, bajo unos centímetros de suelo seco, en torno a un tercio del peso del suelo es hielo.",
+    "«Si hay hielo, está a la misma hondura en toda la región»: en Phoenix cambió más de 10 veces de una zanja a otra, por la pendiente y por el suelo de encima."
+  ],
+  "figuras": [
+    {"nivel": 1, "titulo": "De la corteza al polvo, el hielo es la capa que sube o baja con la latitud", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["corteza", "coladas", "hielo", "regolito", "polvo"], "fichero": "figuras/n1-explosion.svg", "destacada": "hielo"},
+    {"nivel": 2, "titulo": "Dentro del hielo, el equilibrio con el aire decide a qué hondura empieza", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["hielo-puro", "hielo-poros", "hielo-tabla", "hielo-sublimacion", "hielo-equilibrio"], "fichero": "figuras/n2-hielo.svg", "destacada": "hielo-equilibrio"}
+  ],
+  "feynman": [
+    "Bajo el polvo de Marte hay suelo suelto, roca de lava y, al fondo, una corteza de decenas de kilómetros.",
+    "Donde el suelo está muy frío, el vapor del aire se queda congelado entre los granos a pocos centímetros.",
+    "Hacia el ecuador el suelo está más templado: el hielo se sublima y solo queda más hondo, si queda."
+  ],
+  "prediccion": {
+    "pregunta": "Dos sondas iguales excavan 10 cm: una en la llanura ártica de Phoenix, a 68° N, y otra en Elysium Planitia, junto al ecuador, donde bajó InSight. ¿Cuál toca hielo?",
+    "respuesta": "La de 68° N: allí el suelo es tan frío que el hielo está en equilibrio con el vapor del aire a unos 5 cm (4,6 de media en Phoenix). Junto al ecuador el hielo cercano a la superficie se sublima: los 10 cm son regolito seco, como el que pisó InSight.",
+    "opciones": ["La de 68° N", "La del ecuador", "Las dos por igual"],
+    "correcta": 0
+  }
+}

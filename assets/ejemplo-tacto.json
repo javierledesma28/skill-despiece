@@ -1,0 +1,61 @@
+{
+  "objeto": "El sentido del tacto, de la piel a la corteza",
+  "tipo": "sistema",
+  "eje": "la cadena de la señal, de la piel a la corteza",
+  "pregunta_foco": "¿Por qué se distinguen dos puntas en la yema del dedo y no en la espalda?",
+  "lector": "estudiante o curioso sin formación en neurociencia que quiere entender cómo se siente un contacto",
+  "profundidad": 2,
+  "nivel0": {
+    "titulo": "El tacto fino sube por una cadena de tres neuronas, y su agudeza se decide en la piel",
+    "frontera": "Desde la piel de la mano y del tronco hasta la corteza somatosensorial: el tacto fino, la presión y la vibración. Quedan fuera el dolor, la temperatura y la cara, que viajan por otras vías.",
+    "fuera": ["el objeto que toca la piel", "el dolor y la temperatura", "la cara y el nervio trigémino"]
+  },
+  "fuentes": [
+    {"id": "johansson-vallbo-1979", "descripcion": "Johansson, R. S. y Vallbo, Å. B. (1979). Tactile sensibility in the human hand: relative and absolute densities of four types of mechanoreceptive units in glabrous skin. Journal of Physiology 286: 283–300", "url": "https://doi.org/10.1113/jphysiol.1979.sp012619"},
+    {"id": "henley-tacto", "descripcion": "Henley, C. Foundations of Neuroscience, cap. 4.5 «Touch: The Skin». Michigan State University, en LibreTexts", "url": "https://med.libretexts.org/Bookshelves/Neuroscience/Foundations_of_Neuroscience_(Henley)/04%3A_Sensory_Systems/4.05%3A_Touch-_The_Skin"},
+    {"id": "openstax-ap", "descripcion": "Betts, J. G. et al. Anatomy and Physiology 2e, sección 14.2 «Central Processing». OpenStax, 2022", "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/14-2-central-processing"},
+    {"id": "mendelson-1964", "descripcion": "Mendelson, M. y Loewenstein, W. R. (1964). Mechanisms of receptor adaptation. Science 144: 554–555", "url": "https://doi.org/10.1126/science.144.3618.554"}
+  ],
+  "piezas": [
+    {"id": "receptores", "rol": "interfaz", "nombre": "Mecanorreceptores", "padre": null, "orden": 1, "funcion": "Convierten la presión en impulsos: se estiman unas 241 unidades por cm² en la yema y 58 en la palma", "fuente": "johansson-vallbo-1979"},
+    {"id": "pacini", "rol": "regulador", "nombre": "Corpúsculo de Pacini", "padre": "receptores", "funcion": "Su cápsula en capas filtra la presión sostenida y solo deja pasar los cambios rápidos, como la vibración", "fuente": "mendelson-1964"},
+    {"id": "ruffini", "rol": "componente", "nombre": "Terminación de Ruffini", "padre": "receptores", "funcion": "Mide el estiramiento de la piel desde la dermis; su campo grande no sirve para separar dos puntos cercanos", "fuente": "henley-tacto"},
+    {"id": "meissner", "rol": "componente", "nombre": "Corpúsculo de Meissner", "padre": "receptores", "funcion": "Avisa del movimiento sobre la piel y se calla si el contacto sigue; campo pequeño, cerca de la superficie", "fuente": "henley-tacto"},
+    {"id": "merkel", "rol": "componente", "nombre": "Disco de Merkel", "padre": "receptores", "funcion": "Señala bordes y puntos mientras dura la presión, con un campo pequeño; en la yema se apiña, y con él la agudeza", "fuente": "johansson-vallbo-1979"},
+    {"id": "fibra", "rol": "enlace", "nombre": "Fibra aferente", "padre": null, "orden": 2, "funcion": "Lleva los impulsos hasta la médula; es la primera neurona de la cadena y su cuerpo está en el ganglio de la raíz dorsal", "fuente": "openstax-ap"},
+    {"id": "columna", "rol": "etapa", "nombre": "Columna dorsal (médula)", "padre": null, "orden": 3, "funcion": "Sube los axones hasta el bulbo ordenados por zonas: la pierna en el fascículo grácil, el brazo en el cuneiforme", "fuente": "openstax-ap"},
+    {"id": "tronco", "rol": "enlace", "nombre": "Bulbo y lemnisco medial", "padre": null, "orden": 4, "funcion": "Hace la primera sinapsis y cruza al otro lado: la segunda neurona sube por el lemnisco medial hasta el tálamo", "fuente": "openstax-ap"},
+    {"id": "talamo", "rol": "componente", "nombre": "Tálamo", "padre": null, "orden": 5, "funcion": "Releva la señal: de aquí sale la tercera neurona, hacia la circunvolución poscentral de la corteza", "fuente": "openstax-ap"},
+    {"id": "corteza", "rol": "contenedor", "nombre": "Corteza somatosensorial", "padre": null, "orden": 6, "funcion": "Guarda un mapa del cuerpo que agranda los dedos y la cara y encoge la espalda y los hombros", "fuente": "openstax-ap"}
+  ],
+  "relaciones": [
+    {"de": "receptores", "a": "fibra", "tipo": "flujo", "etiqueta": "impulsos"},
+    {"de": "fibra", "a": "columna", "tipo": "flujo", "etiqueta": "entra por la raíz dorsal"},
+    {"de": "columna", "a": "tronco", "tipo": "flujo", "etiqueta": "primera sinapsis, en el bulbo"},
+    {"de": "tronco", "a": "talamo", "tipo": "flujo", "etiqueta": "ya cruzada, por el lemnisco medial"},
+    {"de": "talamo", "a": "corteza", "tipo": "flujo", "etiqueta": "tercera neurona"},
+    {"de": "merkel", "a": "fibra", "tipo": "dato", "etiqueta": "campo pequeño: dice dónde"},
+    {"de": "pacini", "a": "fibra", "tipo": "dato", "etiqueta": "campo grande: solo cambios"}
+  ],
+  "flujo": ["receptores", "fibra", "columna", "tronco", "talamo", "corteza"],
+  "flujo_entrada": "el objeto que toca la piel",
+  "malentendidos": [
+    "«La yema tiene más receptores de todos los tipos»: la diferencia la ponen los de campo pequeño (Merkel y Meissner); los de Pacini y Ruffini están repartidos casi por igual en toda la mano.",
+    "«El tacto de la mano derecha llega al lado derecho del cerebro»: la vía cruza en el bulbo, tras la primera sinapsis, y llega a la corteza del lado contrario."
+  ],
+  "figuras": [
+    {"nivel": 1, "titulo": "Seis eslabones de la piel a la corteza, y la agudeza nace en el primero", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["receptores", "fibra", "columna", "tronco", "talamo", "corteza"], "fichero": "figuras/n1-explosion.svg", "destacada": "receptores"},
+    {"nivel": 2, "titulo": "De los cuatro receptores, los de campo pequeño son los que separan puntas", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["pacini", "ruffini", "meissner", "merkel"], "fichero": "figuras/n2-receptores.svg", "destacada": "merkel"}
+  ],
+  "feynman": [
+    "La piel tiene sensores que convierten un roce en impulsos, y una cadena de tres neuronas los lleva hasta la corteza.",
+    "En la yema hay muchos sensores de campo pequeño muy juntos; en la espalda, menos y con campos grandes.",
+    "Si las dos puntas caen en el campo del mismo sensor, llega una sola señal y se siente un solo punto."
+  ],
+  "prediccion": {
+    "pregunta": "Se apoyan dos puntas separadas 1 cm en la yema del índice y, después, en el centro de la espalda. ¿Dónde se sienten dos puntos y dónde uno?",
+    "respuesta": "En la yema, dos: allí se apiñan los receptores de campo pequeño y cada punta excita fibras distintas. En la espalda, uno: hay menos receptores y sus campos son grandes, así que las dos puntas caen en el mismo campo y llega una sola señal.",
+    "opciones": ["Dos en la yema y uno en la espalda", "Dos en los dos sitios", "Uno en los dos sitios"],
+    "correcta": 0
+  }
+}

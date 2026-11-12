@@ -2,25 +2,24 @@
 name: despiece
 description: >-
   Despieza algo para que el lector lo entienda —un aparato, una red, un proceso, una historia, una
-  auditoría o una idea— y lo explica por niveles, del todo a las partes: encuadre, piezas ordenadas por
-  dependencia y agrupadas por pertenencia, cada una con función y fuente, una vista explotada por nivel
-  (3–7 piezas) que se abre a demanda, la figura de flujo o de red delegada a la skill de dibujo
-  instalada, y comprobación de que se entendió (tres frases y una pregunta de predicción). Usar cuando
-  pidan «despiezá», «desmenuzá», «desarmá», «cómo funciona por dentro», «qué partes tiene», «anatomía
-  de», «explicámelo para entenderlo», «no veo cómo encaja», o una explicación visual de cualquier cosa
-  por capas, aunque no digan «despiece». No usar cuando ya se sabe qué diagrama se quiere (ER, flujo,
-  Gantt, red estilo Learn: la skill de diagramas que corresponda, p. ej. diagram-design), para gráficos
-  de datos (dataviz), presentaciones, hacer interactivo un SVG existente ni para el estado de un
-  proyecto (relevamiento).
+  auditoría o una idea— y lo explica por niveles: encuadre, piezas ordenadas por dependencia y agrupadas
+  por pertenencia, cada una con función y fuente, una vista explotada por nivel (3–7 piezas) que se abre
+  a demanda, el flujo o la red delegados a la skill de dibujo instalada, y comprobación de que se
+  entendió (tres frases y una predicción). Usar cuando pidan «despiezá», «desmenuzá», «desarmá», «cómo
+  funciona por dentro», «qué partes tiene», «anatomía de», «explicámelo para entenderlo», «no veo cómo
+  encaja», o una explicación visual de cualquier cosa por capas, aunque no digan «despiece». No usar
+  cuando ya se sabe qué diagrama se quiere (ER, flujo, Gantt, red estilo Learn: la skill de diagramas
+  que corresponda, p. ej. diagram-design), para gráficos de datos (dataviz), presentaciones, hacer
+  interactivo un SVG existente ni para el estado de un proyecto (relevamiento).
 argument-hint: "[qué despiezar]"
 compatibility: Claude Code en Windows, macOS o Linux. Python 3.10 o superior sin dependencias de pip; para capturar la página en PNG, Edge o Chrome, y Node 22 o superior para capturar la interactiva.
 allowed-tools:
   - Bash(python -I ${CLAUDE_SKILL_DIR}/scripts/*)
   - Bash(node ${CLAUDE_SKILL_DIR}/scripts/*)
 metadata:
-  version: "1.2.0"
+  version: "2.0.0"
   author: t28.io (Javier Ledesma)
-  updated: "2026-11-02"
+  updated: "2026-11-12"
 ---
 
 # Despiece explicativo
@@ -147,8 +146,9 @@ el modelo. `<marca>` es la ruta del JSON de marca del proyecto o `ninguna`.
   python -I ${CLAUDE_SKILL_DIR}/scripts/explosionado.py <carpeta>/modelo.json --salida <carpeta>/figuras/n2-<padre>.svg --subconjunto <padre> --marca <marca>
   ```
 
-  Toma el título de la figura del modelo con esas mismas piezas, y el subtítulo, de `eje`. Si la página
-  va a ser interactiva, estas figuras sobran: las dibuja desde `geometria`.
+  Toma el título de la figura del modelo con esas mismas piezas, y el subtítulo, de `eje`: el del modelo
+  en las raíces y el de la pieza abierta en un subconjunto (darle uno propio si sus hijas llevan `orden`).
+  Si la página va a ser interactiva, estas figuras sobran: las dibuja desde `geometria`.
 - **Flujo, red, secuencia o comparación** → cuando la pregunta foco es por dónde pasa algo, quién habla
   con quién o en qué orden, la figura de ese nivel es esa, y la explotada puede acompañarla. Se pide con
   un guion a quien dibuja, según [references/guion-visual.md](references/guion-visual.md) (leerlo al

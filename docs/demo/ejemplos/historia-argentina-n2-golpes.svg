@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 807" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cada tramo del ciclo de 1930 a 1983 empieza con un golpe" font-family="system-ui, sans-serif">
+<rect width="1240" height="807" fill="#ffffff"/>
+<text x="64" y="52" font-size="26" font-weight="700" fill="#1f2933">Cada tramo del ciclo de 1930 a 1983 empieza con un golpe</text>
+<text x="64" y="80" font-size="15" fill="#7b8794">Vista explotada · de abajo arriba, la cronología, de 1930 a 1983</text>
+<ellipse cx="330.0" cy="673.5" rx="190" ry="34" fill="#000000" fill-opacity="0.05"/>
+<line x1="330.0" y1="677.5" x2="330.0" y2="172.5" stroke="#cbd2d9" stroke-width="1.6" stroke-dasharray="7,6"/>
+<g id="fv-escena">
+<g class="fv-punto" data-id="t1930" data-forma="capa">
+<polygon points="204.4,641.0 351.7,726.0 351.7,721.0 204.4,636.0" fill="#f1f4f7" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="351.7,726.0 455.6,666.0 455.6,661.0 351.7,721.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="308.3,576.0 455.6,661.0 351.7,721.0 204.4,636.0" fill="#fbfcfd" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<line x1="332.9" y1="590.1" x2="229.0" y2="650.1" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="357.4" y1="604.2" x2="253.5" y2="664.2" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="382.0" y1="618.4" x2="278.0" y2="678.4" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="406.5" y1="632.6" x2="302.6" y2="692.6" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="431.0" y1="646.7" x2="327.1" y2="706.7" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="282.4" y1="590.9" x2="429.6" y2="675.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="256.4" y1="605.9" x2="403.6" y2="690.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="230.4" y1="620.9" x2="377.6" y2="705.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<polygon points="308.3,575.8 332.9,590.0 306.9,605.0 282.4,590.8" fill="#c3ccd5" fill-opacity="0.18"/>
+</g>
+<g class="fv-punto" data-id="t1943" data-forma="capa">
+<polygon points="308.3,581.7 455.6,666.7 351.7,726.7 204.4,641.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon points="204.4,532.0 351.7,617.0 351.7,612.0 204.4,527.0" fill="#f1f4f7" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="351.7,617.0 455.6,557.0 455.6,552.0 351.7,612.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="308.3,467.0 455.6,552.0 351.7,612.0 204.4,527.0" fill="#fbfcfd" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<line x1="332.9" y1="481.1" x2="229.0" y2="541.1" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="357.4" y1="495.2" x2="253.5" y2="555.2" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="382.0" y1="509.4" x2="278.0" y2="569.4" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="406.5" y1="523.6" x2="302.6" y2="583.6" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="431.0" y1="537.7" x2="327.1" y2="597.7" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="282.4" y1="481.9" x2="429.6" y2="566.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="256.4" y1="496.9" x2="403.6" y2="581.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="230.4" y1="511.9" x2="377.6" y2="596.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<polygon points="308.3,466.8 332.9,481.0 306.9,496.0 282.4,481.8" fill="#c3ccd5" fill-opacity="0.18"/>
+</g>
+<g class="fv-punto" data-id="t1955" data-forma="capa">
+<polygon points="308.3,472.7 455.6,557.7 351.7,617.7 204.4,532.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon points="204.4,423.0 351.7,508.0 351.7,503.0 204.4,418.0" fill="#a8c4dc" stroke="#2e5d85" stroke-width="1.6" stroke-linejoin="round"/>
+<polygon points="351.7,508.0 455.6,448.0 455.6,443.0 351.7,503.0" fill="#87aecf" stroke="#2e5d85" stroke-width="1.6" stroke-linejoin="round"/>
+<polygon points="308.3,358.0 455.6,443.0 351.7,503.0 204.4,418.0" fill="#d5e2ee" stroke="#2e5d85" stroke-width="1.6" stroke-linejoin="round"/>
+<line x1="332.9" y1="372.1" x2="229.0" y2="432.1" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="357.4" y1="386.2" x2="253.5" y2="446.2" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="382.0" y1="400.4" x2="278.0" y2="460.4" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="406.5" y1="414.6" x2="302.6" y2="474.6" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="431.0" y1="428.7" x2="327.1" y2="488.7" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="282.4" y1="372.9" x2="429.6" y2="457.9" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="256.4" y1="387.9" x2="403.6" y2="472.9" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="230.4" y1="402.9" x2="377.6" y2="487.9" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.45"/>
+<polygon points="308.3,357.8 332.9,372.0 306.9,387.0 282.4,372.8" fill="#2e5d85" fill-opacity="0.18"/>
+</g>
+<g class="fv-punto" data-id="t1966" data-forma="capa">
+<polygon points="308.3,363.7 455.6,448.7 351.7,508.7 204.4,423.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon points="204.4,314.0 351.7,399.0 351.7,394.0 204.4,309.0" fill="#f1f4f7" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="351.7,399.0 455.6,339.0 455.6,334.0 351.7,394.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="308.3,249.0 455.6,334.0 351.7,394.0 204.4,309.0" fill="#fbfcfd" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<line x1="332.9" y1="263.1" x2="229.0" y2="323.1" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="357.4" y1="277.2" x2="253.5" y2="337.2" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="382.0" y1="291.4" x2="278.0" y2="351.4" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="406.5" y1="305.6" x2="302.6" y2="365.6" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="431.0" y1="319.7" x2="327.1" y2="379.7" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="282.4" y1="263.9" x2="429.6" y2="348.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="256.4" y1="278.9" x2="403.6" y2="363.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="230.4" y1="293.9" x2="377.6" y2="378.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<polygon points="308.3,248.8 332.9,263.0 306.9,278.0 282.4,263.8" fill="#c3ccd5" fill-opacity="0.18"/>
+</g>
+<g class="fv-punto" data-id="t1976" data-forma="capa">
+<polygon points="308.3,254.7 455.6,339.7 351.7,399.7 204.4,314.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon points="204.4,205.0 351.7,290.0 351.7,285.0 204.4,200.0" fill="#f1f4f7" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="351.7,290.0 455.6,230.0 455.6,225.0 351.7,285.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="308.3,140.0 455.6,225.0 351.7,285.0 204.4,200.0" fill="#fbfcfd" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<line x1="332.9" y1="154.1" x2="229.0" y2="214.1" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="357.4" y1="168.2" x2="253.5" y2="228.2" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="382.0" y1="182.4" x2="278.0" y2="242.4" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="406.5" y1="196.6" x2="302.6" y2="256.6" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="431.0" y1="210.7" x2="327.1" y2="270.7" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="282.4" y1="154.9" x2="429.6" y2="239.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="256.4" y1="169.9" x2="403.6" y2="254.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<line x1="230.4" y1="184.9" x2="377.6" y2="269.9" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.45"/>
+<polygon points="308.3,139.8 332.9,154.0 306.9,169.0 282.4,154.8" fill="#c3ccd5" fill-opacity="0.18"/>
+</g>
+</g>
+<g id="fv-llamadas"><polyline points="403.6,693.5 584.0,693.5 584.0,693.5 616.0,693.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="403.6" cy="693.5" r="3" fill="#84898f"/>
+<circle cx="632" cy="693.5" r="15" fill="#84898f"/>
+<text x="632" y="698.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+<polyline points="403.6,584.5 584.0,584.5 584.0,584.5 616.0,584.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="403.6" cy="584.5" r="3" fill="#84898f"/>
+<circle cx="632" cy="584.5" r="15" fill="#84898f"/>
+<text x="632" y="589.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+<polyline points="403.6,475.5 584.0,475.5 584.0,475.5 616.0,475.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="403.6" cy="475.5" r="3" fill="#3e7cb1"/>
+<circle cx="632" cy="475.5" r="15" fill="#3e7cb1"/>
+<text x="632" y="480.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+<polyline points="403.6,366.5 584.0,366.5 584.0,366.5 616.0,366.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="403.6" cy="366.5" r="3" fill="#84898f"/>
+<circle cx="632" cy="366.5" r="15" fill="#84898f"/>
+<text x="632" y="371.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">4</text>
+<polyline points="403.6,257.5 584.0,257.5 584.0,257.5 616.0,257.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="403.6" cy="257.5" r="3" fill="#84898f"/>
+<circle cx="632" cy="257.5" r="15" fill="#84898f"/>
+<text x="632" y="262.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">5</text></g>
+<g id="fv-lista"><text x="720" y="685.5" font-size="16" font-weight="600" fill="#7b8794">Restauración (1930–1943)</text>
+<text x="720" y="705.5" font-size="14" fill="#7b8794">El golpe del 6-sep-1930 depone a Yrigoyen; desde 1932,</text>
+<text x="720" y="723.5" font-size="14" fill="#7b8794">presidentes elegidos con fraude: la «restauración conservadora»</text>
+<text x="720" y="576.5" font-size="16" font-weight="600" fill="#7b8794">Gobierno de Perón (1943–1955)</text>
+<text x="720" y="596.5" font-size="14" fill="#7b8794">El golpe del 4-jun-1943 abre un gobierno militar donde asciende</text>
+<text x="720" y="614.5" font-size="14" fill="#7b8794">Perón; elegido en 1946 y 1951, cae con el golpe de 1955</text>
+<text x="720" y="467.5" font-size="16" font-weight="600" fill="#1f2933">Proscripción (1955–1966)<tspan font-weight="400" fill="#7b8794" font-size="13"> · contiene 5 piezas → figura aparte</tspan></text>
+<text x="720" y="487.5" font-size="14" fill="#7b8794">Con el peronismo prohibido, Frondizi e Illia, elegidos sin él,</text>
+<text x="720" y="505.5" font-size="14" fill="#7b8794">caen por golpes; Romero titula el tramo «El empate»</text>
+<text x="720" y="358.5" font-size="16" font-weight="600" fill="#7b8794">Golpe del 66 y retorno (1966–1976)</text>
+<text x="720" y="378.5" font-size="14" fill="#7b8794">El golpe del 28-jun-1966 inicia la «Revolución Argentina»; en</text>
+<text x="720" y="396.5" font-size="14" fill="#7b8794">1973 vuelven las elecciones y Perón, que muere en 1974</text>
+<text x="720" y="249.5" font-size="16" font-weight="600" fill="#7b8794">El Proceso (1976–1983)</text>
+<text x="720" y="269.5" font-size="14" fill="#7b8794">La Junta depone a Isabel Perón (1976) y aplica una represión</text>
+<text x="720" y="287.5" font-size="14" fill="#7b8794">ilegal, juzgada en 1985; tras Malvinas llama a elecciones</text></g>
+</svg>

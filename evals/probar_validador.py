@@ -137,6 +137,10 @@ r += [
     caso("dos bases", lambda m: (pieza("pcb", rol="base")(m), pieza("dram", rol="base")(m)), "A", "rol «base»"),
     caso("eje vacío", poner(["eje"], " "), "E", "eje debe ser un texto"),
     caso("eje largo", poner(["eje"], "x" * 90), "A", "eje de 90"),
+    caso("eje de pieza vacío", pieza("nand", eje=""), "E", "«nand»: eje debe ser un texto"),
+    sin("eje de pieza válido", pieza("nand", eje="la escritura, de la celda al bloque"), "«nand»: eje"),
+    caso("funcion que no cabe en la figura", pieza("nand", funcion="x " * 65), "A", "«nand»: funcion de 130"),
+    sin("funcion que cabe en la figura", pieza("nand", funcion="x " * 60), "«nand»: funcion de"),
     caso("orden parcial en un sistema", lambda m: (m.update(tipo="sistema"), m.pop("geometria"),
          sin_campo("dram", "orden")(m)), "A", "orden en unas raíces"),
 ]

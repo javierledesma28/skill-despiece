@@ -3,6 +3,57 @@
 Formato: versión semántica (`metadata.version` de SKILL.md). Una entrada por cambio relevante, con el
 resultado de las evals que lo respaldan.
 
+## [2.0.0] - 2026-11-12
+
+Cambia el modelo: la skill deja de saber de hardware. Un despiece son **dos ejes y nada más**, dependencia
+(`orden`) y pertenencia (`padre`); el resto es vocabulario del dominio. Los modelos de la 1.x siguen
+validando: `orden_montaje` queda como alias de `orden`.
+
+### Añadido
+- **`orden`**: qué tiene que existir antes, en cualquier tipo (el montaje, el despliegue, la cronología, la
+  profundidad, la cadena de una señal). Único entre hermanas; obligatorio en las raíces del tipo físico.
+- **`eje`** en el modelo y en una pieza con hijas: qué ordena `orden`, en pocas palabras, para el subtítulo
+  de la figura. Si las piezas no traen `orden` ni están en el `flujo`, la figura no afirma ningún orden.
+- **`rol`**: el papel abstracto de una pieza (`base`, `etapa`, `capa`, `componente`, `interfaz`, `enlace`,
+  `contenedor`, `limite`, `regulador`, `bloque`), que elige su silueta. `forma` le sigue ganando; las pistas
+  por nombre quedan solo para lo físico.
+- **Paso 8 de `SKILL.md`, abrir a demanda**: el modelo crece por la pieza que el usuario abre, sin rehacer lo
+  ya abierto; `profundidad` admite hasta 4, y más allá la pieza merece un despiece propio.
+- **Siete ejemplos nuevos**, válidos, sin avisos y con fuentes, uno por clase de caso: una red radial en la nube
+  (`red-nube`), un pipeline de CI/CD (`cicd`), la historia política argentina (`historia-argentina`, 4 niveles),
+  la familia Darwin–Wedgwood (`arbol-genealogico`), una auditoría ISO/IEC 27001 (`auditoria-iso27001`, 4
+  niveles), el subsuelo de Marte (`terreno-marte`) y el sentido del tacto (`tacto`). Con el SSD y el sistema
+  web, nueve. **`docs/ejemplos.md`** los muestra todos, nivel por nivel, con el comando de cada figura.
+- `validar_modelo.py`: el alias, `orden` repetido entre hermanas, `orden` y `orden_montaje` distintos en una
+  pieza, `rol` y `forma` conocidos, `eje` (texto corto, en el modelo y en las piezas), raíces sin rol fuera
+  de lo físico (aviso), más de una `base` entre hermanas (aviso). `probar_validador.py`: 54/54.
+- Evals 6 (la vista explotada de una historia, fuera de lo físico) y 7 (abrir una pieza a demanda sobre un
+  modelo ya hecho), **sin correr todavía**.
+
+### Cambiado
+- **`explosionado.py` dibuja los cuatro tipos**, no solo el físico, y en isométrica (30°): prismas de tres
+  caras, sombra bajo la base y sombra proyectada de cada pieza sobre la de abajo, eje discontinuo, pieza
+  destacada con el secundario de la marca, llamadas con guía en codo y lista a la derecha sin solapes. Ocho
+  siluetas: `placa`, `chip`, `conector`, `modulo`, `carcasa`, `disipador`, `cable` y `capa`.
+- Sin `orden`, la pila sigue el `flujo` y, si no, el orden de escritura. El margen superior se calcula con la
+  silueta real de la pieza más alta (antes quedaba una franja vacía sobre una fila de chips). La separación
+  es variable: una pieza que baja en pantalla más que la de abajo se separa esa diferencia de más, y la de
+  abajo queda tan a la vista como bajo una igual (una carcasa tapaba casi entero un cable o una loseta). El
+  «+» de una pieza cerrada va sobre la pieza, no sobre el eje. Lo que va sobre una carcasa (bandeja abierta)
+  o un disipador se sube hasta librar su borde trasero: si no, se vería dentro, y estar dentro es `padre`.
+- `validar_modelo.py` avisa de una `funcion` de más de 125 caracteres (antes, 160): la figura la muestra en dos
+  líneas y recorta el resto con «…».
+- `references/modelo.md`: una pieza abierta sin `eje` propio toma el del tipo, no el del modelo, porque lo que
+  ordena las raíces rara vez ordena a sus hijas (así lo hacía ya el código).
+- `SKILL.md`: gotchas de los dos ejes, del dominio como ejemplos y de la profundidad a demanda; el paso 5
+  hace de la vista explotada la figura por defecto de cada nivel y delega el flujo, la red y la secuencia.
+- `references/modelo.md` (con índice), `metodo-por-tipo.md` (la vista explotada fuera de lo físico) e
+  `interactivo.md`, al día. README reescrito: abre con una galería de tres casos (aparato, red, historia) y
+  explica los dos ejes y los roles.
+- Demos regeneradas: `docs/demo/iso/`, `docs/demo/ejemplos/` (nueva, 19 figuras) y la página interactiva de
+  `docs/interactivo/` (solo cambia el JSON incrustado). `docs/demo/figuras/` y la página estática siguen siendo
+  las de la 1.1.1.
+
 ## [1.2.0] - 2026-11-02
 
 ### Añadido

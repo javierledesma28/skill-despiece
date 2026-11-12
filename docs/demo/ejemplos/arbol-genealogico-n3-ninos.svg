@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 574" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Dos de las tres muertes son anteriores a la carta de 1852 sobre su temor" font-family="system-ui, sans-serif">
+<rect width="1240" height="574" fill="#ffffff"/>
+<text x="64" y="52" font-size="26" font-weight="700" fill="#1f2933">Dos de las tres muertes son anteriores a la carta de 1852 sobre su temor</text>
+<text x="64" y="80" font-size="15" fill="#7b8794">Vista explotada · de abajo arriba, el orden de nacimiento</text>
+<ellipse cx="330.0" cy="440.0" rx="190" ry="34" fill="#000000" fill-opacity="0.05"/>
+<line x1="330.0" y1="444.0" x2="330.0" y2="142.0" stroke="#cbd2d9" stroke-width="1.6" stroke-dasharray="7,6"/>
+<g id="fv-escena">
+<g class="fv-punto" data-id="annie" data-forma="chip">
+<polygon points="257.3,420.0 330.0,462.0 330.0,452.0 257.3,410.0" fill="#a8c4dc" stroke="#2e5d85" stroke-width="1.6" stroke-linejoin="round"/>
+<polygon points="330.0,462.0 402.7,420.0 402.7,410.0 330.0,452.0" fill="#87aecf" stroke="#2e5d85" stroke-width="1.6" stroke-linejoin="round"/>
+<polygon points="330.0,368.0 402.7,410.0 330.0,452.0 257.3,410.0" fill="#d5e2ee" stroke="#2e5d85" stroke-width="1.6" stroke-linejoin="round"/>
+<polygon points="330.0,377.9 385.4,409.9 330.0,441.9 274.6,409.9" fill="#2e5d85" fill-opacity="0.08" stroke="#2e5d85" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="259.9,421.5 265.0,424.5 259.0,429.0 253.8,426.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="400.1,421.5 395.0,424.5 401.0,429.0 406.2,426.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="270.2,427.5 275.4,430.5 269.4,435.0 264.2,432.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="389.8,427.5 384.6,430.5 390.6,435.0 395.8,432.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="280.6,433.5 285.8,436.5 279.8,441.0 274.6,438.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="379.4,433.5 374.2,436.5 380.2,441.0 385.4,438.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="291.0,439.5 296.2,442.5 290.2,447.0 285.0,444.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="369.0,439.5 363.8,442.5 369.8,447.0 375.0,444.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="301.4,445.5 306.6,448.5 300.6,453.0 295.4,450.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="358.6,445.5 353.4,448.5 359.4,453.0 364.6,450.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="311.8,451.5 317.0,454.5 310.9,459.0 305.8,456.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="348.2,451.5 343.0,454.5 349.1,459.0 354.2,456.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="322.2,457.5 327.4,460.5 321.3,465.0 316.1,462.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="337.8,457.5 332.6,460.5 338.7,465.0 343.9,462.0" fill="#87aecf" stroke="#2e5d85" stroke-width="0.6"/>
+<polygon points="330.0,377.9 385.4,409.9 274.6,409.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="330.0" cy="383.8" r="2.6" fill="#2e5d85"/>
+</g>
+<g class="fv-punto" data-id="mary" data-forma="chip">
+<polygon points="330.0,373.7 402.7,415.7 330.0,457.7 257.3,415.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon points="257.3,306.0 330.0,348.0 330.0,338.0 257.3,296.0" fill="#f1f4f7" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="330.0,348.0 402.7,306.0 402.7,296.0 330.0,338.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="330.0,254.0 402.7,296.0 330.0,338.0 257.3,296.0" fill="#fbfcfd" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="330.0,263.9 385.4,295.9 330.0,327.9 274.6,295.9" fill="#c3ccd5" fill-opacity="0.08" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="259.9,307.5 265.0,310.5 259.0,315.0 253.8,312.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="400.1,307.5 395.0,310.5 401.0,315.0 406.2,312.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="270.2,313.5 275.4,316.5 269.4,321.0 264.2,318.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="389.8,313.5 384.6,316.5 390.6,321.0 395.8,318.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="280.6,319.5 285.8,322.5 279.8,327.0 274.6,324.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="379.4,319.5 374.2,322.5 380.2,327.0 385.4,324.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="291.0,325.5 296.2,328.5 290.2,333.0 285.0,330.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="369.0,325.5 363.8,328.5 369.8,333.0 375.0,330.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="301.4,331.5 306.6,334.5 300.6,339.0 295.4,336.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="358.6,331.5 353.4,334.5 359.4,339.0 364.6,336.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="311.8,337.5 317.0,340.5 310.9,345.0 305.8,342.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="348.2,337.5 343.0,340.5 349.1,345.0 354.2,342.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="322.2,343.5 327.4,346.5 321.3,351.0 316.1,348.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="337.8,343.5 332.6,346.5 338.7,351.0 343.9,348.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="330.0,263.9 385.4,295.9 274.6,295.9" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="330.0" cy="269.8" r="2.6" fill="#c3ccd5"/>
+</g>
+<g class="fv-punto" data-id="charles-waring" data-forma="chip">
+<polygon points="330.0,259.7 402.7,301.7 330.0,343.7 257.3,301.7" fill="#1f2933" fill-opacity="0.045"/>
+<polygon points="257.3,192.0 330.0,234.0 330.0,224.0 257.3,182.0" fill="#f1f4f7" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="330.0,234.0 402.7,192.0 402.7,182.0 330.0,224.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="330.0,140.0 402.7,182.0 330.0,224.0 257.3,182.0" fill="#fbfcfd" stroke="#c3ccd5" stroke-width="1.0" stroke-linejoin="round"/>
+<polygon points="330.0,149.9 385.4,181.9 330.0,213.9 274.6,181.9" fill="#c3ccd5" fill-opacity="0.08" stroke="#c3ccd5" stroke-width="0.7" stroke-opacity="0.6"/>
+<polygon points="259.9,193.5 265.0,196.5 259.0,201.0 253.8,198.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="400.1,193.5 395.0,196.5 401.0,201.0 406.2,198.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="270.2,199.5 275.4,202.5 269.4,207.0 264.2,204.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="389.8,199.5 384.6,202.5 390.6,207.0 395.8,204.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="280.6,205.5 285.8,208.5 279.8,213.0 274.6,210.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="379.4,205.5 374.2,208.5 380.2,213.0 385.4,210.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="291.0,211.5 296.2,214.5 290.2,219.0 285.0,216.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="369.0,211.5 363.8,214.5 369.8,219.0 375.0,216.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="301.4,217.5 306.6,220.5 300.6,225.0 295.4,222.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="358.6,217.5 353.4,220.5 359.4,225.0 364.6,222.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="311.8,223.5 317.0,226.5 310.9,231.0 305.8,228.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="348.2,223.5 343.0,226.5 349.1,231.0 354.2,228.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="322.2,229.5 327.4,232.5 321.3,237.0 316.1,234.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="337.8,229.5 332.6,232.5 338.7,237.0 343.9,234.0" fill="#e7ebef" stroke="#c3ccd5" stroke-width="0.6"/>
+<polygon points="330.0,149.8 385.4,181.8 274.6,181.8" fill="#ffffff" fill-opacity="0.35"/>
+<circle cx="330.0" cy="155.8" r="2.6" fill="#c3ccd5"/>
+</g>
+</g>
+<g id="fv-llamadas"><polyline points="372.4,439.5 584.0,439.5 584.0,439.5 616.0,439.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="372.4" cy="439.5" r="3" fill="#3e7cb1"/>
+<circle cx="632" cy="439.5" r="15" fill="#3e7cb1"/>
+<text x="632" y="444.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+<polyline points="372.4,325.5 584.0,325.5 584.0,325.5 616.0,325.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="372.4" cy="325.5" r="3" fill="#84898f"/>
+<circle cx="632" cy="325.5" r="15" fill="#84898f"/>
+<text x="632" y="330.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+<polyline points="372.4,211.5 584.0,211.5 584.0,211.5 616.0,211.5" fill="none" stroke="#cbd2d9" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="372.4" cy="211.5" r="3" fill="#84898f"/>
+<circle cx="632" cy="211.5" r="15" fill="#84898f"/>
+<text x="632" y="216.5" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">3</text></g>
+<g id="fv-lista"><text x="720" y="431.5" font-size="16" font-weight="600" fill="#1f2933">Annie (1841–1851)</text>
+<text x="720" y="451.5" font-size="14" fill="#7b8794">Nace el 2-mar-1841 y muere en Malvern el 23-abr-1851, a los 10</text>
+<text x="720" y="469.5" font-size="14" fill="#7b8794">años; una semana después Darwin escribe un recuerdo de ella</text>
+<text x="720" y="317.5" font-size="16" font-weight="600" fill="#7b8794">Mary Eleanor (1842)</text>
+<text x="720" y="337.5" font-size="14" fill="#7b8794">La tercera hija: vive 23 días y muere en 1842, de causa</text>
+<text x="720" y="355.5" font-size="14" fill="#7b8794">desconocida</text>
+<text x="720" y="203.5" font-size="16" font-weight="600" fill="#7b8794">Charles Waring (1856–1858)</text>
+<text x="720" y="223.5" font-size="14" fill="#7b8794">El último hijo: muere en 1858, a los 18 meses, de escarlatina</text></g>
+</svg>

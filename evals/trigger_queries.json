@@ -20,5 +20,9 @@
   {"split": "validation", "should_trigger": false, "query": "redibujá este draw.io como flowchart con la marca de la casa"},
   {"split": "validation", "should_trigger": false, "query": "resumime este informe en tres líneas para el correo a dirección"},
   {"split": "validation", "should_trigger": false, "query": "abrí un ticket con lo que hicimos ayer en la WAF"},
-  {"split": "validation", "should_trigger": true, "query": "quiero ver cómo se desarma una placa base pieza a pieza en una página que se recorra con el scroll, tipo 3D"}
+  {"split": "validation", "should_trigger": true, "query": "quiero ver cómo se desarma una placa base pieza a pieza en una página que se recorra con el scroll, tipo 3D"},
+  {"split": "train", "should_trigger": true, "query": "desarmame la historia argentina del siglo XX por etapas, que no entiendo por qué hubo tantos golpes"},
+  {"split": "train", "should_trigger": false, "query": "haceme una línea de tiempo con los presidentes argentinos desde 1983, una barra por mandato"},
+  {"split": "validation", "should_trigger": true, "query": "qué partes tiene una auditoría ISO 27001 y qué tiene que pasar antes de qué, para explicárselo a los nuevos"},
+  {"split": "validation", "should_trigger": false, "query": "dibujá el árbol genealógico de los Darwin como organigrama, con una caja por persona"}
 ]

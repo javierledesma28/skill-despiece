@@ -6,7 +6,7 @@
 
 **Una skill de Claude Code que desarma cualquier cosa por niveles y te la explica con figuras.**
 
-Un objeto físico, un proceso, un sistema o una idea: `/despiece` lo abre capa por capa,
+Un aparato, una red, una historia, una auditoría o una idea: `/despiece` lo abre capa por capa,
 dibuja cada nivel y te hace tres preguntas para comprobar que lo entendiste de verdad.
 
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-3e7cb1?style=flat-square)](SKILL.md)
@@ -20,10 +20,10 @@ dibuja cada nivel y te hace tres preguntas para comprobar que lo entendiste de v
 
 ## ¿Qué hace?
 
-Le pedís `/despiece SSD NVMe` (o `una turbina`, `el pipeline de CI`, `la inflación`) y la skill:
+Le pedís `/despiece SSD NVMe` (o `la red de la oficina en Azure`, `la historia argentina`, `una auditoría ISO 27001`) y la skill:
 
-1. **Arma un modelo** del objeto en JSON: piezas, de qué depende cada una, orden de montaje y fuente de cada dato. Lo valida antes de dibujar nada.
-2. **Dibuja cada nivel** como figura SVG. Para objetos físicos, una **vista explotada isométrica**: las piezas separadas sobre el eje de montaje, de abajo arriba, con llamadas numeradas.
+1. **Arma un modelo** en JSON con dos ejes y nada más: qué tiene que existir antes de qué (`orden`) y qué está dentro de qué (`padre`). Cada pieza lleva su función y la fuente de cada dato. Lo valida antes de dibujar nada.
+2. **Dibuja cada nivel** como una **vista explotada isométrica**, sea un aparato, una red o una historia: las piezas separadas sobre un solo eje, de abajo arriba, con llamadas numeradas. Lo que ordena el eje lo dice el modelo: el montaje, el despliegue, la cronología, la profundidad.
 3. **Ensambla una página HTML** (modo claro y oscuro) que se lee de arriba abajo: nivel 0 → nivel 1 → nivel 2…
 4. **Te pone a prueba**: tres frases al estilo Feynman y una predicción. Si no las podés contestar, todavía no lo entendiste.
 
@@ -34,10 +34,21 @@ cargar, se desmonta pieza a pieza, sigue el flujo paso a paso y te deja entrar e
 > Sin dependencias: Python 3.10 o superior y nada más. La figura sale con `viewBox`, así que escala donde la pongas.
 > Node 22 solo hace falta para capturar la página interactiva, y es opcional.
 
-<p align="center">
-  <a href="docs/demo/iso/n1-explosion.svg"><img src="docs/demo/iso/n1-explosion.svg" alt="Nivel 1: vista explotada del SSD con la controladora destacada" width="90%"></a>
-  <br><sub>Nivel 1 del ejemplo: SSD NVMe con la controladora destacada. Pieza con «+» = tiene su propia figura.</sub>
-</p>
+<table>
+  <tr>
+    <td width="33%" align="center"><a href="docs/demo/iso/n1-explosion.svg"><img src="docs/demo/iso/n1-explosion.svg" alt="Vista explotada de un SSD NVMe, ordenada por el montaje, con la controladora destacada"></a></td>
+    <td width="33%" align="center"><a href="docs/demo/ejemplos/red-nube-n1-explosion.svg"><img src="docs/demo/ejemplos/red-nube-n1-explosion.svg" alt="Vista explotada de una red radial en la nube, ordenada por el despliegue, con el peering destacado"></a></td>
+    <td width="33%" align="center"><a href="docs/demo/ejemplos/historia-argentina-n1-explosion.svg"><img src="docs/demo/ejemplos/historia-argentina-n1-explosion.svg" alt="Vista explotada de la historia política argentina, ordenada por la cronología, con el ciclo de golpes destacado"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Un aparato</b> · el orden es el montaje</sub></td>
+    <td align="center"><sub><b>Una red</b> · el orden es el despliegue</sub></td>
+    <td align="center"><sub><b>Una historia</b> · el orden es la cronología</sub></td>
+  </tr>
+</table>
+
+<p align="center"><sub>La misma figura para los tres: cambia el vocabulario, no la skill. Pieza con «+» = tiene su propia figura.<br>
+<a href="docs/ejemplos.md"><b>Ver los 9 ejemplos con todos sus niveles</b></a>: un árbol genealógico, una auditoría ISO 27001, un pipeline de CI/CD, el subsuelo de Marte, el sentido del tacto…</sub></p>
 
 ---
 
@@ -87,11 +98,21 @@ La skill no hace un resumen. Construye una **jerarquía** y la recorre:
 | **0** | ¿Qué es y para qué sirve, en una frase? | Un disco sin partes móviles que guarda datos en chips. |
 | **1** | ¿De qué piezas está hecho y en qué orden se arman? | PCB → conector M.2 → chips NAND → controladora → DRAM. |
 | **2** | ¿Qué hay dentro de cada pieza que importa? | Dentro de la NAND: celdas, páginas, bloques, planos. |
-| **n** | …hasta donde el objeto lo aguante y vos lo pidas. | |
+| **n** | …hasta donde el objeto lo aguante y vos lo pidas: cada pieza se abre a demanda. | |
+
+Y todo se arma con **dos ejes**. Lo demás es vocabulario del dominio:
+
+| Caso | `orden` (dependencia) es… | `padre` (pertenencia) es… |
+|---|---|---|
+| Un SSD | el montaje | la NAND contiene celdas y bloques |
+| Una red en la nube | el despliegue | la red contiene subredes, y las subredes, interfaces |
+| La historia de un país | la cronología | un período contiene décadas, y una década, hechos |
+| Una auditoría | las fases | un dominio contiene controles, y un control, evidencias |
+| Un terreno | la profundidad | un estrato contiene sus capas |
 
 Reglas que respeta en cada figura (vienen de Agrawala 2003/2008 y de los cortes de Stephen Biesty):
 
-- Las piezas se separan **sobre un solo eje**, el de montaje, y lo mínimo para verse.
+- Las piezas se separan **sobre un solo eje**, el de dependencia, y lo mínimo para verse.
 - Una pieza con hijos se dibuja **cerrada** y se abre en otra figura. Nunca todo a la vez.
 - Con `--destacar`, **una sola** pieza va en color; el resto queda en gris.
 - Las llamadas van numeradas, con guía en codo hasta la lista, para que **no se crucen**.
@@ -104,18 +125,18 @@ Reglas que respeta en cada figura (vienen de Agrawala 2003/2008 y de los cortes 
 
 <br>
 
-Cada pieza se dibuja como un sólido isométrico con la silueta de su papel. Podés fijarla con el campo `"forma"` en el JSON; si no está, se infiere del nombre.
+Cada pieza se dibuja como un sólido isométrico con la silueta de su papel. El papel lo da el campo `"rol"`, que no sabe de ningún dominio: una VNet, una placa y el período fundacional de un país son la `base` de su figura. Si querés una silueta concreta, `"forma"` le gana al rol; y solo en objetos físicos, sin ninguno de los dos, se infiere del nombre.
 
-| Forma | Qué dibuja | Se infiere de… |
-|---|---|---|
-| `placa` | Placa fina con pistas, vías, huellas punteadas, taladros, serigrafía y muesca de llave | pcb, placa, board, tarjeta |
-| `chip` | Encapsulado con bisel, brillo, pines en dos lados y marca de pin 1; `cantidad` dibuja una fila | chip, nand, dram, controladora, soc, cpu, gpu, sensor… |
-| `conector` | Cuerpo con ranura, pestañas y lengüeta dorada con contactos alternos | conector, puerto, socket, slot, usb, hdmi, rj45… |
-| `modulo` | Bloque con bisel superior y rejilla lateral | *(raíz sin pista)* |
-| `carcasa` | Bandeja abierta con paredes finas, tornillos en esquinas y rejilla de ventilación | carcasa, tapa, chasis, case, caja |
-| `disipador` | Base más aletas, con sombra entre aletas | disipador, heatsink, ventilador, radiador |
-| `cable` | Cinta plana con conductores paralelos | cable, cinta, flex, bus, antena |
-| `capa` | Loseta fina con retícula, para partes lógicas o internas | *(pieza hija sin pista)* |
+| Forma | Qué dibuja | `rol` que la pide | Del nombre (solo físico) |
+|---|---|---|---|
+| `placa` | Placa fina con pistas, vías, huellas punteadas, taladros, serigrafía y muesca de llave | `base`: sobre lo que se apoya el resto | pcb, placa, board, tarjeta |
+| `capa` | Loseta fina con retícula | `etapa`, `capa`: período, fase, estrato, dominio | *(pieza hija sin pista)* |
+| `chip` | Encapsulado con bisel, brillo, pines en dos lados y marca de pin 1; `cantidad` dibuja una fila | `componente`: unidad activa con identidad propia | chip, nand, dram, controladora, soc, cpu… |
+| `conector` | Cuerpo con ranura, pestañas y lengüeta dorada con contactos alternos | `interfaz`: punto de entrada o salida | conector, puerto, socket, slot, usb… |
+| `cable` | Cinta plana con conductores paralelos | `enlace`: peering, parentesco, causa | cable, cinta, flex, bus, antena |
+| `carcasa` | Bandeja abierta con paredes finas, tornillos en esquinas y rejilla de ventilación | `contenedor`, `limite`: lo que encierra o restringe | carcasa, tapa, chasis, case, caja |
+| `disipador` | Base más aletas, con sombra entre aletas | `regulador`: lo que disipa, controla o compensa | disipador, heatsink, ventilador |
+| `modulo` | Bloque con bisel superior y rejilla lateral | `bloque`: genérico | *(raíz sin pista)* |
 
 Cada pieza proyecta una sombra tenue sobre la de abajo, lo que vende la separación sin agregar ruido.
 
@@ -169,12 +190,12 @@ despiece/
 │   └── capturar-cdp.mjs      ← captura en tiempo real para revisarla (Node 22, opcional)
 ├── references/               ← guion visual, formato del modelo, pruebas de comprensión
 ├── assets/
-│   ├── ejemplo-fisico.json   ← SSD NVMe, el ejemplo de todas las demos
-│   ├── ejemplo-sistema.json  ← un sistema, para ver el otro camino
+│   ├── ejemplo-*.json        ← un modelo por clase de caso: SSD, red, historia, auditoría…
 │   ├── plantilla-interactiva.html
 │   └── marca-ejemplo.json
 ├── evals/                    ← casos para comprobar que la skill no se rompe
-├── docs/demo/iso/            ← SVG de demostración
+├── docs/ejemplos.md          ← los 9 ejemplos con sus figuras, nivel por nivel
+├── docs/demo/                ← SVG de demostración (iso/ el SSD, ejemplos/ el resto)
 ├── docs/interactivo/         ← la página interactiva del SSD y sus capturas
 └── CHANGELOG.md
 ```
@@ -190,10 +211,12 @@ Los scripts corren con `python -I` (modo aislado) a propósito: nada de tu entor
 
 - [x] Modelo validado con fuentes por dato
 - [x] Vista explotada isométrica con siluetas por tipo de pieza
+- [x] La misma vista para aparatos, procesos, sistemas e ideas: dos ejes y roles (2.0.0)
+- [x] Profundidad a demanda: cada pieza se abre cuando la pedís (2.0.0)
 - [x] Página HTML claro/oscuro con pruebas de comprensión
 - [x] [Página interactiva](docs/interactivo.md) que se abre y se recorre con el scroll (1.2.0, solo físico)
 - [ ] **Explorador interactivo** con zoom semántico: acercás una pieza y se abre; te alejás y se cierra
-- [ ] Figuras propias para `proceso`, `sistema` e `idea` (hoy se delegan a una skill de diagramas)
+- [ ] Figuras propias de flujo y de red (hoy se delegan a una skill de diagramas)
 - [ ] Exportar un nivel a PNG/PDF desde la propia página
 
 Si estás leyendo esto en la rama `vista-isometrica`, mirá [HANDOFF.md](HANDOFF.md): ahí está lo que falta para cerrar el PR.

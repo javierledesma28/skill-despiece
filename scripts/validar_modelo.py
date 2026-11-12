@@ -14,7 +14,7 @@ Comprueba lo que el método exige y que, sin guía, se salta (E = error, A = avi
   E  relaciones con de/a existentes y tipo conocido
   E  feynman con exactamente 3 frases; prediccion con pregunta (termina en «?») y respuesta
   A  figuras: > 6 piezas nuevas (E si > 9), título no afirmativo, skill desconocida, nivel > profundidad
-  A  funcion > 160 caracteres (es un párrafo, no una función); nombre > 40
+  A  funcion > 125 caracteres (la figura muestra dos líneas y recorta el resto); nombre > 40
   A  sin malentendidos; sin figuras; piezas sin ninguna figura que las muestre
   E  figuras[].destacada fuera de las piezas de esa figura
   E  prediccion.opciones: 2–4 textos, con correcta (índice desde 0) dentro de rango
@@ -135,8 +135,9 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
         fuente = p.get("fuente")
         if not (isinstance(fuente, str) and fuente.strip()) and p.get("supuesto") is not True:
             E.append(f"pieza «{pid}» sin fuente y sin «supuesto: true»: no se explica de memoria")
-        if isinstance(p.get("funcion"), str) and len(p["funcion"]) > 160:
-            A.append(f"pieza «{pid}»: funcion de {len(p['funcion'])} caracteres; una función se dice en una línea")
+        if isinstance(p.get("funcion"), str) and len(p["funcion"]) > 125:
+            A.append(f"pieza «{pid}»: funcion de {len(p['funcion'])} caracteres; la figura muestra dos líneas "
+                     "(unos 125) y recorta el resto con «…»")
         if isinstance(p.get("nombre"), str) and len(p["nombre"]) > 40:
             A.append(f"pieza «{pid}»: nombre de {len(p['nombre'])} caracteres; acortarlo para que quepa en la figura")
         for campo in ("orden", "orden_montaje"):
@@ -144,6 +145,10 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
                 E.append(f"pieza «{pid}»: {campo} debe ser un entero (1 es lo primero, abajo en la figura)")
         if "orden" in p and "orden_montaje" in p and p["orden"] != p["orden_montaje"]:
             E.append(f"pieza «{pid}»: orden = {p['orden']} y orden_montaje = {p['orden_montaje']}; son el mismo campo, dejar solo «orden»")
+        if "eje" in p and (not isinstance(p["eje"], str) or not p["eje"].strip()):
+            E.append(f"pieza «{pid}»: eje debe ser un texto: qué ordena a sus hijas en su figura")
+        elif isinstance(p.get("eje"), str) and len(p["eje"]) > 70:
+            A.append(f"pieza «{pid}»: eje de {len(p['eje'])} caracteres; va en el subtítulo de su figura")
         if "rol" in p and p["rol"] not in ROLES:
             E.append(f"pieza «{pid}»: rol «{p['rol']}» desconocido; usar uno de {sorted(ROLES)}")
         if "forma" in p and p["forma"] not in FORMAS_FIGURA:

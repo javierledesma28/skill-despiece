@@ -8,7 +8,8 @@ dependencia, lo mínimo para verse; de abajo arriba va el campo «orden» de cad
 el montaje en un aparato, el despliegue en un sistema, la cronología en una historia, la profundidad en un
 terreno. Sin «orden», el del flujo y, si no, el de escritura. El subtítulo dice qué ordena el eje: el
 campo «eje» del modelo («la cronología, de lo más antiguo a lo más reciente») o, si falta, uno según el
-tipo. Una pieza con hijos se dibuja cerrada y se abre en otra figura con --subconjunto; con --destacar
+tipo; en un subconjunto, el «eje» de la pieza que se abre. Si las piezas no traen «orden» ni están en el
+flujo, el subtítulo no afirma ningún orden. Una pieza con hijos se dibuja cerrada y se abre en otra figura con --subconjunto; con --destacar
 una sola pieza va en color y el resto queda en gris. Llamadas numeradas con línea guía hasta la lista de
 piezas, a la derecha, para que las guías no se crucen.
 
@@ -379,26 +380,48 @@ def main(argv: list[str]) -> int:
         return 2
     # Orden ascendente: la 1 abajo. Sin «orden» en todas, el del flujo; si tampoco, el de escritura.
     flujo = [f for f in m.get("flujo") or [] if isinstance(f, str)]
+    criterio = None
     if all(orden_de(p) is not None for p in grupo):
         grupo.sort(key=orden_de)
+        criterio = "orden"
     elif all(p["id"] in flujo for p in grupo):
         grupo.sort(key=lambda p: flujo.index(p["id"]))
+        criterio = "flujo"
     n = len(grupo)
     formas = [forma_de(p, tipo) for p in grupo]
 
     # Alturas: la escena se construye de abajo arriba; cada pieza a SEP de la anterior más su propio alto.
+    # Una fila de chips iguales va centrada en el eje: su mitad izquierda sube en pantalla y hay que dejarle
+    # sitio a la pieza de arriba; si es la última, solo al margen superior.
+    # «cima»: cuánto sube la escena sobre el origen, con la esquina trasera de cada pieza proyectada; así el
+    # margen superior es el que pide la pieza más alta, no el de una placa grande.
+    # «alcance»: cuánto baja en pantalla la esquina delantera de una pieza bajo su base. Si la de arriba baja
+    # más que la de abajo (una carcasa sobre un cable), se separa esa diferencia de más: así la de abajo
+    # queda tan a la vista como bajo una pieza igual a ella.
+    # Sobre una carcasa (bandeja abierta) o entre las aletas de un disipador, la pieza de arriba se vería metida
+    # dentro, y estar dentro es «padre», el otro eje: se sube hasta que su punto más bajo libra el borde trasero.
     zs: list[float] = []
     z = 0.0
-    for p, f in zip(grupo, formas):
-        zs.append(z)
-        extra = 0
+    cima = 0.0
+    alcance_prev = None
+    for k, (p, f) in enumerate(zip(grupo, formas)):
+        sube = 0.0
         if f == "chip" and isinstance(p.get("cantidad"), int) and p["cantidad"] > 1:
-            extra = (min(p["cantidad"], 6) - 1) * (FORMAS["chip"]["w"] + 26) * SIN  # la fila baja en pantalla
-        z += FORMAS[f]["h"] + SEP + extra
-    alto_pila = z - SEP  # de la base de la pieza 1 a la cima de la última
+            sube = (min(p["cantidad"], 6) - 1) * (FORMAS["chip"]["w"] + 26) * SIN / 2
+        fo = FORMAS[f]
+        alcance = ((fo["w"] + fo["d"]) / 2 + fo.get("dy", 0)) * SIN + sube
+        if alcance_prev is not None:
+            z += max(0.0, alcance - alcance_prev)
+            if formas[k - 1] in ("carcasa", "disipador"):
+                fc = FORMAS[formas[k - 1]]
+                borde = zs[-1] + fc["h"] + min(fc["w"], fc["d"]) * SIN  # borde trasero, sobre el eje
+                z = max(z, borde + alcance + 12)
+        alcance_prev = alcance
+        zs.append(z)
+        cima = max(cima, z + fo["h"] + sube + ((fo["w"] + fo["d"]) / 2 - fo.get("dy", 0)) * SIN)
+        z += fo["h"] + SEP + sube
     pie_h = 56 if mk["pie"] else 24
-    # Margen superior e inferior para la proyección de las caras (una placa de 300×170 sube/baja ~120 px).
-    oy = TOP + 124 + alto_pila
+    oy = TOP + 12 + cima
     H = int(oy + 130 + pie_h)
     iso = Iso(ESCENA_CX, oy)  # origen (0,0,0) en pantalla: la base de la pieza 1
 
@@ -411,8 +434,17 @@ def main(argv: list[str]) -> int:
                 break
     if not titulo:
         titulo = f"Dentro de {piezas[padre]['nombre']}" if padre else (m.get("nivel0", {}).get("titulo") or m.get("objeto", "Vista explotada"))
-    eje = m.get("eje") if isinstance(m.get("eje"), str) and m["eje"].strip() else EJE_POR_TIPO[tipo]
-    subt = f"Vista explotada · de abajo arriba, {recortar(eje, 90)}"
+    # El subtítulo dice qué ordena la pila, y nada más: el «eje» de la pieza abierta (o del modelo, en las
+    # raíces) si se ordenó por «orden» o por el flujo; si no hay «eje», uno genérico; y si la pila va en el
+    # orden de escritura, no se afirma ningún orden.
+    duenno = piezas[padre] if padre else m
+    eje = duenno.get("eje") if isinstance(duenno.get("eje"), str) and duenno["eje"].strip() else None
+    if criterio == "orden":
+        subt = f"Vista explotada · de abajo arriba, {recortar(eje or EJE_POR_TIPO[tipo], 90)}"
+    elif criterio == "flujo":
+        subt = f"Vista explotada · de abajo arriba, {recortar(eje or 'el orden del flujo', 90)}"
+    else:
+        subt = f"Vista explotada · las partes de {recortar(piezas[padre]['nombre'], 60)}" if padre else "Vista explotada"
 
     s: list[str] = []
     s.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMid meet" '
@@ -469,7 +501,7 @@ def main(argv: list[str]) -> int:
             cx_mas = 0.0
             if forma == "chip" and isinstance(p.get("cantidad"), int) and p["cantidad"] > 1:
                 cx_mas = -(min(p["cantidad"], 6) - 1) * (FORMAS["chip"]["w"] + 26) / 2  # sobre el primer chip de la fila
-            px, py = iso.p(cx_mas, 0, zs[i] + h + 26)
+            px, py = iso.p(cx_mas, FORMAS[forma].get("dy", 0), zs[i] + h + 26)  # sobre la pieza, no sobre el eje
             s.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="9" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="1.2"/>')
             s.append(f'<text x="{px:.1f}" y="{py + 4:.1f}" font-size="13" font-weight="700" fill="{col["borde"]}" text-anchor="middle">+</text>')
         s.append("</g>")

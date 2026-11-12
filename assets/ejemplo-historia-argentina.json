@@ -1,0 +1,85 @@
+{
+  "objeto": "La historia política argentina, 1826–2026",
+  "tipo": "proceso",
+  "eje": "la cronología, de lo más antiguo a lo más reciente",
+  "pregunta_foco": "¿Por qué la Argentina alternó tantas veces entre gobiernos civiles y militares en el siglo XX?",
+  "lector": "lector curioso, argentino o no, que conoce fechas sueltas (1930, 1976, 1983) pero no cómo encajan",
+  "profundidad": 4,
+  "nivel0": {
+    "titulo": "En dos siglos, la Argentina pasó de las guerras civiles a más de 40 años sin golpes",
+    "frontera": "Desde 1826, con la presidencia de Rivadavia y las guerras civiles, hasta 2026: quién gobierna y cómo llega al poder. Queda fuera lo anterior a 1826 y la historia económica y social.",
+    "fuera": ["la Revolución de Mayo y la independencia (1810–1825)", "la historia económica y social, salvo cuando explica un cambio de gobierno", "la política exterior y las guerras con otros países, salvo Malvinas"]
+  },
+  "fuentes": [
+    {"id": "halperin-1972", "descripcion": "Tulio Halperin Donghi, De la revolución de independencia a la confederación rosista (Paidós, Historia Argentina 3, 1972)"},
+    {"id": "constitucion", "descripcion": "Constitución de la Nación Argentina, texto oficial (Ley 24.430): sancionada en 1853 y reformada en 1860, 1866, 1898, 1957 y 1994", "url": "https://servicios.infoleg.gob.ar/infolegInternet/anexos/0-4999/804/norma.htm"},
+    {"id": "botana", "descripcion": "Natalio R. Botana, El orden conservador. La política argentina entre 1880 y 1916 (Sudamericana, 1977)"},
+    {"id": "ley-8871", "descripcion": "Ley 8871 (Ley Sáenz Peña), sancionada el 10 de febrero de 1912: voto secreto y obligatorio. Debate parlamentario publicado por la Cámara de Diputados", "url": "https://www4.hcdn.gob.ar/dependencias/dip/wdebates/Ley-08871-Debate-Ley-Electoral-S%e1enz-Pe%f1a.pdf"},
+    {"id": "romero", "descripcion": "Luis Alberto Romero, Breve historia contemporánea de la Argentina 1916-2016, 4.ª ed. (Fondo de Cultura Económica, 2017), caps. II a XI", "url": "https://fce.com.ar/wp-content/uploads/2020/11/Romero-BHCA.pdf"},
+    {"id": "potash", "descripcion": "Robert A. Potash, El ejército y la política en la Argentina 1945-1962 (Sudamericana, 1981; orig. Stanford University Press, 1980): las elecciones de marzo de 1962 y la caída de Frondizi"}
+  ],
+  "piezas": [
+    {"id": "guerras-civiles", "rol": "etapa", "nombre": "Guerras civiles (1826–1852)", "padre": null, "orden": 1, "funcion": "Enfrenta a unitarios y federales sin una Constitución común; Rosas gobierna Buenos Aires hasta su derrota en Caseros, en 1852", "fuente": "halperin-1972"},
+    {"id": "organizacion", "rol": "etapa", "nombre": "Organización (1852–1880)", "padre": null, "orden": 2, "funcion": "Sanciona la Constitución de 1853, que con reformas (la última en 1994) sigue vigente y fija cómo se elige al presidente", "fuente": "constitucion"},
+    {"id": "orden-conservador", "rol": "etapa", "nombre": "Orden conservador (1880–1916)", "padre": null, "orden": 3, "funcion": "El Partido Autonomista Nacional (PAN) controla la sucesión; en 1912 la Ley 8871 impone el voto secreto y obligatorio", "fuente": "botana"},
+    {"id": "radicales", "rol": "etapa", "nombre": "Radicales (1916–1930)", "padre": null, "orden": 4, "funcion": "Con el voto secreto gana la UCR: Yrigoyen (1916), Alvear (1922) y otra vez Yrigoyen (1928), depuesto por el golpe de 1930", "fuente": "romero"},
+    {"id": "golpes", "rol": "etapa", "nombre": "Ciclo de golpes (1930–1983)", "padre": null, "orden": 5, "eje": "la cronología, de 1930 a 1983", "funcion": "Seis golpes (1930, 1943, 1955, 1962, 1966 y 1976) se alternan con gobiernos elegidos, varios con fraude o proscripción", "fuente": "romero"},
+    {"id": "democracia", "rol": "etapa", "nombre": "Democracia (desde 1983)", "padre": null, "orden": 6, "funcion": "Desde el 10-dic-1983 no hubo golpes: la Constitución se reformó en 1994 y la crisis de 2001 se resolvió en el Congreso", "fuente": "romero"},
+    {"id": "t1930", "rol": "etapa", "nombre": "Restauración (1930–1943)", "padre": "golpes", "orden": 1, "funcion": "El golpe del 6-sep-1930 depone a Yrigoyen; desde 1932, presidentes elegidos con fraude: la «restauración conservadora»", "fuente": "romero"},
+    {"id": "t1943", "rol": "etapa", "nombre": "Gobierno de Perón (1943–1955)", "padre": "golpes", "orden": 2, "funcion": "El golpe del 4-jun-1943 abre un gobierno militar donde asciende Perón; elegido en 1946 y 1951, cae con el golpe de 1955", "fuente": "romero"},
+    {"id": "t1955", "rol": "etapa", "nombre": "Proscripción (1955–1966)", "padre": "golpes", "orden": 3, "eje": "la cronología, de 1955 a 1966", "funcion": "Con el peronismo prohibido, Frondizi e Illia, elegidos sin él, caen por golpes; Romero titula el tramo «El empate»", "fuente": "romero"},
+    {"id": "t1966", "rol": "etapa", "nombre": "Golpe del 66 y retorno (1966–1976)", "padre": "golpes", "orden": 4, "funcion": "El golpe del 28-jun-1966 inicia la «Revolución Argentina»; en 1973 vuelven las elecciones y Perón, que muere en 1974", "fuente": "romero"},
+    {"id": "t1976", "rol": "etapa", "nombre": "El Proceso (1976–1983)", "padre": "golpes", "orden": 5, "funcion": "La Junta depone a Isabel Perón (1976) y aplica una represión ilegal, juzgada en 1985; tras Malvinas llama a elecciones", "fuente": "romero"},
+    {"id": "golpe-1955", "rol": "limite", "nombre": "Golpe de 1955", "padre": "t1955", "orden": 1, "funcion": "El 16-sep-1955 derroca a Perón; gobiernan Lonardi y luego Aramburu, en la autodenominada «Revolución Libertadora»", "fuente": "romero"},
+    {"id": "decreto-4161", "rol": "limite", "nombre": "Decreto-ley 4161/56", "padre": "t1955", "orden": 2, "funcion": "Desde el 5-mar-1956 prohíbe los símbolos peronistas y hasta nombrar a Perón, con penas de prisión", "fuente": "romero"},
+    {"id": "eleccion-1958", "rol": "interfaz", "nombre": "Elección de 1958", "padre": "t1955", "orden": 3, "funcion": "El 23-feb-1958 gana Frondizi (UCRI), sin candidatos peronistas y con el apoyo que Perón pidió desde el exilio", "fuente": "romero"},
+    {"id": "golpe-1962", "rol": "limite", "nombre": "Golpe de 1962", "padre": "t1955", "orden": 4, "eje": "el orden en que entran en la crisis de 1962", "funcion": "El 29-mar-1962, once días después de un triunfo electoral peronista, las Fuerzas Armadas deponen a Frondizi", "fuente": "potash"},
+    {"id": "eleccion-1963", "rol": "interfaz", "nombre": "Elección de 1963", "padre": "t1955", "orden": 5, "funcion": "El 7-jul-1963 gana Illia (UCRP) con el peronismo proscripto; el golpe del 28-jun-1966 lo depone", "fuente": "romero"},
+    {"id": "frondizi", "rol": "componente", "nombre": "Arturo Frondizi (UCRI)", "padre": "golpe-1962", "orden": 1, "funcion": "Presidente desde 1958: admite listas peronistas en 1962, interviene provincias tras su triunfo y acaba preso en Martín García", "fuente": "potash"},
+    {"id": "peronismo", "rol": "componente", "nombre": "Peronismo proscripto", "padre": "golpe-1962", "orden": 2, "funcion": "Con otros sellos, como Unión Popular, gana el 18-mar-1962 en nueve provincias, entre ellas Buenos Aires, con Andrés Framini", "fuente": "potash"},
+    {"id": "ffaa", "rol": "regulador", "nombre": "Fuerzas Armadas", "padre": "golpe-1962", "orden": 3, "funcion": "Rechazan el resultado, deponen a Frondizi el 29 de marzo y condicionan al gobierno siguiente a anular las elecciones", "fuente": "potash"},
+    {"id": "guido", "rol": "interfaz", "nombre": "José María Guido", "padre": "golpe-1962", "orden": 4, "funcion": "Presidente provisional del Senado: jura ante la Corte Suprema por la ley de acefalía y anula los comicios en abril de 1962", "fuente": "potash"}
+  ],
+  "relaciones": [
+    {"de": "guerras-civiles", "a": "organizacion", "tipo": "flujo", "etiqueta": "Caseros (1852)"},
+    {"de": "organizacion", "a": "orden-conservador", "tipo": "flujo", "etiqueta": "federalización de Buenos Aires (1880)"},
+    {"de": "orden-conservador", "a": "radicales", "tipo": "flujo", "etiqueta": "Ley 8871 (1912): voto secreto"},
+    {"de": "radicales", "a": "golpes", "tipo": "flujo", "etiqueta": "golpe del 6-sep-1930"},
+    {"de": "golpes", "a": "democracia", "tipo": "flujo", "etiqueta": "elecciones del 30-oct-1983"},
+    {"de": "t1930", "a": "t1943", "tipo": "flujo", "etiqueta": "golpe del 4-jun-1943"},
+    {"de": "t1943", "a": "t1955", "tipo": "flujo", "etiqueta": "golpe de septiembre de 1955"},
+    {"de": "t1955", "a": "t1966", "tipo": "flujo", "etiqueta": "golpe del 28-jun-1966"},
+    {"de": "t1966", "a": "t1976", "tipo": "flujo", "etiqueta": "golpe del 24-mar-1976"},
+    {"de": "golpe-1955", "a": "decreto-4161", "tipo": "causa", "etiqueta": "proscripción del peronismo"},
+    {"de": "decreto-4161", "a": "eleccion-1958", "tipo": "controla", "etiqueta": "sin candidatos peronistas"},
+    {"de": "eleccion-1958", "a": "golpe-1962", "tipo": "flujo"},
+    {"de": "golpe-1962", "a": "eleccion-1963", "tipo": "flujo", "etiqueta": "Guido llama a elecciones"},
+    {"de": "decreto-4161", "a": "eleccion-1963", "tipo": "controla", "etiqueta": "peronismo proscripto"},
+    {"de": "decreto-4161", "a": "peronismo", "tipo": "controla", "etiqueta": "lo proscribe"},
+    {"de": "peronismo", "a": "ffaa", "tipo": "causa", "etiqueta": "triunfo del 18-mar-1962"},
+    {"de": "ffaa", "a": "frondizi", "tipo": "controla", "etiqueta": "lo deponen el 29-mar-1962"},
+    {"de": "ffaa", "a": "guido", "tipo": "controla", "etiqueta": "le exigen anular los comicios"}
+  ],
+  "flujo": ["guerras-civiles", "organizacion", "orden-conservador", "radicales", "golpes", "democracia"],
+  "malentendidos": [
+    "«Entre 1930 y 1983 gobernaron siempre los militares»: hubo presidentes civiles elegidos durante buena parte del período (Justo, Perón, Frondizi, Illia, Cámpora), aunque varios con fraude o con proscripción.",
+    "«La democracia empezó en 1983»: desde 1916 hubo presidentes elegidos con voto secreto y obligatorio (masculino hasta 1951); lo nuevo desde 1983 es que ningún gobierno fue interrumpido por un golpe."
+  ],
+  "figuras": [
+    {"nivel": 1, "titulo": "En 200 años, los seis golpes de Estado caben en un solo período", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["guerras-civiles", "organizacion", "orden-conservador", "radicales", "golpes", "democracia"], "fichero": "figuras/n1-explosion.svg", "destacada": "golpes"},
+    {"nivel": 2, "titulo": "Cada tramo del ciclo de 1930 a 1983 empieza con un golpe", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["t1930", "t1943", "t1955", "t1966", "t1976"], "fichero": "figuras/n2-golpes.svg", "destacada": "t1955"},
+    {"nivel": 3, "titulo": "Entre 1955 y 1966, cada presidente elegido sin el peronismo cayó por un golpe", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["golpe-1955", "decreto-4161", "eleccion-1958", "golpe-1962", "eleccion-1963"], "fichero": "figuras/n3-t1955.svg", "destacada": "golpe-1962"},
+    {"nivel": 4, "titulo": "Once días después del triunfo peronista de 1962, Frondizi fue depuesto", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["frondizi", "peronismo", "ffaa", "guido"], "fichero": "figuras/n4-golpe-1962.svg", "destacada": "ffaa"}
+  ],
+  "feynman": [
+    "Entre 1930 y 1976 hubo seis golpes de Estado: los militares sacaban a un gobierno y, años después, llamaban a elecciones.",
+    "Desde 1955 el peronismo, que había ganado las elecciones de 1946 y 1951, tenía prohibido presentarse.",
+    "Según Romero, los gobiernos elegidos sin el peronismo quedaban débiles; cuando volvió a ganar en 1962, los militares depusieron al presidente."
+  ],
+  "prediccion": {
+    "pregunta": "Es marzo de 1962. El peronismo, proscripto desde 1956, gana con otro nombre la gobernación de Buenos Aires, y a Frondizi le quedan dos años de mandato. ¿Qué pasa en las semanas siguientes?",
+    "respuesta": "Las Fuerzas Armadas deponen a Frondizi el 29 de marzo; asume José María Guido, presidente provisional del Senado, que anula esas elecciones. Es el patrón del período: un resultado que las Fuerzas Armadas no aceptaban terminaba en golpe.",
+    "opciones": ["Frondizi reconoce el resultado y termina su mandato en 1964", "Las Fuerzas Armadas deponen a Frondizi y se anulan las elecciones", "Se convoca una elección presidencial con Perón como candidato"],
+    "correcta": 1
+  }
+}
