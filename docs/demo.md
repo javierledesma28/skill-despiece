@@ -91,9 +91,12 @@ Con Claude Code, el mismo resultado se pide así:
 
 ## Los otros tres tipos
 
+La misma vista explotada sirve para una red, una historia, una auditoría o un sentido del cuerpo: los nueve
+ejemplos, nivel por nivel y con el comando de cada figura, están en [**Ejemplos**](ejemplos.md).
+
 Un sistema (el camino de una petición hasta un portal detrás de una WAF), un proceso (la activación de un rol por
-PIM) y una idea (la idempotencia en una API de pagos) son los casos de evaluación públicos de la skill. Cómo salen,
-con y sin la skill, en [`evals/resultados-2026-11-02.md`](../evals/resultados-2026-11-02.md).
+PIM) y una idea (la idempotencia en una API de pagos) son además los casos de evaluación públicos de la skill. Cómo
+salen, con y sin la skill, en [`evals/resultados-2026-11-02.md`](../evals/resultados-2026-11-02.md).
 
 ---
 

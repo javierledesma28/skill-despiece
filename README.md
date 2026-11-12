@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://images.segmind.com/generations/8aa288dd-101b-44f6-93ca-a50fe89ea2b3/7a70afc9ad5052b713213588bb8f0157.png" alt="Vista explotada isométrica de un SSD NVMe" width="100%">
+<img src="docs/img/portada.png" alt="Vista explotada isométrica de un SSD NVMe" width="100%">
 
 # despiece
 
