@@ -3,6 +3,17 @@
 Formato: versión semántica (`metadata.version` de SKILL.md). Una entrada por cambio relevante, con el
 resultado de las evals que lo respaldan.
 
+## [2.0.1] - 2026-11-12
+
+Solo documentación: la skill no cambia.
+
+### Cambiado
+- La portada del README pasa a `docs/img/portada.png`, en el repo, en vez de la URL del CDN de Segmind, que no es
+  permanente.
+- Demo estática regenerada con la 2.0.0: las dos figuras de `docs/demo/figuras/` en isométrica, `docs/demo/index.html`
+  y sus cuatro capturas, ahora de la página completa en claro y oscuro. `docs/demo.md` remite a la galería de los
+  nueve ejemplos.
+
 ## [2.0.0] - 2026-11-12
 
 Cambia el modelo: la skill deja de saber de hardware. Un despiece son **dos ejes y nada más**, dependencia
