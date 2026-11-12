@@ -219,8 +219,6 @@ Los scripts corren con `python -I` (modo aislado) a propósito: nada de tu entor
 - [ ] Figuras propias de flujo y de red (hoy se delegan a una skill de diagramas)
 - [ ] Exportar un nivel a PNG/PDF desde la propia página
 
-Si estás leyendo esto en la rama `vista-isometrica`, mirá [HANDOFF.md](HANDOFF.md): ahí está lo que falta para cerrar el PR.
-
 </details>
 
 ---
