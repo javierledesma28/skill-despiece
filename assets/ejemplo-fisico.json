@@ -14,11 +14,11 @@
     {"id": "jedec-m2", "descripcion": "PCI-SIG M.2 Specification: tamaños 2230/2242/2280 y llaves M/B"}
   ],
   "piezas": [
-    {"id": "pcb", "nombre": "Placa (PCB)", "padre": null, "orden_montaje": 1, "funcion": "Sostiene y conecta todo; su tamaño (2280 = 22 × 80 mm) fija cuántos chips caben", "fuente": "jedec-m2"},
-    {"id": "conector", "nombre": "Conector M.2 llave M", "padre": null, "orden_montaje": 2, "funcion": "Entrega alimentación y hasta 4 carriles PCIe; la llave impide pinchar un disco SATA", "fuente": "jedec-m2"},
-    {"id": "controladora", "nombre": "Controladora", "padre": null, "orden_montaje": 3, "funcion": "El cerebro: traduce comandos NVMe a operaciones sobre la NAND y reparte el desgaste", "fuente": "nvme-spec"},
-    {"id": "dram", "nombre": "Caché DRAM", "padre": null, "orden_montaje": 4, "funcion": "Guarda la tabla que dice en qué chip está cada bloque; sin ella, el disco la busca en la propia NAND y se frena", "supuesto": true},
-    {"id": "nand", "nombre": "Chips NAND", "padre": null, "orden_montaje": 5, "funcion": "Donde viven los datos; más chips en paralelo, más velocidad sostenida", "cantidad": 4, "fuente": "nvme-spec"},
+    {"id": "pcb", "nombre": "Placa (PCB)", "padre": null, "orden": 1, "funcion": "Sostiene y conecta todo; su tamaño (2280 = 22 × 80 mm) fija cuántos chips caben", "fuente": "jedec-m2"},
+    {"id": "conector", "nombre": "Conector M.2 llave M", "padre": null, "orden": 2, "funcion": "Entrega alimentación y hasta 4 carriles PCIe; la llave impide pinchar un disco SATA", "fuente": "jedec-m2"},
+    {"id": "controladora", "nombre": "Controladora", "padre": null, "orden": 3, "funcion": "El cerebro: traduce comandos NVMe a operaciones sobre la NAND y reparte el desgaste", "fuente": "nvme-spec"},
+    {"id": "dram", "nombre": "Caché DRAM", "padre": null, "orden": 4, "funcion": "Guarda la tabla que dice en qué chip está cada bloque; sin ella, el disco la busca en la propia NAND y se frena", "supuesto": true},
+    {"id": "nand", "nombre": "Chips NAND", "padre": null, "orden": 5, "funcion": "Donde viven los datos; más chips en paralelo, más velocidad sostenida", "cantidad": 4, "fuente": "nvme-spec"},
     {"id": "nand-celdas", "nombre": "Celdas (TLC o QLC)", "padre": "nand", "funcion": "Cada celda guarda 3 o 4 bits; cuantos más bits, más barato y más lento al escribir", "supuesto": true},
     {"id": "nand-slc", "nombre": "Caché SLC", "padre": "nand", "funcion": "Parte de la NAND trabaja a 1 bit por celda para absorber ráfagas; al llenarse, la velocidad cae", "supuesto": true},
     {"id": "nand-bloques", "nombre": "Bloques y páginas", "padre": "nand", "funcion": "Se escribe por páginas y se borra por bloques: por eso borrar cuesta y hace falta TRIM", "fuente": "nvme-spec"}
@@ -34,8 +34,8 @@
     "«Un M.2 siempre es NVMe»: hay M.2 SATA con la misma forma y una fracción de la velocidad; la llave del conector lo delata."
   ],
   "figuras": [
-    {"nivel": 1, "titulo": "Cinco piezas en una placa, y la controladora en medio de todo", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["pcb", "conector", "controladora", "dram", "nand"], "fichero": "figuras/n1-explosion.svg"},
-    {"nivel": 2, "titulo": "Dentro de la NAND: la caché SLC es lo que se agota en una copia larga", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["nand-celdas", "nand-slc", "nand-bloques"], "fichero": "figuras/n2-nand.svg"}
+    {"nivel": 1, "titulo": "Cinco piezas en una placa, y la controladora en medio de todo", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["pcb", "conector", "controladora", "dram", "nand"], "fichero": "figuras/n1-explosion.svg", "destacada": "controladora"},
+    {"nivel": 2, "titulo": "Dentro de la NAND: la caché SLC es lo que se agota en una copia larga", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["nand-celdas", "nand-slc", "nand-bloques"], "fichero": "figuras/n2-nand.svg", "destacada": "nand-slc"}
   ],
   "feynman": [
     "Un SSD es una placa con una controladora que reparte los datos entre varios chips de memoria.",
@@ -44,6 +44,31 @@
   ],
   "prediccion": {
     "pregunta": "Dos SSD de 1 TB: uno con 4 chips NAND y DRAM, otro con 2 chips y sin DRAM. Copiás 200 GB seguidos. ¿Cuál se frena antes y por qué?",
-    "respuesta": "El de 2 chips sin DRAM: tiene la mitad de canales en paralelo y, al agotarse su caché SLC, cada escritura además busca la tabla de mapeo en la propia NAND."
+    "respuesta": "El de 2 chips sin DRAM: tiene la mitad de canales en paralelo y, al agotarse su caché SLC, cada escritura además busca la tabla de mapeo en la propia NAND.",
+    "opciones": ["El de 4 chips NAND con DRAM", "El de 2 chips NAND sin DRAM"],
+    "correcta": 1
+  },
+  "flujo_entrada": "el slot M.2 y el bus PCIe",
+  "geometria": {
+    "unidad": "mm",
+    "placa": {"largo": 80, "ancho": 22, "grosor": 1.6, "agujeros": [[77.8, 11, 1.3]], "rotulo": "Placa 2280 · {ancho} × {largo} {unidad}"},
+    "piezas": {
+      "pcb": {"forma": "placa"},
+      "conector": {"forma": "conector", "x": [0, 5], "y": [2, 20], "alto": 0.8, "muesca": [14.5, 16.5]},
+      "controladora": {"forma": "chip", "x": [12, 24], "y": [5, 17], "alto": 1.3},
+      "dram": {"forma": "chip", "x": [28, 36], "y": [5, 17], "alto": 1.1},
+      "nand": {"forma": "chip", "unidades": [[40, 48.5], [50, 58.5], [60, 68.5], [70, 78.5]], "y": [3, 19], "alto": 1.1}
+    },
+    "subconjuntos": {
+      "nand": {
+        "huella": {"x": [0, 8.5], "y": [0, 16]},
+        "rotulo": "Un chip NAND de {ancho} × {largo} {unidad}, abierto en sus {n} partes",
+        "piezas": {
+          "nand-bloques": {"z": [0, 1.0], "patron": "rejilla"},
+          "nand-celdas": {"z": [1.0, 2.0], "patron": "puntos"},
+          "nand-slc": {"z": [2.0, 2.6], "x": [0.6, 7.9], "y": [0.6, 5.4]}
+        }
+      }
+    }
   }
 }

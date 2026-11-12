@@ -1,0 +1,66 @@
+{
+  "objeto": "Una red radial (spoke) de Azure unida a la oficina por el VPN Gateway de la red central (hub)",
+  "tipo": "sistema",
+  "eje": "el despliegue, de la red a las máquinas",
+  "pregunta_foco": "¿Por qué una máquina de una red radial no llega a la oficina por el túnel VPN aunque el peering esté conectado?",
+  "lector": "técnico de sistemas que administra máquinas en Azure pero no diseñó la red",
+  "profundidad": 2,
+  "nivel0": {
+    "titulo": "Una máquina radial llega a la oficina solo si el peering le presta el túnel de la central",
+    "frontera": "Desde la NIC de una máquina en la red radial hasta el VPN Gateway de la red central. Queda fuera la red de la oficina, su equipo VPN y la resolución de nombres.",
+    "fuera": ["la red de la oficina y su equipo VPN", "la resolución de nombres (DNS)", "un cortafuegos central (NVA) en la red central"]
+  },
+  "fuentes": [
+    {"id": "learn-peering", "descripcion": "Microsoft Learn: Azure Virtual Network peering", "url": "https://learn.microsoft.com/azure/virtual-network/virtual-network-peering-overview"},
+    {"id": "learn-gestion", "descripcion": "Microsoft Learn: Create, change, or delete a virtual network peering (ajustes, requisitos y estados)", "url": "https://learn.microsoft.com/azure/virtual-network/virtual-network-manage-peering"},
+    {"id": "learn-transito", "descripcion": "Microsoft Learn: Configure VPN gateway transit for virtual network peering", "url": "https://learn.microsoft.com/azure/vpn-gateway/vpn-gateway-peering-gateway-transit"},
+    {"id": "learn-vpn", "descripcion": "Microsoft Learn: VPN Gateway configuration settings (GatewaySubnet, local network gateway)", "url": "https://learn.microsoft.com/azure/vpn-gateway/vpn-gateway-about-vpn-gateway-settings"},
+    {"id": "learn-rutas", "descripcion": "Microsoft Learn: Virtual network traffic routing", "url": "https://learn.microsoft.com/azure/virtual-network/virtual-networks-udr-overview"},
+    {"id": "learn-nsg", "descripcion": "Microsoft Learn: Network security groups overview", "url": "https://learn.microsoft.com/azure/virtual-network/network-security-groups-overview"},
+    {"id": "learn-etiquetas", "descripcion": "Microsoft Learn: Azure service tags overview (etiqueta VirtualNetwork)", "url": "https://learn.microsoft.com/azure/virtual-network/service-tags-overview"},
+    {"id": "learn-diag", "descripcion": "Microsoft Learn: Diagnose a virtual machine routing problem (rutas efectivas)", "url": "https://learn.microsoft.com/azure/virtual-network/diagnose-network-routing-problem"}
+  ],
+  "piezas": [
+    {"id": "vnet", "rol": "base", "nombre": "Red virtual (VNet)", "padre": null, "orden": 1, "funcion": "Reserva el rango privado de cada red; la central y la radial no pueden solaparse si se van a emparejar", "fuente": "learn-gestion"},
+    {"id": "subred", "rol": "capa", "nombre": "Subred y su tabla de rutas", "padre": null, "orden": 2, "funcion": "Segmenta la VNet; Azure le crea una tabla donde suma las rutas del sistema, las propias y las aprendidas", "fuente": "learn-rutas"},
+    {"id": "vpn-gw", "rol": "interfaz", "nombre": "VPN Gateway de la central", "padre": null, "orden": 3, "funcion": "Levanta el túnel IPsec con la oficina desde la GatewaySubnet y conoce sus rangos por la puerta de enlace local", "fuente": "learn-vpn"},
+    {"id": "peering", "rol": "enlace", "nombre": "Peering radial–central", "padre": null, "orden": 4, "eje": "la configuración, de los enlaces a las rutas", "funcion": "Une la radial con la central por la red troncal de Microsoft; no es transitivo y por sí solo no presta el gateway", "fuente": "learn-peering"},
+    {"id": "peering-estado", "rol": "enlace", "nombre": "Dos enlaces, uno por red", "padre": "peering", "orden": 1, "funcion": "Cada red crea su mitad; «Connected» solo dice que existen las dos, no qué comparten", "fuente": "learn-gestion"},
+    {"id": "peering-transito", "rol": "regulador", "nombre": "Permitir tránsito (central)", "padre": "peering", "orden": 2, "funcion": "En el enlace de la central: deja que su VPN Gateway reenvíe tráfico a la radial; exige que la central tenga gateway", "fuente": "learn-gestion"},
+    {"id": "peering-remoto", "rol": "interfaz", "nombre": "Usar gateway remoto (radial)", "padre": "peering", "orden": 3, "funcion": "En el enlace radial: adopta el gateway central; exige que la central permita el tránsito y que la radial no tenga gateway", "fuente": "learn-gestion"},
+    {"id": "peering-rutas", "rol": "capa", "nombre": "Rutas aprendidas (radial)", "padre": "peering", "orden": 4, "funcion": "Con los dos ajustes, los rangos de la oficina llegan a las subredes radiales con salto «Virtual network gateway»", "fuente": "learn-transito"},
+    {"id": "nsg", "rol": "contenedor", "nombre": "Grupo de seguridad (NSG)", "padre": null, "orden": 5, "funcion": "Filtra por prioridad lo que entra y sale de la subred o la NIC; la primera regla que coincide decide", "fuente": "learn-nsg"},
+    {"id": "vm", "rol": "componente", "nombre": "Máquina y su NIC", "padre": null, "orden": 6, "funcion": "Origina el paquete; las rutas efectivas de su NIC dicen por dónde sale hacia cada destino", "fuente": "learn-diag"}
+  ],
+  "relaciones": [
+    {"de": "vnet", "a": "subred", "tipo": "contiene"},
+    {"de": "vm", "a": "nsg", "tipo": "flujo", "etiqueta": "el paquete sale de la NIC"},
+    {"de": "nsg", "a": "subred", "tipo": "flujo", "etiqueta": "si una regla de salida lo deja"},
+    {"de": "subred", "a": "peering", "tipo": "flujo", "etiqueta": "si hay ruta hacia la oficina"},
+    {"de": "peering", "a": "vpn-gw", "tipo": "flujo", "etiqueta": "solo con tránsito del gateway"},
+    {"de": "vpn-gw", "a": "subred", "tipo": "dato", "etiqueta": "propaga los rangos de la oficina"},
+    {"de": "peering-remoto", "a": "peering-transito", "tipo": "depende", "etiqueta": "solo se activa si la central permite el tránsito"},
+    {"de": "peering-remoto", "a": "peering-rutas", "tipo": "causa", "etiqueta": "trae las rutas de la oficina a la radial"}
+  ],
+  "flujo": ["vm", "nsg", "subred", "peering", "vpn-gw"],
+  "malentendidos": [
+    "«Peering en Connected es conectividad completa»: Connected solo dice que existen los dos enlaces; sin «permitir tránsito» y «usar gateway remoto», la radial no ve las rutas de la oficina.",
+    "«Si no llega, lo bloquea el NSG»: la regla por defecto AllowVnetOutBound deja salir hacia la etiqueta VirtualNetwork, que incluye los rangos locales conectados; antes que las reglas, mirar las rutas efectivas de la NIC.",
+    "«El peering es transitivo»: dos radiales emparejadas con la misma central no se ven entre sí sin un peering directo o un equipo que reenvíe en la central."
+  ],
+  "figuras": [
+    {"nivel": 1, "titulo": "La máquina sale por el túnel de la central solo si el peering lo comparte", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["vnet", "subred", "vpn-gw", "peering", "nsg", "vm"], "fichero": "figuras/n1-explosion.svg", "destacada": "peering"},
+    {"nivel": 2, "titulo": "Dos ajustes del peering deciden si la radial ve las rutas de la oficina", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["peering-estado", "peering-transito", "peering-remoto", "peering-rutas"], "fichero": "figuras/n2-peering.svg", "destacada": "peering-remoto"}
+  ],
+  "feynman": [
+    "La red radial y la central son dos redes distintas que el peering une como si fueran una.",
+    "El túnel a la oficina está en la central, y la radial solo lo usa si la central lo presta y la radial acepta usarlo.",
+    "Si falta uno de los dos permisos, la máquina no tiene ruta a la oficina y sus paquetes no entran en el túnel."
+  ],
+  "prediccion": {
+    "pregunta": "La central y la radial están emparejadas, con los dos enlaces en Connected; la central permite el tránsito, pero el enlace de la radial no tiene «usar gateway remoto». ¿Qué ves en las rutas efectivas de la NIC y llega un ping a la oficina?",
+    "respuesta": "No hay ninguna ruta con salto «Virtual network gateway» hacia el rango de la oficina, así que el ping no entra en el túnel. Se arregla activando «usar gateway remoto» en el enlace de la radial; además, el equipo VPN de la oficina tiene que incluir el rango radial en el túnel para la vuelta.",
+    "opciones": ["Llega: el peering está en Connected", "No llega: la NIC no tiene ruta a la oficina", "No llega: el NSG por defecto lo bloquea"],
+    "correcta": 1
+  }
+}

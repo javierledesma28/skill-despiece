@@ -1,0 +1,68 @@
+{
+  "objeto": "Un pipeline de CI/CD que lleva un cambio del commit a producción",
+  "tipo": "proceso",
+  "eje": "el orden de los pasos, del commit a producción",
+  "pregunta_foco": "¿Por qué un cambio que pasó todas las pruebas rompe en producción?",
+  "lector": "desarrollador que usa un pipeline ya montado pero no lo diseñó",
+  "profundidad": 2,
+  "nivel0": {
+    "titulo": "Las pruebas validan el artefacto, y producción le cambia la configuración, los secretos y los datos",
+    "frontera": "Desde que el cambio entra en la rama principal hasta que la versión nueva recibe tráfico real. Queda fuera cómo se escribió el cambio y la operación del día a día.",
+    "fuera": ["el cambio ya escrito y revisado", "la operación diaria y las alertas", "la infraestructura donde corre la aplicación"]
+  },
+  "fuentes": [
+    {"id": "cd-libro", "descripcion": "Jez Humble y David Farley, Continuous Delivery (Addison-Wesley, 2010), cap. 5: anatomía del pipeline de despliegue"},
+    {"id": "cd-patrones", "descripcion": "continuousdelivery.com: Patterns (etapa de commit, construir una vez, pruebas de humo)", "url": "https://continuousdelivery.com/implementing/patterns/"},
+    {"id": "fowler-pipeline", "descripcion": "Martin Fowler: DeploymentPipeline (2013)", "url": "https://martinfowler.com/bliki/DeploymentPipeline.html"},
+    {"id": "github-env", "descripcion": "GitHub Docs: Deployments and environments (secretos por entorno y reglas de protección)", "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments"},
+    {"id": "twelve-config", "descripcion": "The Twelve-Factor App, III. Config", "url": "https://12factor.net/config"},
+    {"id": "twelve-paridad", "descripcion": "The Twelve-Factor App, X. Dev/prod parity", "url": "https://12factor.net/dev-prod-parity"},
+    {"id": "sato-parallel", "descripcion": "Danilo Sato: ParallelChange, o expandir y contraer (martinfowler.com, 2014)", "url": "https://martinfowler.com/bliki/ParallelChange.html"},
+    {"id": "fowler-bluegreen", "descripcion": "Martin Fowler: BlueGreenDeployment (2010)", "url": "https://martinfowler.com/bliki/BlueGreenDeployment.html"}
+  ],
+  "piezas": [
+    {"id": "commit", "rol": "interfaz", "nombre": "Commit en la rama principal", "padre": null, "orden": 1, "funcion": "Dispara el pipeline: cada cambio que entra en control de versiones es un candidato a producción", "fuente": "cd-libro"},
+    {"id": "build", "rol": "componente", "nombre": "Build y pruebas unitarias", "padre": null, "orden": 2, "funcion": "Compila y pasa las pruebas rápidas en minutos; si falla, se arregla antes de seguir", "fuente": "cd-patrones"},
+    {"id": "artefacto", "rol": "bloque", "nombre": "Artefacto versionado", "padre": null, "orden": 3, "funcion": "Guarda el paquete construido una sola vez: el mismo que se prueba es el que llega a cada entorno", "fuente": "cd-patrones"},
+    {"id": "aceptacion", "rol": "etapa", "nombre": "Pruebas de aceptación", "padre": null, "orden": 4, "funcion": "Despliega el artefacto en un entorno de pruebas y comprueba el comportamiento completo, más lento que las unitarias", "fuente": "fowler-pipeline"},
+    {"id": "aprobacion", "rol": "limite", "nombre": "Aprobación del entorno", "padre": null, "orden": 5, "funcion": "Retiene el job hasta que un revisor aprueba; solo entonces ve los secretos del entorno de producción", "fuente": "github-env"},
+    {"id": "prod", "rol": "etapa", "nombre": "Despliegue a producción", "padre": null, "orden": 6, "eje": "lo que entra al desplegar, de la configuración a la vuelta atrás", "funcion": "Pone la versión ante el tráfico real, en un entorno que rara vez es idéntico al de pruebas", "fuente": "twelve-paridad"},
+    {"id": "prod-config", "rol": "capa", "nombre": "Configuración del entorno", "padre": "prod", "orden": 1, "funcion": "Entrega al arrancar lo que cambia entre despliegues (URLs, tamaños, banderas); el código probado no vio estos valores", "fuente": "twelve-config"},
+    {"id": "prod-secretos", "rol": "limite", "nombre": "Secretos de producción", "padre": "prod", "orden": 2, "funcion": "Solo los recibe el job que declara el entorno de producción: ninguna prueba anterior los usó", "fuente": "github-env"},
+    {"id": "prod-datos", "rol": "componente", "nombre": "Migración de datos", "padre": "prod", "orden": 3, "funcion": "Cambia el esquema de una base con datos reales; hecha en expandir y contraer, la versión anterior sigue funcionando", "fuente": "sato-parallel"},
+    {"id": "prod-humo", "rol": "regulador", "nombre": "Prueba de humo", "padre": "prod", "orden": 4, "funcion": "Comprueba al desplegar que la versión arranca y alcanza sus dependencias; si no, el despliegue se da por fallido", "fuente": "cd-patrones"},
+    {"id": "prod-vuelta", "rol": "enlace", "nombre": "Vuelta atrás", "padre": "prod", "orden": 5, "funcion": "Devuelve el tráfico a la versión anterior sin recompilar; solo es segura si el esquema sigue sirviendo a esa versión", "fuente": "fowler-bluegreen"}
+  ],
+  "relaciones": [
+    {"de": "commit", "a": "build", "tipo": "flujo", "etiqueta": "lo dispara"},
+    {"de": "build", "a": "artefacto", "tipo": "flujo", "etiqueta": "si pasan las pruebas"},
+    {"de": "artefacto", "a": "aceptacion", "tipo": "flujo", "etiqueta": "el mismo paquete"},
+    {"de": "aceptacion", "a": "aprobacion", "tipo": "flujo", "etiqueta": "si pasa"},
+    {"de": "aprobacion", "a": "prod", "tipo": "flujo", "etiqueta": "aprobado, con los secretos del entorno"},
+    {"de": "artefacto", "a": "prod", "tipo": "dato", "etiqueta": "sin recompilar"},
+    {"de": "prod-config", "a": "prod-humo", "tipo": "dato", "etiqueta": "arranca con los valores reales"},
+    {"de": "prod-humo", "a": "prod-vuelta", "tipo": "causa", "etiqueta": "si falla, se vuelve"},
+    {"de": "prod-datos", "a": "prod-vuelta", "tipo": "controla", "etiqueta": "una migración incompatible impide volver"}
+  ],
+  "flujo": ["commit", "build", "artefacto", "aceptacion", "aprobacion", "prod"],
+  "flujo_entrada": "el cambio ya escrito y revisado",
+  "malentendidos": [
+    "«Si pasó las pruebas, está listo para producción»: las pruebas validan el artefacto con la configuración y los datos de prueba; producción le da otros valores, otros secretos y datos de otro tamaño.",
+    "«Siempre se puede volver atrás»: volver a la versión anterior solo es seguro si la migración fue compatible con ella; una columna borrada no vuelve con el binario."
+  ],
+  "figuras": [
+    {"nivel": 1, "titulo": "El artefacto no cambia en seis pasos; lo que cambia es el último entorno", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["commit", "build", "artefacto", "aceptacion", "aprobacion", "prod"], "fichero": "figuras/n1-explosion.svg", "destacada": "prod"},
+    {"nivel": 2, "titulo": "Al desplegar entran configuración, secretos y datos que ninguna prueba vio", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["prod-config", "prod-secretos", "prod-datos", "prod-humo", "prod-vuelta"], "fichero": "figuras/n2-prod.svg", "destacada": "prod-config"}
+  ],
+  "feynman": [
+    "El pipeline lleva el mismo paquete del commit a producción y lo revisa en cada parada.",
+    "Las pruebas revisan el paquete, pero en producción el paquete recibe otra configuración, otras claves y datos reales.",
+    "Por eso el último paso comprueba que la versión nueva responde y deja preparada la forma de volver a la anterior."
+  ],
+  "prediccion": {
+    "pregunta": "Un cambio renombra una columna y lee una variable de configuración nueva. Pasa todas las pruebas en un entorno donde la variable existe; en producción nadie la definió. La migración renombra la columna antes de arrancar la versión nueva. ¿Qué pasa al desplegar?",
+    "respuesta": "La versión nueva arranca sin el valor y la prueba de humo la da por fallida. Volver a la anterior no basta: la columna ya cambió de nombre y la versión vieja tampoco la encuentra. Con expandir y contraer (añadir la columna nueva sin quitar la vieja), la vuelta atrás habría funcionado.",
+    "opciones": ["Funciona: pasó todas las pruebas", "Falla, y la vuelta atrás lo arregla", "Falla, y volver atrás no basta porque la columna ya cambió"],
+    "correcta": 2
+  }
+}

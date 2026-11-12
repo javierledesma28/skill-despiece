@@ -1,6 +1,6 @@
 <div align="center">
 
-[**← README**](../README.md) · **Demo** · [**Instalación**](instalacion.md) · [**Changelog**](../CHANGELOG.md) · [**Licencia**](../LICENSE)
+[**← README**](../README.md) · **Demo** · [**Interactiva**](interactivo.md) · [**Instalación**](instalacion.md) · [**Changelog**](../CHANGELOG.md) · [**Licencia**](../LICENSE)
 
 </div>
 
@@ -64,6 +64,8 @@ Al final de la página (y en la conversación) van las dos puertas de comprensi�
 > seguidos. ¿Cuál se frena antes y por qué? *(La respuesta está plegada en la página.)*
 
 Páginas completas: [tema claro](demo/pagina-claro.png) · [tema oscuro](demo/pagina-oscuro.png).
+
+La misma explicación como página que se abre, se desmonta al bajar y recorre el flujo: [**Interactiva**](interactivo.md).
 
 ## Reproducilo en tu máquina
 

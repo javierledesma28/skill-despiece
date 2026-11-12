@@ -1,0 +1,78 @@
+{
+  "objeto": "La auditoría de certificación ISO/IEC 27001:2022",
+  "tipo": "proceso",
+  "eje": "las fases de la certificación, de la preparación al ciclo de tres años",
+  "pregunta_foco": "¿Por qué una organización con todas sus políticas escritas puede no pasar la etapa 2?",
+  "lector": "responsable de seguridad de una organización mediana que prepara su primera certificación y nunca ha pasado una auditoría externa",
+  "profundidad": 4,
+  "nivel0": {
+    "titulo": "Certificarse en ISO 27001 es demostrar con pruebas que lo escrito se cumple",
+    "frontera": "Desde que la organización delimita el alcance de su SGSI y contrata un organismo acreditado hasta la recertificación del tercer año. Queda fuera cómo se diseña e implanta el SGSI.",
+    "fuera": ["el diseño e implantación del SGSI", "la acreditación del propio organismo de certificación", "otros marcos, como SOC 2 o ISO/IEC 27701"]
+  },
+  "fuentes": [
+    {"id": "iso27001", "descripcion": "ISO/IEC 27001:2022: requisitos del SGSI (cláusulas 4–10) y Anexo A, 93 controles en cuatro temas (5 organizacionales, 6 personas, 7 físicos, 8 tecnológicos)", "url": "https://www.iso.org/standard/27001"},
+    {"id": "iso27002", "descripcion": "ISO/IEC 27002:2022: guía de implantación de cada control del Anexo A", "url": "https://www.iso.org/standard/75652.html"},
+    {"id": "iso17021", "descripcion": "ISO/IEC 17021-1:2015: requisitos para los organismos que auditan y certifican sistemas de gestión (etapas 1 y 2, no conformidades, decisión, vigilancia anual y ciclo de tres años)", "url": "https://www.iso.org/standard/61651.html"},
+    {"id": "iso27006", "descripcion": "ISO/IEC 27006-1:2024: lo que, además de ISO/IEC 17021-1, debe cumplir un organismo que certifica SGSI; sustituye a ISO/IEC 27006:2015", "url": "https://www.iso.org/standard/82908.html"},
+    {"id": "iso19011", "descripcion": "ISO 19011:2018: directrices de auditoría; recopilar y verificar información (6.4.7) y muestreo (Anexo A). Retirada en mayo de 2026 y sustituida por ISO 19011:2026", "url": "https://www.iso.org/standard/70017.html"},
+    {"id": "ea-faq", "descripcion": "European Accreditation, pregunta 35.10 sobre la definición de no conformidad: ISO/IEC 17021-1, apartados 3.12, 3.13 y 9.5.2 b–c", "url": "https://european-accreditation.org/?p=43004"}
+  ],
+  "piezas": [
+    {"id": "preparacion", "rol": "etapa", "nombre": "Preparación y alcance", "padre": null, "orden": 1, "funcion": "Delimita qué cubre el SGSI y contrata un organismo acreditado para certificarlo; el certificado solo vale para ese alcance", "fuente": "iso27006"},
+    {"id": "etapa1", "rol": "etapa", "nombre": "Etapa 1: revisión documental", "padre": null, "orden": 2, "funcion": "Revisa el SGSI escrito y si ya hubo auditoría interna y revisión por la dirección; decide si se pasa a la etapa 2", "fuente": "iso17021"},
+    {"id": "etapa2", "rol": "etapa", "nombre": "Etapa 2: implementación", "padre": null, "orden": 3, "funcion": "Comprueba que lo escrito se cumple y funciona en la práctica; es la base de la decisión de certificar", "fuente": "iso17021"},
+    {"id": "sgsi", "rol": "base", "nombre": "Requisitos del SGSI (4–10)", "padre": "etapa2", "funcion": "Sostiene al resto: del análisis de riesgos sale la Declaración de Aplicabilidad, que dice qué controles se auditan", "fuente": "iso27001"},
+    {"id": "organizacionales", "rol": "capa", "nombre": "Organizacionales (37)", "padre": "etapa2", "funcion": "Agrupa 37 controles de gobierno: políticas, roles, proveedores, incidentes y continuidad", "fuente": "iso27001"},
+    {"id": "personas", "rol": "capa", "nombre": "Personas (8)", "padre": "etapa2", "funcion": "Agrupa 8 controles sobre quien trabaja: selección, concienciación, régimen disciplinario y teletrabajo", "fuente": "iso27001"},
+    {"id": "fisicos", "rol": "capa", "nombre": "Físicos (14)", "padre": "etapa2", "funcion": "Agrupa 14 controles sobre lugares y equipos: perímetros, accesos, puesto despejado y suministros", "fuente": "iso27001"},
+    {"id": "tecnologicos", "rol": "capa", "nombre": "Tecnológicos (34)", "padre": "etapa2", "funcion": "Agrupa 34 controles técnicos: accesos, cifrado, copias, registros, vulnerabilidades y desarrollo", "fuente": "iso27001"},
+    {"id": "c8-8", "rol": "componente", "nombre": "8.8 Vulnerabilidades técnicas", "padre": "tecnologicos", "funcion": "Obliga a conocer las vulnerabilidades de lo que se usa, valorar la exposición y tomar medidas a tiempo", "fuente": "iso27001"},
+    {"id": "c8-13", "rol": "componente", "nombre": "8.13 Copias de seguridad", "padre": "tecnologicos", "funcion": "Exige mantener copias de información, software y sistemas, y probarlas con regularidad según una política", "fuente": "iso27001"},
+    {"id": "c8-15", "rol": "componente", "nombre": "8.15 Registro de eventos", "padre": "tecnologicos", "funcion": "Exige generar, guardar, proteger y analizar registros de actividad, excepciones y fallos", "fuente": "iso27001"},
+    {"id": "otros-tec", "rol": "bloque", "nombre": "Los otros 31 controles", "padre": "tecnologicos", "funcion": "Completan los 34 del tema; cuáles aplican y por qué se excluye alguno lo dice la Declaración de Aplicabilidad", "fuente": "iso27001"},
+    {"id": "politica-copias", "rol": "base", "nombre": "Política de copias", "padre": "c8-13", "funcion": "Fija qué se copia, cada cuánto, cuánto se guarda y cómo se prueba; es el criterio, no la prueba", "fuente": "iso27002"},
+    {"id": "entrevista", "rol": "interfaz", "nombre": "Entrevista al operador", "padre": "c8-13", "funcion": "Contrasta lo escrito con lo que sabe quien hace las copias, por ejemplo qué hace cuando un trabajo falla", "fuente": "iso19011"},
+    {"id": "observacion", "rol": "interfaz", "nombre": "Observación en vivo", "padre": "c8-13", "funcion": "Confirma ante la consola o una restauración en marcha que los registros cuentan lo que de verdad pasa", "fuente": "iso19011"},
+    {"id": "registros-copias", "rol": "capa", "nombre": "Registros de ejecución", "padre": "c8-13", "funcion": "Muestran qué trabajos de copia corrieron en el periodo auditado, cuáles fallaron y qué se hizo después", "fuente": "iso19011"},
+    {"id": "muestra-restauracion", "rol": "componente", "nombre": "Muestra de restauraciones", "padre": "c8-13", "funcion": "Demuestra que la copia sirve: el auditor elige restauraciones del periodo y pide su registro; sin ellas no hay prueba", "fuente": "iso19011"},
+    {"id": "no-conformidades", "rol": "etapa", "nombre": "No conformidades y acciones", "padre": null, "orden": 4, "funcion": "Separa los incumplimientos en mayores (el SGSI no logra sus resultados) y menores, y exige corregir su causa", "fuente": "iso17021"},
+    {"id": "decision", "rol": "etapa", "nombre": "Decisión de certificación", "padre": null, "orden": 5, "funcion": "Concede el certificado solo con las mayores corregidas y verificadas; para las menores basta un plan aceptado", "fuente": "ea-faq"},
+    {"id": "vigilancia", "rol": "etapa", "nombre": "Vigilancia y recertificación", "padre": null, "orden": 6, "funcion": "Audita parte del SGSI el primer y el segundo año, y todo de nuevo antes de que el certificado venza al tercero", "fuente": "iso17021"}
+  ],
+  "relaciones": [
+    {"de": "preparacion", "a": "etapa1", "tipo": "flujo", "etiqueta": "alcance y SGSI documentado"},
+    {"de": "etapa1", "a": "etapa2", "tipo": "flujo", "etiqueta": "si la organización está lista"},
+    {"de": "etapa2", "a": "no-conformidades", "tipo": "causa", "etiqueta": "si falta la prueba de que algo se cumple"},
+    {"de": "etapa2", "a": "decision", "tipo": "flujo", "etiqueta": "informe del equipo auditor"},
+    {"de": "no-conformidades", "a": "decision", "tipo": "flujo", "etiqueta": "mayores corregidas y verificadas"},
+    {"de": "decision", "a": "vigilancia", "tipo": "flujo", "etiqueta": "certificado por tres años"},
+    {"de": "vigilancia", "a": "no-conformidades", "tipo": "causa", "etiqueta": "los hallazgos de vigilancia también abren no conformidades"},
+    {"de": "sgsi", "a": "tecnologicos", "tipo": "controla", "etiqueta": "la Declaración de Aplicabilidad elige qué controles aplican"},
+    {"de": "politica-copias", "a": "registros-copias", "tipo": "dato", "etiqueta": "criterio con el que se leen"},
+    {"de": "registros-copias", "a": "muestra-restauracion", "tipo": "dato", "etiqueta": "de aquí sale la muestra"}
+  ],
+  "flujo": ["preparacion", "etapa1", "etapa2", "no-conformidades", "decision", "vigilancia"],
+  "flujo_entrada": "el diseño e implantación del SGSI",
+  "malentendidos": [
+    "«Si la etapa 1 salió bien, la etapa 2 es un trámite»: la etapa 1 revisa lo escrito y si la organización está lista; la etapa 2 pide pruebas de que cada control funciona, y es la que decide.",
+    "«Hay que cumplir los 93 controles del Anexo A»: se auditan los que la Declaración de Aplicabilidad declara aplicables tras el análisis de riesgos, y cada exclusión tiene que estar justificada."
+  ],
+  "figuras": [
+    {"nivel": 1, "titulo": "Seis fases hasta el certificado, y la etapa 2 pone a prueba lo escrito", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["preparacion", "etapa1", "etapa2", "no-conformidades", "decision", "vigilancia"], "fichero": "figuras/n1-explosion.svg", "destacada": "etapa2"},
+    {"nivel": 2, "titulo": "La etapa 2 audita el SGSI y los controles que este declara aplicables", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["sgsi", "organizacionales", "personas", "fisicos", "tecnologicos"], "fichero": "figuras/n2-etapa2.svg", "destacada": "tecnologicos"},
+    {"nivel": 3, "titulo": "Entre los tecnológicos, la copia de seguridad exige probar, no solo copiar", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["c8-8", "c8-13", "c8-15", "otros-tec"], "fichero": "figuras/n3-tecnologicos.svg", "destacada": "c8-13"},
+    {"nivel": 4, "titulo": "La política es el criterio; la prueba, una restauración que elige el auditor", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["politica-copias", "entrevista", "observacion", "registros-copias", "muestra-restauracion"], "fichero": "figuras/n4-c8-13.svg", "destacada": "muestra-restauracion"}
+  ],
+  "feynman": [
+    "Para certificarse, una organización llama a un organismo externo que primero revisa sus papeles y después comprueba si los cumple.",
+    "En esa segunda visita el auditor no se queda con la política: elige él mismo ejemplos y pide la prueba de que pasó lo que dice.",
+    "Si falta una prueba importante, no hay certificado hasta corregirlo; y con certificado, el organismo vuelve a mirar cada año."
+  ],
+  "prediccion": {
+    "pregunta": "Una organización tiene una política de copias impecable que exige probar una restauración al mes, pero nunca la ha hecho. En la etapa 2 el auditor pide tres de esas pruebas del último semestre. ¿Qué pasa?",
+    "respuesta": "No hay nada que enseñar: es una no conformidad con el control 8.13, porque lo escrito no se cumple. Si el organismo la califica de mayor, no hay certificado hasta que la organización corrija, haga las pruebas y el organismo lo verifique; si es menor, basta con un plan de corrección aceptado.",
+    "opciones": ["Pasa: la política ya cubre el control", "No conformidad: falta la prueba de que se cumple"],
+    "correcta": 1
+  }
+}

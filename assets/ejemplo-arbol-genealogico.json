@@ -1,0 +1,69 @@
+{
+  "objeto": "La familia Darwin–Wedgwood, de los abuelos a los hijos de Charles",
+  "tipo": "idea",
+  "eje": "las generaciones, de la más antigua a la más reciente",
+  "pregunta_foco": "¿Por qué Charles Darwin temía que sus hijos heredaran una salud frágil?",
+  "lector": "lector curioso que conoce a Darwin por la evolución pero no su vida familiar",
+  "profundidad": 3,
+  "nivel0": {
+    "titulo": "Dos bodas cruzaron a los Darwin con los Wedgwood, y la segunda unió a dos primos hermanos",
+    "frontera": "Desde los abuelos de Charles Darwin, nacidos hacia 1730, hasta sus diez hijos (1839–1856), por la línea que lleva a ellos. Quedan fuera los nietos y las ramas laterales.",
+    "fuera": ["los nietos de Charles Darwin y las generaciones siguientes", "los hermanos de Charles y de Emma y sus familias", "la teoría de la evolución, salvo lo que Darwin estudió sobre la endogamia"]
+  },
+  "fuentes": [
+    {"id": "berra-2010", "descripcion": "Tim M. Berra, Gonzalo Alvarez y Francisco C. Ceballos, «Was the Darwin/Wedgwood dynasty adversely affected by consanguinity?», BioScience 60(5), 376 (2010)", "url": "https://doi.org/10.1525/bio.2010.60.5.7"},
+    {"id": "osu-2010", "descripcion": "Ohio State University News, «Study: Darwin was right to worry that marriage to his cousin affected his offspring» (mayo de 2010), resumen del artículo de Berra et al.", "url": "https://news.osu.edu/study-darwin-was-right-to-worry-that-marriage-to-his-cousin-affected-his-offspring/"},
+    {"id": "osu-2013", "descripcion": "Ohio State News, «Darwin's children represent highs and lows of famous scientist's personal life» (16 de octubre de 2013)", "url": "https://news.osu.edu/darwins-children-represent-highs-and-lows-of-famous-scientists-personal-life"},
+    {"id": "dcp-emma", "descripcion": "Darwin Correspondence Project: Emma Darwin (1808–1896)", "url": "https://www.darwinproject.ac.uk/emma-darwin"},
+    {"id": "dcp-robert", "descripcion": "Darwin Correspondence Project, registro de nombres: Robert Waring Darwin (1766–1848)", "url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_1234"},
+    {"id": "darwin-1876", "descripcion": "Charles Darwin, The effects of cross and self fertilisation in the vegetable kingdom (John Murray, 1876), en Darwin Online (F1249)", "url": "https://darwin-online.org.uk/converted/published/1876_CrossandSelfFertilisation_F1249/1876_CrossandSelfFertilisation_F1249.html"},
+    {"id": "dcp-lubbock-1870", "descripcion": "Carta de Charles Darwin a John Lubbock, 17 de julio de 1870 (DCP-LETT-7281)", "url": "https://www.darwinproject.ac.uk/letter/DCP-LETT-7281.xml"},
+    {"id": "dcp-fox-1852", "descripcion": "Carta de Charles Darwin a W. D. Fox, 7 de marzo [1852] (DCP-LETT-1476)", "url": "https://www.darwinproject.ac.uk/letter/DCP-LETT-1476.xml"},
+    {"id": "dcp-annie", "descripcion": "Darwin Correspondence Project: la muerte de Anne Elizabeth Darwin", "url": "https://www.darwinproject.ac.uk/people/about-darwin/family-life/death-anne-elizabeth-darwin"}
+  ],
+  "piezas": [
+    {"id": "gen1", "rol": "base", "nombre": "Abuelos (n. hacia 1730)", "padre": null, "orden": 1, "funcion": "Josiah Wedgwood I y Sarah, primos terceros, son abuelos de Charles y de Emma; el médico Erasmus Darwin, solo de Charles", "fuente": "berra-2010"},
+    {"id": "gen2", "rol": "etapa", "nombre": "Padres (n. 1765–1769)", "padre": null, "orden": 2, "funcion": "Susannah Wedgwood y su hermano Josiah II, hijos de Josiah I; Susannah se casa con el médico Robert Darwin", "fuente": "dcp-emma"},
+    {"id": "boda-1796", "rol": "enlace", "nombre": "Boda Darwin–Wedgwood (1796)", "padre": null, "orden": 3, "funcion": "Robert Darwin, hijo de Erasmus, se casa con Susannah Wedgwood: primer cruce de las dos familias, del que nace Charles en 1809", "fuente": "dcp-robert"},
+    {"id": "gen3", "rol": "etapa", "nombre": "Charles y Emma (n. 1808–09)", "padre": null, "orden": 4, "funcion": "Nietos de Josiah I. Charles comprobará en plantas (1876) que la autofecundación da una progenie más débil que el cruce", "fuente": "darwin-1876"},
+    {"id": "boda-1839", "rol": "enlace", "nombre": "Boda de primos (1839)", "padre": null, "orden": 5, "funcion": "Charles y Emma, primos hermanos, se casan en 1839; en 1870 él pide que el censo mida si esas bodas dan hijos más débiles", "fuente": "dcp-lubbock-1870"},
+    {"id": "hijos", "rol": "etapa", "nombre": "Diez hijos (1839–1856)", "padre": null, "orden": 6, "funcion": "En marzo de 1852 Darwin escribe a W. D. Fox que lo que más teme para sus hijos es la «mala salud hereditaria»", "fuente": "dcp-fox-1852"},
+    {"id": "ninos", "rol": "componente", "nombre": "Murieron de niños", "padre": "hijos", "eje": "el orden de nacimiento", "cantidad": 3, "funcion": "Tres mueren antes de los 10 años, dos por infecciones; Berra et al. asocian esa mortalidad con la endogamia (F = 0,0630)", "fuente": "osu-2010"},
+    {"id": "con-hijos", "rol": "interfaz", "nombre": "Con descendencia", "padre": "hijos", "cantidad": 3, "funcion": "Solo tres de los siete que llegan a adultos tienen hijos propios: por ellos sigue el árbol hacia la generación siguiente", "fuente": "osu-2013"},
+    {"id": "sin-hijos", "rol": "limite", "nombre": "Sin descendencia", "padre": "hijos", "cantidad": 4, "funcion": "Tres de los seis que tienen matrimonios largos no tienen hijos, y Elizabeth nunca se casa: ahí termina la rama", "fuente": "osu-2013"},
+    {"id": "annie", "rol": "componente", "nombre": "Annie (1841–1851)", "padre": "ninos", "orden": 1, "funcion": "Nace el 2-mar-1841 y muere en Malvern el 23-abr-1851, a los 10 años; una semana después Darwin escribe un recuerdo de ella", "fuente": "dcp-annie"},
+    {"id": "mary", "rol": "componente", "nombre": "Mary Eleanor (1842)", "padre": "ninos", "orden": 2, "funcion": "La tercera hija: vive 23 días y muere en 1842, de causa desconocida", "fuente": "osu-2010"},
+    {"id": "charles-waring", "rol": "componente", "nombre": "Charles Waring (1856–1858)", "padre": "ninos", "orden": 3, "funcion": "El último hijo: muere en 1858, a los 18 meses, de escarlatina", "fuente": "osu-2010"}
+  ],
+  "relaciones": [
+    {"de": "gen1", "a": "gen2", "tipo": "flujo", "etiqueta": "hijos de Josiah I y de Erasmus"},
+    {"de": "gen2", "a": "boda-1796", "tipo": "flujo", "etiqueta": "Robert y Susannah"},
+    {"de": "boda-1796", "a": "gen3", "tipo": "flujo", "etiqueta": "nace Charles (1809)"},
+    {"de": "gen2", "a": "gen3", "tipo": "flujo", "etiqueta": "Josiah II es el padre de Emma"},
+    {"de": "gen3", "a": "boda-1839", "tipo": "flujo", "etiqueta": "Charles y Emma"},
+    {"de": "gen1", "a": "boda-1839", "tipo": "depende", "etiqueta": "abuelos en común"},
+    {"de": "boda-1839", "a": "hijos", "tipo": "flujo", "etiqueta": "diez hijos (1839–1856)"},
+    {"de": "boda-1839", "a": "ninos", "tipo": "causa", "etiqueta": "asociación con la mortalidad infantil (Berra et al., 2010)"}
+  ],
+  "flujo": ["gen1", "gen2", "boda-1796", "gen3", "boda-1839", "hijos"],
+  "malentendidos": [
+    "«Darwin no sabía nada de herencia»: no conocía los genes, pero comprobó en plantas que la autofecundación debilita a la progenie y en 1870 pidió que el censo midiera las bodas entre primos.",
+    "«El estudio de 2010 prueba que la boda causó las muertes»: Berra et al. hallan una asociación entre endogamia y mortalidad infantil en 25 familias; dos de las tres muertes fueron por infecciones."
+  ],
+  "figuras": [
+    {"nivel": 1, "titulo": "La segunda boda entre las dos familias unió a dos primos hermanos", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["gen1", "gen2", "boda-1796", "gen3", "boda-1839", "hijos"], "fichero": "figuras/n1-explosion.svg", "destacada": "boda-1839"},
+    {"nivel": 2, "titulo": "De diez hijos, tres murieron de niños y cuatro no tuvieron descendencia", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["ninos", "con-hijos", "sin-hijos"], "fichero": "figuras/n2-hijos.svg", "destacada": "ninos"},
+    {"nivel": 3, "titulo": "Dos de las tres muertes son anteriores a la carta de 1852 sobre su temor", "tipo_visual": "vista explotada", "skill": "explosionado", "piezas": ["annie", "mary", "charles-waring"], "fichero": "figuras/n3-ninos.svg", "destacada": "annie"}
+  ],
+  "feynman": [
+    "Charles Darwin se casó con su prima hermana Emma: los dos eran nietos del alfarero Josiah Wedgwood.",
+    "Tuvieron diez hijos y tres murieron de niños; Darwin, que vivía enfermo, temía haberles pasado su mala salud.",
+    "Más tarde vio en plantas que la autofecundación da hijos más débiles, y sospechó que casarse entre primos podía hacer algo parecido."
+  ],
+  "prediccion": {
+    "pregunta": "Dos familias del árbol tienen diez hijos cada una hacia 1840: una es de primos hermanos y la otra no tiene parentesco. Según Berra et al. (2010), ¿en cuál esperarías más muertes antes de los 10 años?",
+    "respuesta": "En la de primos hermanos: el estudio halla una asociación positiva entre el coeficiente de endogamia y la mortalidad infantil en las 25 familias Darwin–Wedgwood. Es una tendencia, no una certeza: dos de las tres muertes de los Darwin fueron por infecciones, comunes en la época.",
+    "opciones": ["En la de primos hermanos", "En la que no tiene parentesco", "En ninguna: la endogamia no influye"],
+    "correcta": 0
+  }
+}

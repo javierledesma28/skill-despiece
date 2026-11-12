@@ -1,6 +1,6 @@
 """Ensambla la página HTML del despiece a partir del modelo y de las figuras ya dibujadas.
 
-Usage: python -I ensamblar.py MODELO.json --salida PAGINA.html [--figuras CARPETA] [--marca RUTA.json|ninguna]
+Usage: python -I ensamblar.py MODELO.json --salida PAGINA.html [--figuras CARPETA] [--marca RUTA.json|ninguna] [--interactivo]
 
 La plantilla es fija y el modelo solo aporta el contenido: cabecera con la pregunta foco y el lector;
 nivel 0 (el todo y su frontera); nivel 1 con su figura y la lista de piezas, cada una con su fuente;
@@ -9,14 +9,23 @@ un apartado por subconjunto en los niveles siguientes; «Lo que suele malentende
 SVG se incrustan inline (sin width/height, para que escalen); las PNG van como <img>; si el fichero
 de una figura no existe, se deja un hueco visible «Figura pendiente» y se avisa en stderr.
 
+--interactivo, solo en tipo físico con bloque «geometria» en el modelo, escribe en su lugar la página
+interactiva (assets/plantilla-interactiva.html, detalle en references/interactivo.md): vista isométrica
+que se explota con un deslizador, desmontaje pieza a pieza con el scroll, flujo paso a paso, nivel 2 que
+se abre en su propia lámina y predicción con opciones. Las figuras se dibujan desde la geometría, así que
+--figuras no se usa. Sin geometría o en otro tipo, escribe la página estática y lo dice («interactivo»:
+false y «motivo» en la salida).
+
 --marca acepta la ruta de un fichero JSON con la marca del proyecto (assets/marca-ejemplo.json enseña
 los campos: nombre, primario, secundario, fuente, pie, lema) o «ninguna», el valor por defecto: la skill
 no trae la marca de ninguna organización. Tema claro y oscuro respetando los colores de marca.
-Salida en stdout: JSON {"salida", "figuras_incrustadas", "figuras_pendientes", "secciones"}.
-Códigos de salida: 0 OK · 1 hay figuras pendientes (la página se escribe igual) · 2 argumentos,
-fichero del modelo o fichero de marca inválidos.
+Salida en stdout: JSON {"salida", "interactivo", "figuras_incrustadas", "figuras_pendientes", "secciones"};
+con --interactivo, además «oclusiones» (piezas que otra tapa en algún paso del desmontaje) y «alzas».
+Códigos de salida: 0 OK · 1 hay figuras pendientes u oclusiones (la página se escribe igual) · 2
+argumentos, fichero del modelo, fichero de marca o geometría inválidos.
 Ejemplo:
   python -I ensamblar.py despiece/modelo.json --salida despiece/index.html --figuras despiece/figuras --marca marca.json
+  python -I ensamblar.py despiece/modelo.json --salida despiece/interactivo.html --interactivo
 """
 from __future__ import annotations
 
@@ -27,7 +36,7 @@ import re
 import sys
 from pathlib import Path
 
-MARCA_NINGUNA = {"primario": "#1f2933", "secundario": "#3e7cb1", "fuente": "system-ui, sans-serif", "pie": "", "lema": ""}
+MARCA_NINGUNA = {"nombre": "", "primario": "#1f2933", "secundario": "#3e7cb1", "fuente": "system-ui, sans-serif", "pie": "", "lema": ""}
 CAMPOS_MARCA = {"nombre", "primario", "secundario", "fuente", "pie", "lema"}
 HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
 
@@ -152,11 +161,13 @@ def lista_piezas(piezas: list[dict], fuentes: dict[str, dict]) -> str:
 
 def main(argv: list[str]) -> int:
     _utf8_stdout()
-    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("modelo")
     ap.add_argument("--salida", required=True)
     ap.add_argument("--figuras", default=None, help="carpeta donde están los ficheros de las figuras")
     ap.add_argument("--marca", default="ninguna", help="ruta de un JSON de marca (ver assets/marca-ejemplo.json) o «ninguna»")
+    ap.add_argument("--interactivo", action="store_true",
+                    help="página interactiva (tipo físico con «geometria»); si no se puede, la estática")
     a = ap.parse_args(argv[1:])
 
     ruta = Path(a.modelo)
@@ -175,6 +186,15 @@ def main(argv: list[str]) -> int:
         return 2
     mk["primario_oscuro"] = aclarar(mk["primario"])
     mk["secundario_oscuro"] = aclarar(mk["secundario"])
+    motivo = None
+    if a.interactivo:
+        if m.get("tipo") != "fisico":
+            motivo = f"la página interactiva es solo para tipo físico y este modelo es «{m.get('tipo')}»"
+        elif not isinstance(m.get("geometria"), dict):
+            motivo = "el modelo no tiene bloque «geometria» (references/interactivo.md)"
+        else:
+            return interactiva(m, mk, Path(a.salida))
+        print(f"AVISO: se escribe la página estática: {motivo}", file=sys.stderr)
     carpeta = Path(a.figuras) if a.figuras else ruta.parent
     piezas = [p for p in m.get("piezas", []) if isinstance(p, dict)]
     por_id = {p["id"]: p for p in piezas if "id" in p}
@@ -187,10 +207,13 @@ def main(argv: list[str]) -> int:
     n0 = m.get("nivel0", {})
     raices = [p for p in piezas if p.get("padre") is None]
     flujo = [por_id[i] for i in m.get("flujo", []) if i in por_id]
-    # Orden del nivel 1: en lo físico, el de montaje (coincide con la numeración de la vista explotada);
-    # en lo demás, el del flujo si lo hay (se sigue la petición); si no, el escrito.
-    if m.get("tipo") == "fisico":
-        orden = sorted(raices, key=lambda p: p.get("orden_montaje", 0))
+    # Orden del nivel 1: el campo «orden» (o «orden_montaje») si lo llevan todas, que coincide con la
+    # numeración de la vista explotada; si no, el del flujo (se sigue la petición); si no, el escrito.
+    def orden_de(p):
+        return p.get("orden", p.get("orden_montaje"))
+
+    if raices and all(isinstance(orden_de(p), int) for p in raices):
+        orden = sorted(raices, key=orden_de)
     elif flujo and all(p.get("padre") is None for p in flujo):
         orden = flujo + [p for p in raices if p not in flujo]
     else:
@@ -259,9 +282,32 @@ def main(argv: list[str]) -> int:
     salida.write_text("\n".join(partes), encoding="utf-8")
     for p in pendientes:
         print(f"AVISO: figura pendiente «{p}»: dibujarla y volver a ensamblar", file=sys.stderr)
-    print(json.dumps({"salida": str(salida), "figuras_incrustadas": incrustadas, "figuras_pendientes": pendientes,
-                      "secciones": secciones}, ensure_ascii=False))
+    resultado = {"salida": str(salida), "interactivo": False, "figuras_incrustadas": incrustadas,
+                 "figuras_pendientes": pendientes, "secciones": secciones}
+    if motivo:
+        resultado["motivo"] = motivo
+    print(json.dumps(resultado, ensure_ascii=False))
     return 1 if pendientes else 0
+
+
+def interactiva(m: dict, mk: dict, salida: Path) -> int:
+    # python -I no pone la carpeta del script en sys.path: sin esto no se encuentran los módulos hermanos
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import interactiva as pag  # noqa: E402
+    try:
+        texto, info = pag.pagina(m, mk)
+    except (KeyError, StopIteration, TypeError, ValueError, IndexError) as ex:
+        print(f"ERROR: geometría incompleta ({type(ex).__name__}: {ex}). validar_modelo.py dice qué falta.", file=sys.stderr)
+        return 2
+    salida.parent.mkdir(parents=True, exist_ok=True)
+    salida.write_text(texto, encoding="utf-8")
+    for o in info["oclusiones"]:
+        print(f"AVISO: «{o['tapada']}» queda tapada por {o['por']} en el paso {o['estado']} del desmontaje: "
+              "mover piezas en «geometria» o agruparlas", file=sys.stderr)
+    print(json.dumps({"salida": str(salida), "interactivo": True, "figuras_incrustadas": [], "figuras_pendientes": [],
+                      "secciones": info["secciones"], "oclusiones": info["oclusiones"], "alzas": info["alzas"]},
+                     ensure_ascii=False))
+    return 1 if info["oclusiones"] else 0
 
 
 if __name__ == "__main__":

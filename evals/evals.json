@@ -1,6 +1,6 @@
 {
   "skill_name": "despiece",
-  "nota": "Un caso por familia (sistema, físico, proceso, idea). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku: ver resultados-2026-11-02.md.",
+  "nota": "Un caso por familia (sistema, físico, proceso, idea), uno de la página interactiva (físico, 1.2.0) y dos de la 2.0.0: la vista explotada fuera de lo físico (6) y abrir una pieza a demanda sobre un modelo ya hecho (7). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); los cuatro primeros, corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku (resultados-2026-11-02.md); el quinto, en resultados-2026-11-02b.md; el sexto y el séptimo, en resultados-2026-11-12.md.",
   "evals": [
     {
       "id": 1,
@@ -27,7 +27,7 @@
       "files": [],
       "assertions": [
         "Clasifica el objeto como físico y fija una pregunta foco ligada a la compra o al calor",
-        "Las raíces del modelo tienen orden_montaje y hay entre 3 y 7",
+        "Las raíces del modelo tienen orden (u orden_montaje, su alias) y hay entre 3 y 7",
         "Lo que no se verificó en la documentación oficial (raspberrypi.com) está marcado con supuesto: true y la respuesta lo dice",
         "No inventa referencias concretas de chips ni cifras que no estén en una fuente citada",
         "La figura se genera con explosionado.py (SVG numerado) y se incrusta en la página",
@@ -62,6 +62,59 @@
         "La página se ensambla con --marca ninguna y no aparece pie ni lema de marca en ella",
         "Si usa una metáfora, cabe en una frase y anota qué parte de ella no vale",
         "La respuesta termina con tres frases y una pregunta de predicción"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "fisico-interactivo-ddr5",
+      "prompt": "Armame una página que se pueda abrir y recorrer con el scroll, tipo despiece en 3D, de un módulo de memoria DDR5 SO-DIMM de portátil: qué piezas tiene y por dónde pasa un dato desde el conector hasta los chips. Es para la sección de hardware de nuestra web, que lee gente que arma sus propias PC. Usá la marca de marca.json.",
+      "expected_output": "Tipo físico; pregunta foco ligada a qué cambia DDR5 en el módulo (PMIC y SPD hub en la placa, dos subcanales); modelo con bloque geometria (medidas de la norma JEDEC o dadas por aproximadas) que pasa validar_modelo.py; página con ensamblar.py --interactivo y la marca, sin oclusiones y sin alzas escritas a mano; capturas en varios estados con capturar-cdp.mjs revisadas a ojo; tres frases y predicción.",
+      "files": [],
+      "assertions": [
+        "Clasifica el objeto como físico y fija una pregunta foco; el modelo trae un bloque geometria y pasa validar_modelo.py sin errores",
+        "La página sale de ensamblar.py --interactivo (salida con interactivo: true) y lleva la marca de marca.json",
+        "La página se abre y se desarma con un gesto del lector, recorre el flujo paso a paso y sin JavaScript muestra la figura abierta",
+        "Ninguna pieza queda tapada: ensamblar.py termina sin oclusiones, o las corrige antes de entregar",
+        "No escribe a mano las alturas de explosión (lift) en el modelo",
+        "Las medidas salen de una fuente citada o la respuesta las da por aproximadas, y lo no verificado va como supuesto",
+        "Captura la página en varios estados con capturar-cdp.mjs (no con --screenshot) y dice qué revisó",
+        "La respuesta termina con tres frases y una pregunta de predicción"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "idea-historia-explotada",
+      "prompt": "Despiezame la historia de la Revolución Industrial en Gran Bretaña para una clase de secundaria: qué tuvo que pasar antes de qué y qué entra dentro de cada etapa. Quiero una figura por nivel, no un texto largo.",
+      "expected_output": "Tipo idea o proceso, dicho en la respuesta; raíces con orden (la cronología o la dependencia causal) y rol, eje del modelo que diga qué ordena el orden; vista explotada isométrica de explosionado.py también en un tipo no físico; una etapa abierta en su propia figura con --subconjunto; fuentes citadas o supuestos marcados; tres frases y predicción.",
+      "files": [],
+      "assertions": [
+        "Dice qué tipo eligió (idea o proceso) y por qué, sin forzarlo a físico",
+        "Las raíces llevan orden (no orden_montaje) y rol, y el modelo trae un eje de 70 caracteres o menos que dice qué ordena ese orden (la cronología, la dependencia)",
+        "El modelo pasa validar_modelo.py sin errores",
+        "La figura de nivel 1 sale de explosionado.py, no de un guion delegado, y su subtítulo repite el eje",
+        "Abre al menos una etapa con --subconjunto y sus hijas tienen padre, no una lista suelta",
+        "No inventa piezas de hardware ni metáforas mecánicas: los roles (etapa, componente, enlace…) eligen la silueta",
+        "Cada pieza lleva fuente o supuesto: true",
+        "La respuesta termina con tres frases y una pregunta de predicción"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "abrir-a-demanda-red",
+      "prompt": "Ya tengo el despiece de la red hecho en despiece-red/modelo.json. Ahora abrime el grupo de seguridad (NSG): qué tiene adentro y en qué orden se evalúa. No me rehagas lo demás.",
+      "expected_output": "Lee el modelo existente y no lo rehace: añade hijas con padre igual al id del NSG, con orden entre ellas y eje en la pieza abierta; sube profundidad si hace falta (hasta 4); valida; dibuja solo la figura nueva con --subconjunto y --destacar; entrega solo lo nuevo, con tres frases y predicción sobre ese nivel.",
+      "files": [
+        "assets/ejemplo-red-nube.json"
+      ],
+      "assertions": [
+        "Parte del modelo existente (copiado como despiece-red/modelo.json) y no cambia las piezas ya abiertas ni sus orden",
+        "Las piezas nuevas tienen padre igual al id del NSG y orden único entre ellas",
+        "La pieza abierta lleva eje (qué ordena a sus hijas) y la figura nueva lo muestra en el subtítulo",
+        "profundidad del modelo sube solo si el nivel nuevo lo pide, y nunca pasa de 4",
+        "El modelo pasa validar_modelo.py sin errores",
+        "Dibuja solo la figura nueva con explosionado.py --subconjunto <id del NSG> y no regenera las otras",
+        "No toca ningún recurso real de Azure ni pide tenant o suscripción: el modelo ya trae sus fuentes",
+        "La respuesta entrega solo lo nuevo y termina con tres frases y una predicción sobre ese nivel"
       ]
     }
   ]
