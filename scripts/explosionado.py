@@ -183,6 +183,8 @@ def _chip(iso: Iso, cx: float, cy: float, z: float, w: float, d: float, h: float
         # cara x+ (derecha): pines a lo largo de y
         yy = cy - d/2 + t * d
         s.append(f'<polygon points="{iso.pts((cx + w/2, yy - 3, z), (cx + w/2, yy + 3, z), (cx + w/2 + 7, yy + 3, z - 1), (cx + w/2 + 7, yy - 3, z - 1))}" fill="{col["der"]}" stroke="{col["borde"]}" stroke-width="0.6"/>')
+    # Brillo diagonal sobre la tapa (medio triángulo más claro).
+    s.append(f'<polygon points="{iso.pts((cx - w/2 + b, cy - d/2 + b, z + h + 0.15), (cx + w/2 - b, cy - d/2 + b, z + h + 0.15), (cx - w/2 + b, cy + d/2 - b, z + h + 0.15))}" fill="#ffffff" fill-opacity="0.35"/>')
     px, py = iso.p(cx - w/2 + 16, cy - d/2 + 16, z + h + 0.2)
     s.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="2.6" fill="{col["borde"]}"/>')
     return s
@@ -222,6 +224,13 @@ def dibujar_pieza(iso: Iso, p: dict, forma: str, z: float, col: dict, sw: float)
             s.append(f'<ellipse cx="{px:.1f}" cy="{py:.1f}" rx="4.5" ry="2.6" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="0.9"/>')
         # Muesca de la llave en el borde del conector (lado y+).
         s.append(f'<polygon points="{iso.pts((40, d/2, z - 0.1), (52, d/2, z - 0.1), (52, d/2 - 10, z + h + 0.1), (40, d/2 - 10, z + h + 0.1))}" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="0.8"/>')
+        # Serigrafía: pasivos pequeños (pares de pads) repartidos por la placa.
+        for (xx, yy) in ((-120, -60), (-105, -60), (-120, 55), (-105, 55), (120, -62), (135, -62), (60, 60), (75, 60), (-20, -66), (-5, -66)):
+            s.append(f'<polygon points="{iso.pts((xx - 4, yy - 3, z + h + 0.1), (xx + 4, yy - 3, z + h + 0.1), (xx + 4, yy + 3, z + h + 0.1), (xx - 4, yy + 3, z + h + 0.1))}" fill="{col["borde"]}" fill-opacity="0.25"/>')
+        # Línea de contorno de la serigrafía alrededor del área de los chips.
+        s.append(f'<polygon points="{iso.pts((-108, -40, z + h + 0.1), (128, -40, z + h + 0.1), (128, 40, z + h + 0.1), (-108, 40, z + h + 0.1))}" fill="none" stroke="{col["borde"]}" stroke-width="0.6" stroke-opacity="0.35"/>')
+        # Canto inferior más oscuro: grosor de la placa.
+        s.append(f'<polyline points="{iso.pts((-w/2, d/2, z), (w/2, d/2, z), (w/2, -d/2, z))}" fill="none" stroke="{col["borde"]}" stroke-width="1.4" stroke-opacity="0.6"/>')
     elif forma == "conector":
         # Cuerpo bajo y, delante, la lengüeta de contactos (más baja, más ancha, dorada).
         s.append(iso.caja(0, cy - 6, z, w, d - 12, h, col, sw))
@@ -231,7 +240,11 @@ def dibujar_pieza(iso: Iso, p: dict, forma: str, z: float, col: dict, sw: float)
             xx = -w/2 + 18 + k * (w - 36) / 17
             a = iso.p(xx, cy + d/2 - 7, z + leng_h + 0.2)
             b = iso.p(xx, cy + d/2 + 3, z + leng_h + 0.2)
-            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col["borde"]}" stroke-width="0.8" stroke-opacity="0.55"/>')
+            s.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{"#b89b55" if k % 2 else col["borde"]}" stroke-width="{1.4 if k % 2 else 0.8}" stroke-opacity="0.6"/>')
+        # Ranura del cuerpo (donde entra la lengüeta de la placa) y dos pestañas de fijación.
+        s.append(f'<polygon points="{iso.pts((-w/2 + 10, cy - 6, z + h - 4), (w/2 - 10, cy - 6, z + h - 4), (w/2 - 10, cy - 6 + 3, z + h - 4), (-w/2 + 10, cy - 6 + 3, z + h - 4))}" fill="{col["borde"]}" fill-opacity="0.35"/>')
+        for xx in (-w/2 + 6, w/2 - 6):
+            s.append(iso.caja(xx, cy - 6, z + h, 8, d - 12, 5, col, sw * 0.7))
         # Muesca de llave en la lengüeta.
         s.append(f'<polygon points="{iso.pts((40, cy + d/2 - 7, z + leng_h + 0.3), (52, cy + d/2 - 7, z + leng_h + 0.3), (52, cy + d/2 + 3, z + leng_h + 0.3), (40, cy + d/2 + 3, z + leng_h + 0.3))}" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="0.7"/>')
     elif forma == "carcasa":
@@ -242,6 +255,11 @@ def dibujar_pieza(iso: Iso, p: dict, forma: str, z: float, col: dict, sw: float)
         s.append(iso.caja(-w/2 + t/2, 0, z + 4, t, d, h - 4, col, sw))          # pared izquierda (x-)
         s.append(iso.caja(w/2 - t/2, 0, z + 4, t, d, h - 4, col, sw, ' fill-opacity="0.9"'))  # pared derecha (x+)
         s.append(iso.caja(0, d/2 - t/2, z + 4, w, t, h - 4, col, sw, ' fill-opacity="0.9"'))  # pared frontal (y+)
+        # Tornillos en las cuatro esquinas de las paredes.
+        for xx, yy in ((-w/2 + 12, -d/2 + 12), (w/2 - 12, -d/2 + 12), (-w/2 + 12, d/2 - 12), (w/2 - 12, d/2 - 12)):
+            px, py = iso.p(xx, yy, z + h + 0.2)
+            s.append(f'<ellipse cx="{px:.1f}" cy="{py:.1f}" rx="3.6" ry="2.1" fill="{PAPEL}" stroke="{col["borde"]}" stroke-width="0.8"/>')
+            s.append(f'<line x1="{px - 2.2:.1f}" y1="{py:.1f}" x2="{px + 2.2:.1f}" y2="{py:.1f}" stroke="{col["borde"]}" stroke-width="0.7"/>')
         # Rejilla de ventilación en la pared frontal.
         for k in range(8):
             xx = -w/2 + 40 + k * 22
@@ -253,6 +271,8 @@ def dibujar_pieza(iso: Iso, p: dict, forma: str, z: float, col: dict, sw: float)
         n = 9
         for k in range(n):
             xx = -w/2 + 12 + k * (w - 24) / (n - 1)
+            if k > 0:  # sombra entre aletas, sobre la base
+                s.append(f'<polygon points="{iso.pts((xx - 9, -d/2 + 6, z + base + 0.1), (xx - 2.5, -d/2 + 6, z + base + 0.1), (xx - 2.5, d/2 - 6, z + base + 0.1), (xx - 9, d/2 - 6, z + base + 0.1))}" fill="{col["borde"]}" fill-opacity="0.12"/>')
             s.append(iso.caja(xx, 0, z + base, 5, d - 12, h - base, col, sw * 0.7))
     elif forma == "cable":
         # Cinta plana con un pliegue en zigzag y conductores paralelos.
@@ -413,6 +433,14 @@ def main(argv: list[str]) -> int:
         hijos = [q for q in piezas.values() if q.get("padre") == p["id"]]
         tinta = GRIS if apagada else TINTA
         s.append(f'<g class="fv-punto" data-id="{escape(p["id"])}" data-forma="{forma}">')
+        if i > 0:
+            # Sombra proyectada (huella tenue) sobre la cima de la pieza de abajo: vende la separación.
+            f0 = FORMAS[forma]
+            zb = zs[i - 1] + FORMAS[formas[i - 1]]["h"] + 0.3
+            fw, fd, fcy = f0["w"], f0["d"], f0.get("dy", 0)
+            if forma == "chip" and isinstance(p.get("cantidad"), int) and p["cantidad"] > 1:
+                fw = (min(p["cantidad"], 6) - 1) * (FORMAS["chip"]["w"] + 26) + FORMAS["chip"]["w"]
+            s.append(f'<polygon points="{iso.pts((-fw/2 + 6, fcy - fd/2 + 6, zb), (fw/2 + 6, fcy - fd/2 + 6, zb), (fw/2 + 6, fcy + fd/2 + 6, zb), (-fw/2 + 6, fcy + fd/2 + 6, zb))}" fill="#1f2933" fill-opacity="0.045"/>')
         s.append(cuerpo)
         if hijos and not destacada:
             # Pieza cerrada que se abre en otra figura: un pequeño «+» sobre ella.
