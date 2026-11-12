@@ -152,7 +152,7 @@ Cada pieza proyecta una sombra tenue sobre la de abajo, lo que vende la separaci
 
 </details>
 
-<details>
+<details id="marca-propia">
 <summary><b>🎨 Marca propia (opcional)</b></summary>
 
 <br>

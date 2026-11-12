@@ -113,7 +113,7 @@ más en el sistema.
 | `capturar-cdp.mjs` dice «hace falta Node 22» | Node anterior a 22 | Actualizá Node (`brew upgrade node`, `winget upgrade OpenJS.NodeJS`) o abrí la página en el navegador |
 | `--interactivo` escribe la página estática | El modelo no es de tipo físico o no tiene `geometria` | Es lo esperado: la interactiva solo existe para hardware con geometría (ver [Interactiva](interactivo.md)) |
 | En el explorador, la transición se queda a medias | La pestaña está oculta: el navegador pausa las View Transitions | Ponela en primer plano, o revisalo con `capturar-cdp.mjs` (ver [Explorador](explorador.md)) |
-| La página sale sin marca | Es lo esperado | La skill no trae la marca de nadie. Pasá `--marca ruta/a/tu-marca.json` (ver [el README](../README.md#tu-marca-en-un-fichero)) |
+| La página sale sin marca | Es lo esperado | La skill no trae la marca de nadie. Pasá `--marca ruta/a/tu-marca.json` (ver [el README](../README.md#marca-propia)) |
 
 ¿Otra cosa? [Abrí un issue](https://github.com/javierledesma28/skill-despiece/issues) con tu sistema, la versión
 de Python y el mensaje exacto.
