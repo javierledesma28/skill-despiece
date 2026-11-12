@@ -118,6 +118,11 @@ def sin_campo(pid, campo):
     return lambda m: next(p for p in m["piezas"] if p["id"] == pid).pop(campo)
 
 
+def hijas_ordenadas(m):
+    for i, pid in enumerate(("nand-celdas", "nand-slc", "nand-bloques"), 1):
+        pieza(pid, orden=i)(m)
+
+
 def orden_antiguo(m):
     for p in m["piezas"]:
         if "orden" in p:
@@ -143,6 +148,11 @@ r += [
     sin("funcion que cabe en la figura", pieza("nand", funcion="x " * 60), "«nand»: funcion de"),
     caso("orden parcial en un sistema", lambda m: (m.update(tipo="sistema"), m.pop("geometria"),
          sin_campo("dram", "orden")(m)), "A", "orden en unas raíces"),
+    caso("hijas ordenadas sin eje en un sistema", lambda m: (m.update(tipo="sistema"), m.pop("geometria"),
+         hijas_ordenadas(m)), "A", "«nand»: sus hijas llevan orden"),
+    sin("hijas ordenadas con eje en un sistema", lambda m: (m.update(tipo="sistema"), m.pop("geometria"),
+        hijas_ordenadas(m), pieza("nand", eje="la escritura, de la celda al bloque")(m)), "sus hijas llevan orden"),
+    sin("hijas ordenadas sin eje en lo físico", hijas_ordenadas, "sus hijas llevan orden"),
 ]
 print(f"{sum(bool(x) for x in r)}/{len(r)}")
 sys.exit(0 if all(r) else 1)

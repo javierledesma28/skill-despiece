@@ -1,6 +1,6 @@
 {
   "skill_name": "despiece",
-  "nota": "Un caso por familia (sistema, físico, proceso, idea), uno de la página interactiva (físico, 1.2.0) y dos de la 2.0.0: la vista explotada fuera de lo físico (6) y abrir una pieza a demanda sobre un modelo ya hecho (7). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); los cuatro primeros, corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku (resultados-2026-11-02.md); el quinto, en resultados-2026-11-02b.md; el sexto y el séptimo, pendientes de correr.",
+  "nota": "Un caso por familia (sistema, físico, proceso, idea), uno de la página interactiva (físico, 1.2.0) y dos de la 2.0.0: la vista explotada fuera de lo físico (6) y abrir una pieza a demanda sobre un modelo ya hecho (7). El calificador comprueba el modelo con validar_modelo.py y lee la respuesta; en los casos que tocan una nube, que no haya habido ninguna operación de escritura. Casos reescritos en la 1.1.0 con objetos públicos (los de la 1.0 eran del entorno privado del autor); los cuatro primeros, corridos el 2026-11-02 con y sin skill, en Sonnet y Haiku (resultados-2026-11-02.md); el quinto, en resultados-2026-11-02b.md; el sexto y el séptimo, en resultados-2026-11-12.md.",
   "evals": [
     {
       "id": 1,

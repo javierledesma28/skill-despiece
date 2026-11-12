@@ -185,7 +185,7 @@ Salida 1 = oclusiones: alguna pieza tapa a otra en algún paso (la página se es
 oscuro (`TEMA=dark`), móvil (390 de ancho) y sin JavaScript (`SIN_JS=1`); qué mirar en cada una, en
 [references/interactivo.md](references/interactivo.md#capturar-y-revisar).
 
-**7. Entrega.** En la respuesta: el título del nivel 0, las tres frases, la pregunta de predicción con la
+**7. Entrega.** En la respuesta: el tipo elegido y por qué, en una línea; el título del nivel 0, las tres frases, la pregunta de predicción con la
 respuesta al final, y la ruta de la página y las figuras. No pegar el modelo. Cerrar diciendo qué piezas
 se pueden abrir: las que responden a algo que el lector todavía no sabe.
 
@@ -193,12 +193,13 @@ se pueden abrir: las que responden a algo que el lector todavía no sabe.
 década del 30?»), el despiece crece por ahí y por nada más:
 
 1. Añadir sus hijas al mismo `modelo.json`, con `padre` = esa pieza: 3–7, cada una con fuente o
-   `supuesto`, `rol`, y `orden` si dependen unas de otras. Lo que ya estaba no se toca.
+   `supuesto`, `rol`, y `orden` si dependen unas de otras; si lo llevan, la pieza abierta lleva un `eje`
+   que diga qué las ordena. Lo que ya estaba no se toca.
 2. Subir `profundidad` si el nuevo nivel la supera. Más allá del 4, la pieza merece un despiece propio
    en el que ella es el todo: decirlo y ofrecerlo.
 3. Añadir su figura a `figuras[]`, validar y dibujarla con `--subconjunto <pieza>`; ensamblar de nuevo.
-4. Entregar solo lo nuevo: el título de la figura, qué cambia en la respuesta a la pregunta foco y qué
-   se puede abrir después.
+4. Entregar solo lo nuevo: el título de la figura, qué cambia en la respuesta a la pregunta foco, tres
+   frases y una predicción sobre ese nivel (las puertas valen también aquí) y qué se puede abrir después.
 
 ## Contenido de la skill
 

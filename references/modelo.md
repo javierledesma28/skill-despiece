@@ -120,5 +120,5 @@ un caso a otro es qué significa el eje, y eso lo dice `eje`.
   (`docs/red-y-conectividad.md`) y, si se leyó la configuración real, el recurso y la fecha.
 - Cada ámbito (una empresa, un cliente, un proyecto personal) tiene sus fuentes y su marca: no se mezclan.
   Fuera de un proyecto con marca propia, la página va con `--marca ninguna`.
-- En `figuras[].skill` vale `propio` cuando la figura se dibuja con un script del propio despiece, sin skill
-  de dibujo instalada.
+- En `figuras[].skill` va `explosionado` cuando la figura sale de `explosionado.py`, en cualquier tipo, y
+  `propio` cuando se dibuja con un script hecho para ese despiece, sin skill de dibujo instalada.

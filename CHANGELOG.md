@@ -26,9 +26,12 @@ validando: `orden_montaje` queda como alias de `orden`.
   web, nueve. **`docs/ejemplos.md`** los muestra todos, nivel por nivel, con el comando de cada figura.
 - `validar_modelo.py`: el alias, `orden` repetido entre hermanas, `orden` y `orden_montaje` distintos en una
   pieza, `rol` y `forma` conocidos, `eje` (texto corto, en el modelo y en las piezas), raíces sin rol fuera
-  de lo físico (aviso), más de una `base` entre hermanas (aviso). `probar_validador.py`: 54/54.
+  de lo físico (aviso), más de una `base` entre hermanas (aviso), y fuera de lo físico una pieza cuyas hijas
+  llevan `orden` sin `eje` propio (aviso: su subtítulo caería en el genérico). `probar_validador.py`: 57/57.
 - Evals 6 (la vista explotada de una historia, fuera de lo físico) y 7 (abrir una pieza a demanda sobre un
-  modelo ya hecho), **sin correr todavía**.
+  modelo ya hecho): **29/32 con skill frente a 13/32 sin ella** (Sonnet y Haiku). Activación con cuatro
+  consultas nuevas (historia, auditoría, línea de tiempo y organigrama): 75/78, entrenamiento 45/45; los tres
+  fallos, la consulta de la página con scroll de la 1.2.0. Detalle en `evals/resultados-2026-11-12.md`.
 
 ### Cambiado
 - **`explosionado.py` dibuja los cuatro tipos**, no solo el físico, y en isométrica (30°): prismas de tres
@@ -45,6 +48,9 @@ validando: `orden_montaje` queda como alias de `orden`.
   líneas y recorta el resto con «…».
 - `references/modelo.md`: una pieza abierta sin `eje` propio toma el del tipo, no el del modelo, porque lo que
   ordena las raíces rara vez ordena a sus hijas (así lo hacía ya el código).
+- Por las evals: el paso 8 entrega también tres frases y una predicción sobre el nivel abierto, y pide `eje`
+  en la pieza abierta si sus hijas llevan `orden`; el paso 7 empieza por el tipo elegido y por qué;
+  `modelo.md` aclara que una figura de `explosionado.py` lleva `"skill": "explosionado"` en cualquier tipo.
 - `SKILL.md`: gotchas de los dos ejes, del dominio como ejemplos y de la profundidad a demanda; el paso 5
   hace de la vista explotada la figura por defecto de cada nivel y delega el flujo, la red y la secuencia.
 - `references/modelo.md` (con índice), `metodo-por-tipo.md` (la vista explotada fuera de lo físico) e

@@ -10,7 +10,8 @@ Comprueba lo que el método exige y que, sin guía, se salta (E = error, A = avi
   E  tipo fisico: orden (o su alias orden_montaje) entero en las raíces; proceso/sistema: flujo con ≥ 3 ids
   E  orden repetido entre hermanas, u orden y orden_montaje distintos en la misma pieza (A si es en otro tipo y
      solo unas raíces lo llevan); rol y forma conocidos; eje, un texto corto
-  A  más de una pieza con rol «base» entre hermanas; raíces sin rol ni forma fuera del tipo fisico
+  A  más de una pieza con rol «base» entre hermanas; raíces sin rol ni forma fuera del tipo fisico; fuera del
+     tipo fisico, pieza cuyas hijas llevan orden y ella no tiene eje (su subtítulo caería en el genérico)
   E  relaciones con de/a existentes y tipo conocido
   E  feynman con exactamente 3 frases; prediccion con pregunta (termina en «?») y respuesta
   A  figuras: > 6 piezas nuevas (E si > 9), título no afirmativo, skill desconocida, nivel > profundidad
@@ -217,6 +218,11 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
         if sin_rol:
             A.append(f"tipo {tipo}: las raíces {sin_rol} no tienen rol; la vista explotada las dibuja como bloque "
                      "genérico (rol: base, etapa, componente, interfaz, enlace, contenedor, regulador o bloque)")
+        generico = "el orden de los pasos" if tipo == "proceso" else "el orden de dependencia"
+        for padre, hs in hijos.items():
+            if padre is not None and "eje" not in ids[padre] and any(orden_de(ids[h]) is not None for h in hs):
+                A.append(f"pieza «{padre}»: sus hijas llevan orden y ella no tiene eje; el subtítulo de su figura "
+                         f"dirá «{generico}», que rara vez es lo que las ordena (eje: «la cronología, de… a…»)")
     eje = m.get("eje")
     if eje is not None and (not isinstance(eje, str) or not eje.strip()):
         E.append("eje debe ser un texto: qué ordena el eje de la figura («el orden de montaje», «la cronología»…)")
