@@ -13,6 +13,7 @@ dibuja cada nivel y te hace tres preguntas para comprobar que lo entendiste de v
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B%20·%20sin%20dependencias-1f2933?style=flat-square)](scripts/)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-7b8794?style=flat-square)](LICENSE)
 [![t28.io](https://img.shields.io/badge/por-t28.io-3e7cb1?style=flat-square)](https://t28.io)
+[![Demos en vivo](https://img.shields.io/badge/demos-despiece.t28.io-3e7cb1?style=flat-square)](https://despiece.t28.io)
 
 </div>
 
@@ -29,11 +30,11 @@ Le pedís `/despiece SSD NVMe` (o `la red de la oficina en Azure`, `la historia 
 
 Con `--interactivo`, el mismo modelo sale como una página que **se abre y se recorre con el scroll**: se arma al
 cargar, se desmonta pieza a pieza, sigue el flujo paso a paso y te deja entrar en la pieza que decide.
-[Mirá la demo interactiva](docs/interactivo.md).
+[Mirá la demo interactiva](docs/interactivo.md) o [probala en el navegador](https://despiece.t28.io/interactivo/).
 
 Con `--explorador`, cualquier modelo sale como un **explorador con zoom**: te acercás a una pieza con «+» y se abre
 en su propia lámina; te alejás y volvés. Sirve para un SSD y para la historia de un país.
-[Mirá la demo del explorador](docs/explorador.md).
+[Mirá la demo del explorador](docs/explorador.md) o [probalo en el navegador](https://despiece.t28.io/explorador/ssd.html).
 
 > Sin dependencias: Python 3.10 o superior y nada más. La figura sale con `viewBox`, así que escala donde la pongas.
 > Node 22 solo hace falta para capturar la interactiva o el explorador, y es opcional.
@@ -201,6 +202,7 @@ despiece/
 │   ├── plantilla-explorador.html
 │   └── marca-ejemplo.json
 ├── evals/                    ← casos para comprobar que la skill no se rompe
+├── docs/index.html          ← la portada de despiece.t28.io, con las demos para probar
 ├── docs/ejemplos.md          ← los 9 ejemplos con sus figuras, nivel por nivel
 ├── docs/demo/                ← SVG de demostración (iso/ el SSD, ejemplos/ el resto)
 ├── docs/interactivo/         ← la página interactiva del SSD y sus capturas

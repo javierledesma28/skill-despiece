@@ -14,7 +14,7 @@ nivel y la ficha de la que elegís, con su función y su fuente. Es un solo fich
 | Fichero | En esta demo |
 |---|---|
 | Los modelos | [`assets/ejemplo-fisico.json`](../assets/ejemplo-fisico.json) y [`assets/ejemplo-historia-argentina.json`](../assets/ejemplo-historia-argentina.json) |
-| Los exploradores | [`explorador/ssd.html`](explorador/ssd.html) y [`explorador/historia-argentina.html`](explorador/historia-argentina.html) (descargalos y abrilos) |
+| Los exploradores | [`explorador/ssd.html`](explorador/ssd.html) y [`explorador/historia-argentina.html`](explorador/historia-argentina.html) · abrilos en el navegador: [el SSD](https://despiece.t28.io/explorador/ssd.html) y [la historia](https://despiece.t28.io/explorador/historia-argentina.html) |
 | Las capturas | [`explorador/capturas/`](explorador/capturas/) |
 
 No necesita bloque `geometria`: las láminas son las mismas de la [página estática](demo.md), dibujadas por la
@@ -30,8 +30,8 @@ skill al generar el explorador.
 | Clic en la lámina o en la lista | Elige la pieza y muestra su ficha; doble clic la abre |
 | «Atrás» del navegador | Sube un nivel; «adelante» vuelve a bajar |
 
-Cada nivel tiene su dirección (`ssd.html#/nand`), así que se puede compartir un enlace que abre directamente
-dentro de una pieza.
+Cada nivel tiene su dirección ([`ssd.html#/nand`](https://despiece.t28.io/explorador/ssd.html#/nand)), así que se puede compartir un
+enlace que abre directamente dentro de una pieza.
 
 ## El SSD: dos niveles
 

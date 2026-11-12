@@ -13,7 +13,7 @@ versionar.
 |---|---|---|
 | `modelo.json` | La única fuente de verdad: piezas con función y fuente, relaciones, flujo, malentendidos | [`assets/ejemplo-fisico.json`](../assets/ejemplo-fisico.json) |
 | `figuras/*.svg` | Una por nivel, vectorial, sin tamaño fijo | [`n1-explosion.svg`](demo/figuras/n1-explosion.svg) · [`n2-nand.svg`](demo/figuras/n2-nand.svg) |
-| `index.html` | La explicación entera, autocontenida, tema claro y oscuro | [`demo/index.html`](demo/index.html) (descargalo y abrilo) |
+| `index.html` | La explicación entera, autocontenida, tema claro y oscuro | [`demo/index.html`](demo/index.html) · [abrila en el navegador](https://despiece.t28.io/demo/) |
 
 ## El caso: un SSD NVMe
 

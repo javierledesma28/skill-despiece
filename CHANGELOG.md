@@ -3,6 +3,21 @@
 Formato: versión semántica (`metadata.version` de SKILL.md). Una entrada por cambio relevante, con el
 resultado de las evals que lo respaldan.
 
+## [2.1.2] - 2026-11-12
+
+Solo documentación: la skill no cambia.
+
+### Añadido
+- **Las demos se prueban en el navegador**, en [despiece.t28.io](https://despiece.t28.io): `docs/` se publica con
+  GitHub Pages. `docs/index.html` es la portada, con las cuatro demos (los dos exploradores, la interactiva y la
+  estática); `docs/.nojekyll` hace que Pages sirva los ficheros tal cual, sin pasar los `.md` por Jekyll, y
+  `docs/CNAME` fija el dominio.
+
+### Cambiado
+- El README y `docs/demo.md`, `docs/interactivo.md` y `docs/explorador.md` enlazan a las páginas en vivo en vez de
+  pedir que se descarguen. La decisión 5 de `docs/research-interactivo.md` («sin GitHub Pages») queda anotada como
+  revisada.
+
 ## [2.1.1] - 2026-11-12
 
 Solo documentación: la skill no cambia.
