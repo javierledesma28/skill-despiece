@@ -207,10 +207,13 @@ def main(argv: list[str]) -> int:
     n0 = m.get("nivel0", {})
     raices = [p for p in piezas if p.get("padre") is None]
     flujo = [por_id[i] for i in m.get("flujo", []) if i in por_id]
-    # Orden del nivel 1: en lo físico, el de montaje (coincide con la numeración de la vista explotada);
-    # en lo demás, el del flujo si lo hay (se sigue la petición); si no, el escrito.
-    if m.get("tipo") == "fisico":
-        orden = sorted(raices, key=lambda p: p.get("orden_montaje", 0))
+    # Orden del nivel 1: el campo «orden» (o «orden_montaje») si lo llevan todas, que coincide con la
+    # numeración de la vista explotada; si no, el del flujo (se sigue la petición); si no, el escrito.
+    def orden_de(p):
+        return p.get("orden", p.get("orden_montaje"))
+
+    if raices and all(isinstance(orden_de(p), int) for p in raices):
+        orden = sorted(raices, key=orden_de)
     elif flujo and all(p.get("padre") is None for p in flujo):
         orden = flujo + [p for p in raices if p not in flujo]
     else:

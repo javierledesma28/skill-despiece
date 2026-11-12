@@ -1,26 +1,32 @@
-"""Dibuja una vista explotada isométrica (SVG) de un modelo de despiece de tipo fisico.
+"""Dibuja una vista explotada isométrica (SVG) de un modelo de despiece, de cualquier tipo.
 
 Usage: python -I explosionado.py MODELO.json --salida FIGURA.svg
                                   [--subconjunto ID] [--destacar ID] [--marca RUTA.json|ninguna] [--titulo TEXTO]
 
-Reglas que aplica (Agrawala 2003/2008, Biesty): las piezas se separan sobre un solo eje, el de montaje,
-lo mínimo para verse; de abajo arriba va el orden de montaje (la pieza 1 queda abajo); cada pieza se
-dibuja como un sólido isométrico con la forma de su papel (placa, chip, conector, módulo, carcasa,
-disipador, cable); una pieza con hijos se dibuja cerrada y se abre en otra figura con --subconjunto;
-con --destacar una sola pieza va en color y el resto queda en gris. Llamadas numeradas con línea guía
-hasta la lista de piezas, a la derecha, para que las guías no se crucen.
+Reglas que aplica (Agrawala 2003/2008, Biesty): las piezas se separan sobre un solo eje, el de
+dependencia, lo mínimo para verse; de abajo arriba va el campo «orden» de cada pieza (la 1 queda abajo):
+el montaje en un aparato, el despliegue en un sistema, la cronología en una historia, la profundidad en un
+terreno. Sin «orden», el del flujo y, si no, el de escritura. El subtítulo dice qué ordena el eje: el
+campo «eje» del modelo («la cronología, de lo más antiguo a lo más reciente») o, si falta, uno según el
+tipo. Una pieza con hijos se dibuja cerrada y se abre en otra figura con --subconjunto; con --destacar
+una sola pieza va en color y el resto queda en gris. Llamadas numeradas con línea guía hasta la lista de
+piezas, a la derecha, para que las guías no se crucen.
 
-Forma de cada pieza: campo opcional «forma» en la pieza (placa | chip | conector | modulo | carcasa |
-disipador | cable | capa). Sin él, se infiere del nombre; si no se reconoce, módulo en una raíz y capa
-(loseta con retícula, para partes lógicas o internas) en una pieza hija.
+Silueta de cada pieza, por este orden:
+  1. «forma», si la pieza la trae: placa | chip | conector | modulo | carcasa | disipador | cable | capa.
+  2. «rol», el papel abstracto, que no sabe del dominio: base → placa · etapa y capa → capa ·
+     componente → chip · interfaz → conector · enlace → cable · contenedor y limite → carcasa ·
+     regulador → disipador · bloque → modulo.
+  3. En tipo fisico, el nombre («pcb», «conector», «disipador»…); en los demás tipos no se adivina.
+  4. Si nada de eso: módulo en una raíz y capa (loseta con retícula) en una pieza hija.
 
 --marca acepta la ruta de un JSON con la marca del proyecto (assets/marca-ejemplo.json enseña los campos)
 o «ninguna», el valor por defecto: la skill no trae la marca de ninguna organización.
-Entrada: un modelo validado con validar_modelo.py (tipo fisico, raíces con orden_montaje).
+Entrada: un modelo validado con validar_modelo.py; «orden_montaje» vale como alias de «orden».
 Salida: el SVG (sin width/height fijos: viewBox y preserveAspectRatio, para que el contenedor mande)
 y en stdout JSON {"salida", "piezas", "viewBox", "destacada", "subconjunto", "formas"}.
 Códigos de salida: 0 OK · 1 el SVG generado no es XML válido (no se escribe nada) · 2 argumentos,
-fichero, marca o tipo inválidos.
+fichero o marca inválidos.
 Ejemplo:
   python -I explosionado.py assets/ejemplo-fisico.json --salida figuras/n1-explosion.svg --destacar controladora
 """
@@ -133,12 +139,28 @@ def mezclar(hexcolor: str, t: float, con: str = "#ffffff") -> str:
     return "#%02x%02x%02x" % tuple(round(x + (y - x) * t) for x, y in zip(a, b))
 
 
-def forma_de(p: dict) -> str:
+# Rol abstracto → silueta: la tabla que hace a la figura independiente del dominio.
+ROL_A_FORMA = {"base": "placa", "etapa": "capa", "capa": "capa", "componente": "chip", "interfaz": "conector",
+               "enlace": "cable", "contenedor": "carcasa", "limite": "carcasa", "regulador": "disipador",
+               "bloque": "modulo"}
+EJE_POR_TIPO = {"fisico": "el orden de montaje", "proceso": "el orden de los pasos",
+                "sistema": "el orden de dependencia", "idea": "el orden de dependencia"}
+
+
+def orden_de(p: dict) -> int | None:
+    v = p.get("orden", p.get("orden_montaje"))
+    return v if isinstance(v, int) and not isinstance(v, bool) else None
+
+
+def forma_de(p: dict, tipo: str = "fisico") -> str:
     f = p.get("forma")
     if isinstance(f, str) and f in FORMAS:
         return f
+    if p.get("rol") in ROL_A_FORMA:
+        return ROL_A_FORMA[p["rol"]]
     nombre = str(p.get("nombre", "")).lower()
-    for patron, forma in PISTAS:
+    # Las pistas por nombre son de hardware: en un proceso o una idea, «bus» o «memoria» no son piezas físicas.
+    for patron, forma in PISTAS if tipo == "fisico" else []:
         if re.search(patron, nombre):
             return forma
     # Sin pista en el nombre: una raíz es un módulo; una pieza interior (hija) suele ser lógica → capa.
@@ -336,11 +358,7 @@ def main(argv: list[str]) -> int:
     except json.JSONDecodeError as e:
         print(f"ERROR: JSON inválido: {e}. Pasar antes por validar_modelo.py.", file=sys.stderr)
         return 2
-    if m.get("tipo") != "fisico":
-        print(f"ERROR: tipo «{m.get('tipo')}»; la vista explotada es solo para tipo fisico. Para procesos, sistemas e ideas, "
-              "delegar la figura en una skill de dibujo (p. ej. diagram-design) o dibujarla con un script propio según "
-              "references/guion-visual.md.", file=sys.stderr)
-        return 2
+    tipo = m.get("tipo") if m.get("tipo") in EJE_POR_TIPO else "fisico"
     try:
         mk = cargar_marca(a.marca)
     except ValueError as e:
@@ -359,11 +377,14 @@ def main(argv: list[str]) -> int:
     if not grupo:
         print(f"ERROR: «{padre}» no tiene hijos que explotar", file=sys.stderr)
         return 2
-    # Orden de montaje ascendente: la 1 abajo. Sin orden_montaje (subconjuntos), el de escritura.
-    if all(isinstance(p.get("orden_montaje"), int) for p in grupo):
-        grupo.sort(key=lambda p: p["orden_montaje"])
+    # Orden ascendente: la 1 abajo. Sin «orden» en todas, el del flujo; si tampoco, el de escritura.
+    flujo = [f for f in m.get("flujo") or [] if isinstance(f, str)]
+    if all(orden_de(p) is not None for p in grupo):
+        grupo.sort(key=orden_de)
+    elif all(p["id"] in flujo for p in grupo):
+        grupo.sort(key=lambda p: flujo.index(p["id"]))
     n = len(grupo)
-    formas = [forma_de(p) for p in grupo]
+    formas = [forma_de(p, tipo) for p in grupo]
 
     # Alturas: la escena se construye de abajo arriba; cada pieza a SEP de la anterior más su propio alto.
     zs: list[float] = []
@@ -390,7 +411,8 @@ def main(argv: list[str]) -> int:
                 break
     if not titulo:
         titulo = f"Dentro de {piezas[padre]['nombre']}" if padre else (m.get("nivel0", {}).get("titulo") or m.get("objeto", "Vista explotada"))
-    subt = "Vista explotada · de abajo arriba, el orden de montaje"
+    eje = m.get("eje") if isinstance(m.get("eje"), str) and m["eje"].strip() else EJE_POR_TIPO[tipo]
+    subt = f"Vista explotada · de abajo arriba, {recortar(eje, 90)}"
 
     s: list[str] = []
     s.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMid meet" '

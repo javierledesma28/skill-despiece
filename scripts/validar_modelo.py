@@ -7,7 +7,10 @@ Comprueba lo que el método exige y que, sin guía, se salta (E = error, A = avi
   E  nivel0.titulo y nivel0.frontera presentes; el título afirma algo (no «Qué es…», no termina en «:»)
   E  piezas con id único, nombre, funcion y fuente (o supuesto: true); padre existente y sin ciclos
   E  raíces: 2–7 (A si son 2); hijos por padre: 2–7 (una pieza con un solo hijo no se despieza)
-  E  tipo fisico: orden_montaje entero en las raíces; proceso/sistema: flujo con ≥ 3 ids existentes
+  E  tipo fisico: orden (o su alias orden_montaje) entero en las raíces; proceso/sistema: flujo con ≥ 3 ids
+  E  orden repetido entre hermanas, u orden y orden_montaje distintos en la misma pieza (A si es en otro tipo y
+     solo unas raíces lo llevan); rol y forma conocidos; eje, un texto corto
+  A  más de una pieza con rol «base» entre hermanas; raíces sin rol ni forma fuera del tipo fisico
   E  relaciones con de/a existentes y tipo conocido
   E  feynman con exactamente 3 frases; prediccion con pregunta (termina en «?») y respuesta
   A  figuras: > 6 piezas nuevas (E si > 9), título no afirmativo, skill desconocida, nivel > profundidad
@@ -40,7 +43,11 @@ from pathlib import Path
 TIPOS = {"fisico", "proceso", "sistema", "idea"}
 TIPOS_RELACION = {"flujo", "contiene", "depende", "controla", "dato", "energia", "causa"}
 SKILLS_DIBUJO = {"diagram-design", "diagrama-microsoft-learn", "grafico-interactivo", "explosionado", "propio", "ninguna"}
-FORMAS = {"placa", "chip", "conector", "caja"}
+FORMAS = {"placa", "chip", "conector", "caja"}  # geometria.piezas[*].forma: la página interactiva
+# piezas[*].forma: la silueta de la vista explotada (explosionado.py)
+FORMAS_FIGURA = {"placa", "chip", "conector", "modulo", "carcasa", "disipador", "cable", "capa"}
+# piezas[*].rol: el papel abstracto, que elige la silueta sin saber del dominio
+ROLES = {"base", "etapa", "capa", "componente", "interfaz", "enlace", "contenedor", "limite", "regulador", "bloque"}
 PATRONES = {"rejilla", "puntos"}
 NO_AFIRMATIVO = re.compile(
     r"^\s*(qu[eé] es|definici[oó]n|introducci[oó]n|visi[oó]n general|resumen|overview|descripci[oó]n)\b",
@@ -55,6 +62,12 @@ def _utf8_stdout() -> None:
             flujo.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
         except Exception:  # pragma: no cover - consolas antiguas
             pass
+
+
+def orden_de(p: dict) -> int | None:
+    """El orden de dependencia de una pieza: «orden», o «orden_montaje», su nombre antiguo."""
+    v = p.get("orden", p.get("orden_montaje"))
+    return v if isinstance(v, int) and not isinstance(v, bool) else None
 
 
 def titulo_afirmativo(t: str) -> str | None:
@@ -85,8 +98,8 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
         E.append("pregunta_foco no termina en «?»: tiene que ser la pregunta que el lector quiere responder")
 
     profundidad = m.get("profundidad", 2)
-    if not isinstance(profundidad, int) or not 1 <= profundidad <= 3:
-        E.append("profundidad debe ser un entero entre 1 y 3")
+    if not isinstance(profundidad, int) or isinstance(profundidad, bool) or not 1 <= profundidad <= 4:
+        E.append("profundidad debe ser un entero entre 1 y 4 (más de 2, solo por la rama que responde a la pregunta foco)")
         profundidad = 2
 
     n0 = m.get("nivel0") or {}
@@ -126,6 +139,15 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
             A.append(f"pieza «{pid}»: funcion de {len(p['funcion'])} caracteres; una función se dice en una línea")
         if isinstance(p.get("nombre"), str) and len(p["nombre"]) > 40:
             A.append(f"pieza «{pid}»: nombre de {len(p['nombre'])} caracteres; acortarlo para que quepa en la figura")
+        for campo in ("orden", "orden_montaje"):
+            if campo in p and orden_de({campo: p[campo]}) is None:
+                E.append(f"pieza «{pid}»: {campo} debe ser un entero (1 es lo primero, abajo en la figura)")
+        if "orden" in p and "orden_montaje" in p and p["orden"] != p["orden_montaje"]:
+            E.append(f"pieza «{pid}»: orden = {p['orden']} y orden_montaje = {p['orden_montaje']}; son el mismo campo, dejar solo «orden»")
+        if "rol" in p and p["rol"] not in ROLES:
+            E.append(f"pieza «{pid}»: rol «{p['rol']}» desconocido; usar uno de {sorted(ROLES)}")
+        if "forma" in p and p["forma"] not in FORMAS_FIGURA:
+            E.append(f"pieza «{pid}»: forma «{p['forma']}» desconocida; usar una de {sorted(FORMAS_FIGURA)} o quitarla y poner un rol")
 
     # Jerarquía: padres existentes, sin ciclos, conteos por nivel.
     hijos: dict[str | None, list[str]] = {}
@@ -173,11 +195,28 @@ def validar(m: dict) -> tuple[list[str], list[str], dict]:
 
     if tipo == "fisico":
         for pid in raices:
-            if not isinstance(ids[pid].get("orden_montaje"), int):
-                E.append(f"tipo fisico: la pieza «{pid}» necesita orden_montaje (entero); el desmontaje es el montaje al revés")
-        ordenes = [ids[p].get("orden_montaje") for p in raices if isinstance(ids[p].get("orden_montaje"), int)]
+            if orden_de(ids[pid]) is None:
+                E.append(f"tipo fisico: la pieza «{pid}» necesita orden (entero); el desmontaje es el montaje al revés")
+    elif raices and 0 < sum(orden_de(ids[pid]) is not None for pid in raices) < len(raices):
+        A.append("orden en unas raíces y no en otras: la figura las ordena por el flujo o por el orden de escritura")
+    for padre, hs in hijos.items():
+        ordenes = [orden_de(ids[h]) for h in hs if orden_de(ids[h]) is not None]
         if len(ordenes) != len(set(ordenes)):
-            E.append("tipo fisico: hay orden_montaje repetidos entre las raíces")
+            donde = "las raíces" if padre is None else f"las hijas de «{padre}»"
+            E.append(f"orden repetido entre {donde}: cada pieza ocupa un lugar en el eje")
+        bases = [h for h in hs if ids[h].get("rol") == "base"]
+        if len(bases) > 1:
+            A.append(f"rol «base» en {bases}: la base es una, la que sostiene al resto")
+    if tipo in TIPOS - {"fisico"}:
+        sin_rol = [pid for pid in raices if "rol" not in ids[pid] and "forma" not in ids[pid]]
+        if sin_rol:
+            A.append(f"tipo {tipo}: las raíces {sin_rol} no tienen rol; la vista explotada las dibuja como bloque "
+                     "genérico (rol: base, etapa, componente, interfaz, enlace, contenedor, regulador o bloque)")
+    eje = m.get("eje")
+    if eje is not None and (not isinstance(eje, str) or not eje.strip()):
+        E.append("eje debe ser un texto: qué ordena el eje de la figura («el orden de montaje», «la cronología»…)")
+    elif isinstance(eje, str) and len(eje) > 70:
+        A.append(f"eje de {len(eje)} caracteres: va en el subtítulo de la figura, decirlo en pocas palabras")
 
     flujo = m.get("flujo") or []
     if not isinstance(flujo, list):
@@ -403,10 +442,10 @@ def validar_geometria(geo, tipo, ids, raices, hijos, niveles, flujo, E: list[str
                 A.append(f"geometria.piezas.{pid}: se sale de la placa ({largo:g} × {ancho:g}); comprobar x e y")
     if len(placas) != 1:
         E.append(f"geometria.piezas: tiene que haber exactamente una pieza con forma «placa» (hay {len(placas)}): es la base que no sube")
-    elif all(isinstance(ids[r].get("orden_montaje"), int) for r in raices):
-        primera = min(raices, key=lambda r: ids[r]["orden_montaje"])
+    elif all(orden_de(ids[r]) is not None for r in raices):
+        primera = min(raices, key=lambda r: orden_de(ids[r]))
         if primera != placas[0]:
-            E.append(f"geometria: la placa «{placas[0]}» tiene que ser la primera en orden_montaje (ahora lo es «{primera}»)")
+            E.append(f"geometria: la placa «{placas[0]}» tiene que ser la primera en orden (ahora lo es «{primera}»)")
     lista = sorted(cajas)
     for i, a in enumerate(lista):
         for b in lista[i + 1:]:

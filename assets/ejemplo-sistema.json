@@ -1,6 +1,7 @@
 {
   "objeto": "El camino de una petición web por una Application Gateway con WAF",
   "tipo": "sistema",
+  "eje": "el camino de la petición, de la entrada al portal",
   "pregunta_foco": "¿Por qué una petición puede llegar al portal sin que la WAF la vea?",
   "lector": "técnico de sistemas que opera la gateway pero no la diseñó",
   "profundidad": 2,
@@ -15,15 +16,15 @@
     {"id": "learn-appgw", "descripcion": "Microsoft Learn: Application Gateway components", "url": "https://learn.microsoft.com/azure/application-gateway/application-gateway-components"}
   ],
   "piezas": [
-    {"id": "dns", "nombre": "Nombre público", "padre": null, "funcion": "Decide a qué IP va la petición: la de la gateway o la propia del App Service", "fuente": "repo-red"},
-    {"id": "listener", "nombre": "Listener", "padre": null, "funcion": "Acepta la conexión 443 de un hostname concreto y le pone el certificado", "fuente": "learn-appgw"},
-    {"id": "waf", "nombre": "Política WAF", "padre": null, "funcion": "Inspecciona cada petición y decide permitir, bloquear o registrar", "fuente": "learn-appgw"},
+    {"id": "dns", "rol": "interfaz", "nombre": "Nombre público", "padre": null, "funcion": "Decide a qué IP va la petición: la de la gateway o la propia del App Service", "fuente": "repo-red"},
+    {"id": "listener", "rol": "interfaz", "nombre": "Listener", "padre": null, "funcion": "Acepta la conexión 443 de un hostname concreto y le pone el certificado", "fuente": "learn-appgw"},
+    {"id": "waf", "rol": "limite", "nombre": "Política WAF", "padre": null, "funcion": "Inspecciona cada petición y decide permitir, bloquear o registrar", "fuente": "learn-appgw"},
     {"id": "waf-custom", "nombre": "Reglas personalizadas", "padre": "waf", "funcion": "Se evalúan primero y por prioridad; una Allow es terminal y salta las gestionadas", "fuente": "hallazgo-waf"},
     {"id": "waf-managed", "nombre": "Reglas gestionadas (OWASP)", "padre": "waf", "funcion": "Las firmas de Microsoft: SQLi, XSS, protocolos; solo ven lo que no permitió una personalizada", "fuente": "learn-appgw"},
     {"id": "waf-exclusiones", "nombre": "Exclusiones", "padre": "waf", "funcion": "Campos que las gestionadas no miran; una exclusión amplia es un agujero silencioso", "fuente": "learn-appgw"},
-    {"id": "regla", "nombre": "Regla de enrutado", "padre": null, "funcion": "Une el listener con un backend pool y un ajuste HTTP; por path puede mandar a pools distintos", "fuente": "learn-appgw"},
-    {"id": "backend", "nombre": "Backend pool y sonda", "padre": null, "funcion": "La lista de App Services destino y la sonda que decide cuáles están sanos", "fuente": "learn-appgw"},
-    {"id": "appservice", "nombre": "App Service", "padre": null, "funcion": "Sirve el portal; también responde en su propio nombre azurewebsites.net si no se le restringe", "fuente": "hallazgo-waf"}
+    {"id": "regla", "rol": "enlace", "nombre": "Regla de enrutado", "padre": null, "funcion": "Une el listener con un backend pool y un ajuste HTTP; por path puede mandar a pools distintos", "fuente": "learn-appgw"},
+    {"id": "backend", "rol": "regulador", "nombre": "Backend pool y sonda", "padre": null, "funcion": "La lista de App Services destino y la sonda que decide cuáles están sanos", "fuente": "learn-appgw"},
+    {"id": "appservice", "rol": "componente", "nombre": "App Service", "padre": null, "funcion": "Sirve el portal; también responde en su propio nombre azurewebsites.net si no se le restringe", "fuente": "hallazgo-waf"}
   ],
   "relaciones": [
     {"de": "dns", "a": "listener", "tipo": "flujo", "etiqueta": "si resuelve a la gateway"},

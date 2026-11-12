@@ -46,7 +46,7 @@ Origen en una esquina; todas las medidas en `unidad` (por defecto `mm`). Ejemplo
 
 | Campo | Qué es |
 |---|---|
-| `forma` | `placa` (exactamente una: la base, con el `orden_montaje` más bajo), `chip`, `conector` o `caja` (por defecto). `chip` y `caja` se ven igual; `conector` va en dorado con pines |
+| `forma` | `placa` (exactamente una: la base, con el `orden` más bajo), `chip`, `conector` o `caja` (por defecto). `chip` y `caja` se ven igual; `conector` va en dorado con pines |
 | `x`, `y` | `[desde, hasta]`, con desde < hasta |
 | `alto` | > 0 |
 | `z` | Altura a la que empieza (por defecto 0, sobre la placa); para apilar una pieza sobre otra |

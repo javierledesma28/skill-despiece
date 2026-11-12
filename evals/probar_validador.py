@@ -83,7 +83,7 @@ r = [
     caso("id inexistente", poner(P + ["disipador"], {"forma": "caja", "x": [1, 2], "y": [1, 2], "alto": 1}), "E", "«disipador» no existe"),
     caso("forma desconocida", poner(P + ["dram", "forma"], "esfera"), "E", "forma «esfera»"),
     caso("dos placas", poner(P + ["dram"], {"forma": "placa"}), "E", "exactamente una"),
-    caso("placa no es la primera", lambda m: [p.update(orden_montaje=9) for p in m["piezas"] if p["id"] == "pcb"], "E", "primera en orden_montaje"),
+    caso("placa no es la primera", lambda m: [p.update(orden=9) for p in m["piezas"] if p["id"] == "pcb"], "E", "primera en orden"),
     caso("rango al revés", poner(P + ["dram", "x"], [36, 28]), "E", "x debe ser"),
     caso("alto cero", poner(P + ["dram", "alto"], 0), "E", "alto debe ser > 0"),
     caso("z negativa", poner(P + ["dram", "z"], -1), "E", "z (altura"),
@@ -107,6 +107,38 @@ r = [
     caso("nivel 3", lambda m: (m.update(profundidad=3), m["piezas"].extend([
         {"id": "c1", "nombre": "Celda 1", "padre": "nand-celdas", "funcion": "x", "supuesto": True},
         {"id": "c2", "nombre": "Celda 2", "padre": "nand-celdas", "funcion": "x", "supuesto": True}])), "A", "nivel 3"),
+]
+def pieza(pid, **campos):
+    def f(m):
+        next(p for p in m["piezas"] if p["id"] == pid).update(campos)
+    return f
+
+
+def sin_campo(pid, campo):
+    return lambda m: next(p for p in m["piezas"] if p["id"] == pid).pop(campo)
+
+
+def orden_antiguo(m):
+    for p in m["piezas"]:
+        if "orden" in p:
+            p["orden_montaje"] = p.pop("orden")
+
+
+r += [
+    sin("orden_montaje como alias de orden", orden_antiguo, "orden"),
+    caso("alias: placa no es la primera", lambda m: (orden_antiguo(m), pieza("pcb", orden_montaje=9)(m)), "E", "primera en orden"),
+    caso("físico sin orden", sin_campo("dram", "orden"), "E", "«dram» necesita orden"),
+    caso("orden repetido", pieza("dram", orden=1), "E", "orden repetido entre las raíces"),
+    caso("orden y orden_montaje distintos", pieza("dram", orden_montaje=7), "E", "son el mismo campo"),
+    caso("orden no entero", pieza("dram", orden="3"), "E", "orden debe ser un entero"),
+    caso("rol desconocido", pieza("dram", rol="motor"), "E", "rol «motor»"),
+    caso("forma de figura desconocida", pieza("dram", forma="esfera"), "E", "forma «esfera» desconocida"),
+    sin("rol y forma válidos", lambda m: (pieza("dram", rol="componente")(m), pieza("pcb", forma="placa")(m)), "desconocid"),
+    caso("dos bases", lambda m: (pieza("pcb", rol="base")(m), pieza("dram", rol="base")(m)), "A", "rol «base»"),
+    caso("eje vacío", poner(["eje"], " "), "E", "eje debe ser un texto"),
+    caso("eje largo", poner(["eje"], "x" * 90), "A", "eje de 90"),
+    caso("orden parcial en un sistema", lambda m: (m.update(tipo="sistema"), m.pop("geometria"),
+         sin_campo("dram", "orden")(m)), "A", "orden en unas raíces"),
 ]
 print(f"{sum(bool(x) for x in r)}/{len(r)}")
 sys.exit(0 if all(r) else 1)

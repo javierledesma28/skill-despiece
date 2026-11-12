@@ -14,11 +14,11 @@
     {"id": "jedec-m2", "descripcion": "PCI-SIG M.2 Specification: tamaños 2230/2242/2280 y llaves M/B"}
   ],
   "piezas": [
-    {"id": "pcb", "nombre": "Placa (PCB)", "padre": null, "orden_montaje": 1, "funcion": "Sostiene y conecta todo; su tamaño (2280 = 22 × 80 mm) fija cuántos chips caben", "fuente": "jedec-m2"},
-    {"id": "conector", "nombre": "Conector M.2 llave M", "padre": null, "orden_montaje": 2, "funcion": "Entrega alimentación y hasta 4 carriles PCIe; la llave impide pinchar un disco SATA", "fuente": "jedec-m2"},
-    {"id": "controladora", "nombre": "Controladora", "padre": null, "orden_montaje": 3, "funcion": "El cerebro: traduce comandos NVMe a operaciones sobre la NAND y reparte el desgaste", "fuente": "nvme-spec"},
-    {"id": "dram", "nombre": "Caché DRAM", "padre": null, "orden_montaje": 4, "funcion": "Guarda la tabla que dice en qué chip está cada bloque; sin ella, el disco la busca en la propia NAND y se frena", "supuesto": true},
-    {"id": "nand", "nombre": "Chips NAND", "padre": null, "orden_montaje": 5, "funcion": "Donde viven los datos; más chips en paralelo, más velocidad sostenida", "cantidad": 4, "fuente": "nvme-spec"},
+    {"id": "pcb", "nombre": "Placa (PCB)", "padre": null, "orden": 1, "funcion": "Sostiene y conecta todo; su tamaño (2280 = 22 × 80 mm) fija cuántos chips caben", "fuente": "jedec-m2"},
+    {"id": "conector", "nombre": "Conector M.2 llave M", "padre": null, "orden": 2, "funcion": "Entrega alimentación y hasta 4 carriles PCIe; la llave impide pinchar un disco SATA", "fuente": "jedec-m2"},
+    {"id": "controladora", "nombre": "Controladora", "padre": null, "orden": 3, "funcion": "El cerebro: traduce comandos NVMe a operaciones sobre la NAND y reparte el desgaste", "fuente": "nvme-spec"},
+    {"id": "dram", "nombre": "Caché DRAM", "padre": null, "orden": 4, "funcion": "Guarda la tabla que dice en qué chip está cada bloque; sin ella, el disco la busca en la propia NAND y se frena", "supuesto": true},
+    {"id": "nand", "nombre": "Chips NAND", "padre": null, "orden": 5, "funcion": "Donde viven los datos; más chips en paralelo, más velocidad sostenida", "cantidad": 4, "fuente": "nvme-spec"},
     {"id": "nand-celdas", "nombre": "Celdas (TLC o QLC)", "padre": "nand", "funcion": "Cada celda guarda 3 o 4 bits; cuantos más bits, más barato y más lento al escribir", "supuesto": true},
     {"id": "nand-slc", "nombre": "Caché SLC", "padre": "nand", "funcion": "Parte de la NAND trabaja a 1 bit por celda para absorber ráfagas; al llenarse, la velocidad cae", "supuesto": true},
     {"id": "nand-bloques", "nombre": "Bloques y páginas", "padre": "nand", "funcion": "Se escribe por páginas y se borra por bloques: por eso borrar cuesta y hace falta TRIM", "fuente": "nvme-spec"}

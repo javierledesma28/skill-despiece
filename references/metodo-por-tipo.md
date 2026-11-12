@@ -11,7 +11,8 @@ técnica probada y un orden de revelado; lo que no cambia es la regla de 3–7 p
 3. Proceso: eje temporal
 4. Sistema: funciones y flujo
 5. Idea: eje lógico
-6. Orden de revelado común y anti-patrones
+6. La vista explotada fuera de lo físico
+7. Orden de revelado común y anti-patrones
 
 ## 1. Clasificar
 
@@ -33,14 +34,15 @@ explotadas; el estilo de Biesty (el objeto se abre sin dejar de reconocerse).
 
 - **Piezas** = lo que se puede separar o señalar: carcasa, placa, módulos, conectores. Lo que no se ve
   pero decide el comportamiento (una caché, un firmware) también es pieza si responde a la pregunta foco.
-- **`orden_montaje`** en cada raíz: el desmontaje es el montaje al revés y la figura se lee de abajo arriba.
+- **`orden`** en cada raíz: el desmontaje es el montaje al revés y la figura se lee de abajo arriba
+  (`orden_montaje`, su nombre antiguo, sigue valiendo).
 - **Subconjuntos antes que piezas**: una pieza con hijos se dibuja cerrada («contiene N piezas») y se abre
   en una figura aparte (`--subconjunto`). Nunca explotar todo a la vez.
 - **Una pieza destacada por figura** (`--destacar`): la que responde a la pregunta foco.
 - **Fuentes**: hoja de datos o manual del fabricante, especificación del estándar (PCI-SIG, NVMe, IEC),
   teardowns publicados. Lo que se sabe «de oídas» va como `supuesto: true`.
-- **Figura**: `explosionado.py` (2D, numerada, con lista de piezas). Si hace falta un corte o un
-  isométrico, no está en esta skill: decirlo y ofrecer la 2D.
+- **Figura**: `explosionado.py` (isométrica, numerada, con lista de piezas). Si hace falta un corte, no
+  está en esta skill: decirlo y ofrecer la vista explotada.
 
 ## 3. Proceso: eje temporal
 
@@ -96,7 +98,22 @@ enlace); la prueba de Feynman; la escalera de abstracción de Bret Victor.
 - **Figura**: árbol (`tree`) para la descomposición MECE, mapa conceptual (`dependency graph`) para la
   red de conceptos, `quadrant` o `Venn` para comparar; small multiples para «esto frente a aquello».
 
-## 6. Orden de revelado común
+## 6. La vista explotada fuera de lo físico
+
+`explosionado.py` dibuja cualquier tipo: lo que cambia es qué significa el eje. Se apila de abajo arriba
+lo que tiene que existir antes, y cada pieza toma la silueta de su `rol` (tabla en
+[modelo.md](modelo.md)). Los ejemplos de esta tabla son eso, ejemplos: el caso concreto decide.
+
+| Tipo | `orden` es… | `eje`, por ejemplo | Roles que suelen salir |
+|---|---|---|---|
+| Proceso | el orden de los pasos | «el orden de los pasos, del pedido al despliegue» | `etapa`, `componente`, `interfaz` |
+| Sistema | el despliegue o el camino de una petición | «el despliegue, de la red a las máquinas» | `base`, `capa`, `componente`, `interfaz`, `enlace`, `contenedor` |
+| Idea | la cronología, la profundidad o la cadena causal | «la cronología, de lo más antiguo a lo más reciente» | `etapa`, `componente`, `enlace`, `limite` |
+
+Cuando la pregunta foco es por dónde pasa algo, la vista explotada no basta: la figura del nivel es la de
+flujo, red o secuencia, delegada (secciones 3 y 4), y la explotada puede acompañarla.
+
+## 7. Orden de revelado común
 
 1. **Nivel 0**: el todo, reconocible y con su frontera (qué entra y qué queda fuera). Título afirmativo.
 2. **Nivel 1**: nombrar las piezas antes de explicar el mecanismo (preentrenamiento de Mayer). 3–7.

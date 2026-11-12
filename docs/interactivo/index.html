@@ -459,7 +459,7 @@ footer .lema { color: var(--acento); letter-spacing: .14em; font-size: .72rem; f
    "id": "pcb",
    "nombre": "Placa (PCB)",
    "padre": null,
-   "orden_montaje": 1,
+   "orden": 1,
    "funcion": "Sostiene y conecta todo; su tamaño (2280 = 22 × 80 mm) fija cuántos chips caben",
    "fuente": "jedec-m2"
   },
@@ -467,7 +467,7 @@ footer .lema { color: var(--acento); letter-spacing: .14em; font-size: .72rem; f
    "id": "conector",
    "nombre": "Conector M.2 llave M",
    "padre": null,
-   "orden_montaje": 2,
+   "orden": 2,
    "funcion": "Entrega alimentación y hasta 4 carriles PCIe; la llave impide pinchar un disco SATA",
    "fuente": "jedec-m2"
   },
@@ -475,7 +475,7 @@ footer .lema { color: var(--acento); letter-spacing: .14em; font-size: .72rem; f
    "id": "controladora",
    "nombre": "Controladora",
    "padre": null,
-   "orden_montaje": 3,
+   "orden": 3,
    "funcion": "El cerebro: traduce comandos NVMe a operaciones sobre la NAND y reparte el desgaste",
    "fuente": "nvme-spec"
   },
@@ -483,7 +483,7 @@ footer .lema { color: var(--acento); letter-spacing: .14em; font-size: .72rem; f
    "id": "dram",
    "nombre": "Caché DRAM",
    "padre": null,
-   "orden_montaje": 4,
+   "orden": 4,
    "funcion": "Guarda la tabla que dice en qué chip está cada bloque; sin ella, el disco la busca en la propia NAND y se frena",
    "supuesto": true
   },
@@ -491,7 +491,7 @@ footer .lema { color: var(--acento); letter-spacing: .14em; font-size: .72rem; f
    "id": "nand",
    "nombre": "Chips NAND",
    "padre": null,
-   "orden_montaje": 5,
+   "orden": 5,
    "funcion": "Donde viven los datos; más chips en paralelo, más velocidad sostenida",
    "cantidad": 4,
    "fuente": "nvme-spec"

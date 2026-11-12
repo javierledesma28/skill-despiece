@@ -143,11 +143,16 @@ def unidades_de(g: dict, placa: dict | None = None) -> list[tuple]:
     return [(x0, y0, x1, y1, z0, z1)]
 
 
+def orden_de(p: dict) -> int:
+    """«orden», o «orden_montaje», su nombre antiguo; 0 si no hay."""
+    return p.get("orden", p.get("orden_montaje", 0))
+
+
 def conjunto(modelo: dict) -> dict:
     """Base y resto de raíces con su geometría, en orden de pintado (de lejos a cerca)."""
     geo = modelo["geometria"]
     placa = geo["placa"]
-    raices = sorted((p for p in modelo["piezas"] if p.get("padre") is None), key=lambda p: p.get("orden_montaje", 0))
+    raices = sorted((p for p in modelo["piezas"] if p.get("padre") is None), key=orden_de)
     piezas = []
     for p in raices:
         g = geo["piezas"][p["id"]]
@@ -155,7 +160,7 @@ def conjunto(modelo: dict) -> dict:
         x0, x1 = min(u[0] for u in uds), max(u[2] for u in uds)
         y0, y1 = min(u[1] for u in uds), max(u[3] for u in uds)
         piezas.append({"id": p["id"], "pieza": p, "forma": g.get("forma", "caja"), "geo": g, "unidades": uds,
-                       "orden": p.get("orden_montaje", 0), "centro": ((x0 + x1) / 2, (y0 + y1) / 2),
+                       "orden": orden_de(p), "centro": ((x0 + x1) / 2, (y0 + y1) / 2),
                        "arriba": max(u[5] for u in uds)})
     base = next(q for q in piezas if q["forma"] == "placa")
     resto = sorted((q for q in piezas if q is not base), key=lambda q: min(u[0] + u[1] for u in q["unidades"]))

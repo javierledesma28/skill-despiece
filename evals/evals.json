@@ -27,7 +27,7 @@
       "files": [],
       "assertions": [
         "Clasifica el objeto como físico y fija una pregunta foco ligada a la compra o al calor",
-        "Las raíces del modelo tienen orden_montaje y hay entre 3 y 7",
+        "Las raíces del modelo tienen orden (u orden_montaje, su alias) y hay entre 3 y 7",
         "Lo que no se verificó en la documentación oficial (raspberrypi.com) está marcado con supuesto: true y la respuesta lo dice",
         "No inventa referencias concretas de chips ni cifras que no estén en una fuente citada",
         "La figura se genera con explosionado.py (SVG numerado) y se incrusta en la página",
